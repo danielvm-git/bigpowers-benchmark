@@ -80,19 +80,19 @@ public struct BenchRow: Codable, Identifiable, Sendable {
     }
 
     public init(from decoder: any Decoder) throws {
-        let con = try decoder.container(keyedBy: CodingKeys.self)
-        id = try con.decode(UUID.self, forKey: .id)
-        schemaVersion = try con.decode(Int.self, forKey: .schemaVersion)
-        timestamp = try con.decode(Date.self, forKey: .timestamp)
-        bigpowersRef = try con.decode(String.self, forKey: .bigpowersRef)
-        modelId = try con.decode(String.self, forKey: .modelId)
-        taskId = try con.decode(String.self, forKey: .taskId)
-        codePass = try con.decode(Int.self, forKey: .codePass)
-        artifactScore = try con.decode(Int.self, forKey: .artifactScore)
-        conventionScore = try con.decode(Int.self, forKey: .conventionScore)
-        duration = try con.decode(Double.self, forKey: .duration)
-        cost = try con.decode(Double.self, forKey: .cost)
-        workspace = try con.decode(String.self, forKey: .workspace)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+        timestamp = try container.decode(Date.self, forKey: .timestamp)
+        bigpowersRef = try container.decode(String.self, forKey: .bigpowersRef)
+        modelId = try container.decode(String.self, forKey: .modelId)
+        taskId = try container.decode(String.self, forKey: .taskId)
+        codePass = try container.decode(Int.self, forKey: .codePass)
+        artifactScore = try container.decode(Int.self, forKey: .artifactScore)
+        conventionScore = try container.decode(Int.self, forKey: .conventionScore)
+        duration = try container.decode(Double.self, forKey: .duration)
+        cost = try container.decode(Double.self, forKey: .cost)
+        workspace = try container.decode(String.self, forKey: .workspace)
         // overallScore is computed — skip decoding the stored value
     }
 }

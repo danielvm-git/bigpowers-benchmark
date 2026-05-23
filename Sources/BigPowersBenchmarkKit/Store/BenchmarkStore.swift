@@ -2,6 +2,8 @@ import Foundation
 import Observation
 
 @Observable
+// @unchecked: watchSource is only mutated from startWatching/stopWatching (main-thread APIs);
+// event and cancel handlers access no instance state — data races on watchSource are impossible.
 public final class BenchmarkStore: @unchecked Sendable {
     public static let runsDidChangeNotification = Notification.Name("BenchmarkStore.runsDidChange")
 
@@ -14,7 +16,6 @@ public final class BenchmarkStore: @unchecked Sendable {
 
     private let gitService: GitServiceProtocol
     private var watchSource: DispatchSourceFileSystemObject?
-    private var watchFD: Int32 = -1
 
     public var isRunsDirectoryGitRepo: Bool {
         gitService.isGitRepo(at: runsURL)
@@ -74,8 +75,11 @@ public final class BenchmarkStore: @unchecked Sendable {
         stopWatching()
         let fileDescriptor = open(runsURL.path, O_EVTONLY)
         guard fileDescriptor >= 0 else { return }
-        watchFD = fileDescriptor
+        watchSource = makeWatchSource(fileDescriptor: fileDescriptor)
+        watchSource?.resume()
+    }
 
+    private func makeWatchSource(fileDescriptor: Int32) -> DispatchSourceFileSystemObject {
         let source = DispatchSource.makeFileSystemObjectSource(
             fileDescriptor: fileDescriptor,
             eventMask: .write,
@@ -83,21 +87,20 @@ public final class BenchmarkStore: @unchecked Sendable {
         )
         source.setEventHandler { [weak self] in
             guard let self else { return }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                try? self.loadAllRuns()
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                try? await Task.sleep(for: .milliseconds(200))
+                try? loadAllRuns()
                 NotificationCenter.default.post(
                     name: BenchmarkStore.runsDidChangeNotification,
                     object: self
                 )
             }
         }
-        source.setCancelHandler { [weak self] in
-            guard let openFD = self?.watchFD, openFD >= 0 else { return }
-            close(openFD)
-            self?.watchFD = -1
+        source.setCancelHandler {
+            close(fileDescriptor)
         }
-        source.resume()
-        watchSource = source
+        return source
     }
 
     private func stopWatching() {
