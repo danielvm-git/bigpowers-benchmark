@@ -1,3 +1,4 @@
+import AppKit
 import BigPowersBenchmarkKit
 import SwiftUI
 
@@ -5,6 +6,11 @@ import SwiftUI
 struct BigPowersBenchmarkApp: App {
     private let benchmarkStore = BenchmarkStore()
     private let themeManager = ThemeManager()
+
+    init() {
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+    }
 
     var body: some Scene {
         WindowGroup {

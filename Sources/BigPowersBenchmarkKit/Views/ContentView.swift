@@ -23,8 +23,7 @@ public struct ContentView: View {
                 Text(screen.title)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                Text("Select a destination")
-                    .foregroundStyle(.secondary)
+                ContentUnavailableView("Select a screen", systemImage: "sidebar.left")
             }
         }
         .toolbar {
@@ -34,8 +33,25 @@ public struct ContentView: View {
                         columnVisibility = columnVisibility == .all ? .detailOnly : .all
                     }
                 } label: {
-                    Label("Toggle", systemImage: "sidebar.left")
+                    Label("Toggle Sidebar", systemImage: "sidebar.left")
                 }
+                .accessibilityLabel("Toggle Sidebar")
+            }
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    cycleTheme()
+                } label: {
+                    Label("Cycle Theme", systemImage: "paintpalette")
+                }
+                .accessibilityLabel("Cycle Theme")
+
+                Button {
+                    selectedScreen = .settings
+                } label: {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .accessibilityLabel("Settings")
             }
         }
         .sheet(isPresented: $showOnboarding) {
@@ -43,6 +59,9 @@ public struct ContentView: View {
         }
         .onAppear {
             showOnboarding = !store.isRunsDirectoryGitRepo
+        }
+        .onChange(of: store.isRunsDirectoryGitRepo) { _, isRepo in
+            if isRepo { showOnboarding = false }
         }
     }
 
