@@ -15,8 +15,6 @@ opt_in_rules:
   - force_unwrapping
   - sorted_imports
 
-sorted_imports:
-  grouping: alpha
 
 line_length:
   warning: 120
