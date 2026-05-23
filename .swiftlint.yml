@@ -16,7 +16,7 @@ opt_in_rules:
   - sorted_imports
 
 sorted_imports:
-  grouping: attributes
+  grouping: alpha
 
 line_length:
   warning: 120
