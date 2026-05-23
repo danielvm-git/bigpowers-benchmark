@@ -1,0 +1,557 @@
+<style>
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+  
+  .hero-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--s-12);
+  }
+  
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+  }
+  
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-8);
+  }
+  
+  .kpi-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-4);
+  }
+  
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-16);
+  }
+  
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-16);
+  }
+  
+  .legend {
+    display: flex;
+    gap: var(--s-16);
+    align-items: center;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .legend-line {
+    width: 20px;
+    height: 2px;
+  }
+  
+  .heatmap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    overflow-x: auto;
+  }
+  
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: 150px repeat(5, 80px);
+    gap: var(--s-4);
+    min-width: 600px;
+  }
+  
+  .heatmap-header {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    padding: var(--s-8);
+    text-align: center;
+  }
+  
+  .heatmap-row-label {
+    font-size: 13px;
+    color: var(--fg-2);
+    padding: var(--s-8);
+    display: flex;
+    align-items: center;
+  }
+  
+  .heatmap-cell {
+    aspect-ratio: 1;
+    border-radius: var(--r-badge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .heatmap-cell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  .score-0 { background: var(--surface-2); color: var(--fg-4); }
+  .score-1 { background: rgba(45,212,191,0.2); color: var(--accent); }
+  .score-2 { background: rgba(45,212,191,0.4); color: var(--accent); }
+  .score-3 { background: rgba(45,212,191,0.6); color: var(--accent); }
+  .score-4 { background: rgba(45,212,191,0.8); color: #0f1117; }
+  .score-5 { background: var(--accent); color: #0f1117; }
+  
+  .radar-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+  }
+  
+  .radar-chart {
+    width: 100%;
+    height: 280px;
+  }
+  
+  .regression-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  
+  .regression-item {
+    padding: var(--s-16);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--s-12);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .regression-item:last-child {
+    border-bottom: none;
+  }
+  
+  .regression-item:hover {
+    background: var(--surface-2);
+  }
+  
+  .regression-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-badge);
+    background: rgba(248,113,113,.12);
+    color: var(--bad);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .regression-content {
+    flex: 1;
+  }
+  
+  .regression-title {
+    font-size: 13px;
+    color: var(--fg);
+    margin-bottom: var(--s-4);
+  }
+  
+  .regression-meta {
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .recent-runs {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  
+  .run-item {
+    padding: var(--s-16);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--s-12);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .run-item:last-child {
+    border-bottom: none;
+  }
+  
+  .run-item:hover {
+    background: var(--surface-2);
+  }
+  
+  .run-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .run-status.complete { background: var(--good); }
+  .run-status.failed { background: var(--bad); }
+  
+  .run-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--s-16);
+  }
+  
+  .run-model {
+    font-size: 13px;
+    color: var(--fg);
+    min-width: 150px;
+  }
+  
+  .run-ref {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .run-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    margin-left: auto;
+  }
+  
+  .two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--s-24);
+  }
+</style>
+
+<div class="dashboard">
+  <!-- Hero KPIs -->
+  <div class="hero-kpis">
+    <div class="kpi-card">
+      <div class="kpi-label">Best Model</div>
+      <div class="kpi-value">Claude 3.5 Sonnet</div>
+      <div class="kpi-sub">1.38 overall · v2.8.0</div>
+    </div>
+    
+    <div class="kpi-card">
+      <div class="kpi-label">Fastest Model</div>
+      <div class="kpi-value">GPT-4 Turbo</div>
+      <div class="kpi-sub">3m 12s avg · 5 tasks</div>
+    </div>
+    
+    <div class="kpi-card">
+      <div class="kpi-label">Cheapest Model</div>
+      <div class="kpi-value">Hermes 3 70B</div>
+      <div class="kpi-sub">$0.18 avg · 5 tasks</div>
+    </div>
+    
+    <div class="kpi-card">
+      <div class="kpi-label">Most Improved</div>
+      <div class="kpi-value">v2.7.0 → v2.8.0</div>
+      <div class="kpi-sub">+0.22 overall · GPT-4</div>
+    </div>
+    
+    <div class="kpi-card">
+      <div class="kpi-label">Current Trend</div>
+      <div class="kpi-value">↑ Improving</div>
+      <div class="kpi-sub">+0.15 vs v2.7.0</div>
+    </div>
+  </div>
+  
+  <!-- Multi-model score overlay -->
+  <div>
+    <h2 class="section-title">Multi-Model Score Evolution</h2>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-line" style="background: var(--accent);"></div>
+            <span>Claude 3.5 Sonnet</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-line" style="background: var(--good);"></div>
+            <span>GPT-4 Turbo</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-line" style="background: var(--warn);"></div>
+            <span>Gemini 1.5 Pro</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-line" style="background: var(--fg-3);"></div>
+            <span>Hermes 3 70B</span>
+          </div>
+        </div>
+      </div>
+      <svg width="100%" height="240" viewBox="0 0 800 240">
+        <!-- Grid -->
+        <line x1="0" y1="40" x2="800" y2="40" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="80" x2="800" y2="80" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="120" x2="800" y2="120" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="160" x2="800" y2="160" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="200" x2="800" y2="200" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        
+        <!-- Claude line -->
+        <polyline points="0,180 80,160 160,140 240,155 320,125 400,130 480,110 560,95 640,100 720,80 800,70" 
+                  fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        
+        <!-- GPT-4 line -->
+        <polyline points="0,175 80,165 160,150 240,160 320,140 400,145 480,130 560,115 640,120 720,105 800,95" 
+                  fill="none" stroke="var(--good)" stroke-width="2.5"/>
+        
+        <!-- Gemini line -->
+        <polyline points="0,190 80,180 160,170 240,175 320,160 400,165 480,150 560,145 640,140 720,135 800,125" 
+                  fill="none" stroke="var(--warn)" stroke-width="2.5"/>
+        
+        <!-- Hermes line -->
+        <polyline points="0,195 80,190 160,185 240,188 320,180 400,185 480,175 560,170 640,165 720,160 800,155" 
+                  fill="none" stroke="var(--fg-3)" stroke-width="2"/>
+        
+        <!-- X-axis labels -->
+        <text x="0" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">v2.0</text>
+        <text x="160" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">v2.2</text>
+        <text x="320" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">v2.4</text>
+        <text x="480" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">v2.6</text>
+        <text x="640" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">v2.8</text>
+        <text x="760" y="225" font-size="10" fill="var(--fg-3)" font-family="JetBrains Mono">HEAD</text>
+      </svg>
+    </div>
+  </div>
+  
+  <!-- Two column layout -->
+  <div class="two-col">
+    <!-- Model × Task heatmap -->
+    <div>
+      <h2 class="section-title">Model × Task Performance</h2>
+      <div class="heatmap">
+        <div class="heatmap-grid">
+          <div class="heatmap-header"></div>
+          <div class="heatmap-header">T01</div>
+          <div class="heatmap-header">T02</div>
+          <div class="heatmap-header">T03</div>
+          <div class="heatmap-header">T04</div>
+          <div class="heatmap-header">T05</div>
+          
+          <div class="heatmap-row-label">Claude 3.5 Sonnet</div>
+          <div class="heatmap-cell score-5">1.50</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          <div class="heatmap-cell score-5">1.50</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          <div class="heatmap-cell score-5">1.50</div>
+          
+          <div class="heatmap-row-label">GPT-4 Turbo</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          <div class="heatmap-cell score-5">1.50</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          
+          <div class="heatmap-row-label">Gemini 1.5 Pro</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          <div class="heatmap-cell score-4">1.25</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          
+          <div class="heatmap-row-label">Hermes 3 70B</div>
+          <div class="heatmap-cell score-2">0.75</div>
+          <div class="heatmap-cell score-3">1.00</div>
+          <div class="heatmap-cell score-2">0.75</div>
+          <div class="heatmap-cell score-2">0.75</div>
+          <div class="heatmap-cell score-3">1.00</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Skill coverage radar -->
+    <div>
+      <h2 class="section-title">Skill Coverage</h2>
+      <div class="radar-container">
+        <svg class="radar-chart" viewBox="0 0 280 280">
+          <!-- Grid circles -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+          <circle cx="140" cy="140" r="75" fill="none" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+          <circle cx="140" cy="140" r="50" fill="none" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+          <circle cx="140" cy="140" r="25" fill="none" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+          
+          <!-- Axes -->
+          <line x1="140" y1="140" x2="140" y2="40" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          <line x1="140" y1="140" x2="226" y2="90" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          <line x1="140" y1="140" x2="226" y2="190" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          <line x1="140" y1="140" x2="140" y2="240" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          <line x1="140" y1="140" x2="54" y2="190" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          <line x1="140" y1="140" x2="54" y2="90" stroke="var(--fg-3)" stroke-width="1" opacity="0.4"/>
+          
+          <!-- Data polygon -->
+          <polygon points="140,60 200,100 190,170 140,210 90,170 70,100" 
+                   fill="rgba(45,212,191,0.1)" 
+                   stroke="var(--accent)" 
+                   stroke-width="2"/>
+          
+          <!-- Data points -->
+          <circle cx="140" cy="60" r="4" fill="var(--accent)"/>
+          <circle cx="200" cy="100" r="4" fill="var(--accent)"/>
+          <circle cx="190" cy="170" r="4" fill="var(--accent)"/>
+          <circle cx="140" cy="210" r="4" fill="var(--accent)"/>
+          <circle cx="90" cy="170" r="4" fill="var(--accent)"/>
+          <circle cx="70" cy="100" r="4" fill="var(--accent)"/>
+          
+          <!-- Labels -->
+          <text x="140" y="30" font-size="10" fill="var(--fg-3)" text-anchor="middle" font-family="JetBrains Mono">investigate-bug</text>
+          <text x="240" y="95" font-size="10" fill="var(--fg-3)" text-anchor="start" font-family="JetBrains Mono">develop-tdd</text>
+          <text x="240" y="195" font-size="10" fill="var(--fg-3)" text-anchor="start" font-family="JetBrains Mono">plan-work</text>
+          <text x="140" y="260" font-size="10" fill="var(--fg-3)" text-anchor="middle" font-family="JetBrains Mono">refactor</text>
+          <text x="40" y="195" font-size="10" fill="var(--fg-3)" text-anchor="end" font-family="JetBrains Mono">spec-first</text>
+          <text x="40" y="95" font-size="10" fill="var(--fg-3)" text-anchor="end" font-family="JetBrains Mono">debug</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Regressions -->
+  <div>
+    <h2 class="section-title">Recent Regressions</h2>
+    <div class="regression-list">
+      <div class="regression-item">
+        <div class="regression-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14m7-7l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div class="regression-content">
+          <div class="regression-title">GPT-4o overall dropped 0.18 between v2.7.0 → v2.8.0 on T04</div>
+          <div class="regression-meta">spec-first · convention_score fell from 2 → 0</div>
+        </div>
+        <span class="delta-badge delta-bad">↓ -0.18</span>
+      </div>
+      
+      <div class="regression-item">
+        <div class="regression-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14m7-7l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div class="regression-content">
+          <div class="regression-title">Gemini 1.5 Pro artifact_score declined on T03</div>
+          <div class="regression-meta">refactor · missing REFACTOR.md in 3 of last 5 runs</div>
+        </div>
+        <span class="delta-badge delta-bad">↓ -0.10</span>
+      </div>
+      
+      <div class="regression-item">
+        <div class="regression-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14m7-7l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div class="regression-content">
+          <div class="regression-title">Hermes 3 70B code_pass rate dropped on T05</div>
+          <div class="regression-meta">race-condition · tests timing out since v2.7.0</div>
+        </div>
+        <span class="delta-badge delta-bad">↓ -0.25</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent runs -->
+  <div>
+    <h2 class="section-title">Recent Runs</h2>
+    <div class="recent-runs">
+      <div class="run-item" onclick="navigateTo('mission-control')">
+        <div class="run-status complete"></div>
+        <div class="run-content">
+          <div class="run-model">Claude 3.5 Sonnet</div>
+          <div class="run-ref">v2.8.0</div>
+          <div class="run-ref">5 tasks · 8m 42s</div>
+          <div class="run-score">1.38</div>
+        </div>
+      </div>
+      
+      <div class="run-item" onclick="navigateTo('mission-control')">
+        <div class="run-status complete"></div>
+        <div class="run-content">
+          <div class="run-model">GPT-4 Turbo</div>
+          <div class="run-ref">v2.8.0</div>
+          <div class="run-ref">5 tasks · 6m 18s</div>
+          <div class="run-score">1.25</div>
+        </div>
+      </div>
+      
+      <div class="run-item" onclick="navigateTo('mission-control')">
+        <div class="run-status complete"></div>
+        <div class="run-content">
+          <div class="run-model">Gemini 1.5 Pro</div>
+          <div class="run-ref">v2.8.0</div>
+          <div class="run-ref">5 tasks · 7m 32s</div>
+          <div class="run-score">1.05</div>
+        </div>
+      </div>
+      
+      <div class="run-item" onclick="navigateTo('mission-control')">
+        <div class="run-status failed"></div>
+        <div class="run-content">
+          <div class="run-model">Hermes 3 70B</div>
+          <div class="run-ref">v2.7.0</div>
+          <div class="run-ref">3 of 5 tasks · error</div>
+          <div class="run-score" style="color: var(--bad);">0.60</div>
+        </div>
+      </div>
+      
+      <div class="run-item" onclick="navigateTo('mission-control')">
+        <div class="run-status complete"></div>
+        <div class="run-content">
+          <div class="run-model">Claude 3.5 Sonnet</div>
+          <div class="run-ref">v2.7.0</div>
+          <div class="run-ref">5 tasks · 9m 05s</div>
+          <div class="run-score">1.20</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

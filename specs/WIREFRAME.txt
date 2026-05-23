@@ -1,0 +1,478 @@
+================================================================================
+  BigPowers-Benchmark — Text Wireframes
+================================================================================
+  Source: project/*.html (pixel-perfect prototypes), design-system.html
+  Target: macOS 14+ SwiftUI app · NavigationSplitView shell
+  Canonical theme: Dark (Teal accent #2dd4bf)
+  Generated: 2026-05-23
+================================================================================
+
+
+TABLE OF CONTENTS
+-----------------
+  0. Design System (tokens & components)
+  1. Global App Shell
+  2. Dashboard
+  3. Mission Control (default / primary run surface)
+  4. Run Explorer
+  5. Skill Insights
+  6. Model Health
+  7. Task Library
+  8. Settings & Model Registry
+  9. Analytics (placeholder)
+ 10. Overlays & Secondary UI
+ 11. Menu Bar Extra
+ 12. Data & Navigation Map
+
+
+================================================================================
+0. DESIGN SYSTEM (from design-system.html)
+================================================================================
+
+TYPOGRAPHY
+  Display     Inter 28/600
+  H1          Inter 18/600
+  H2          Inter 13/600 UPPERCASE (0.14em tracking)
+  Body        Inter 13/400
+  Label       Inter 11/600 UPPERCASE
+  Mono LG     JetBrains Mono 22/500  (scores, KPIs)
+  Mono        JetBrains Mono 13/500
+  Meta        JetBrains Mono 11      (timestamps)
+
+SPACING       4 · 8 · 12 · 16 · 24 · 32 px
+RADIUS        badge 4 · button 6 · card 8 · pill 9999
+MOTION        120ms fast · 200ms base · 320ms slow (honor Reduce Motion)
+
+SEMANTIC COLORS (dark canonical)
+  --bg / --surface / --border
+  --fg (primary text) · --fg-2 (secondary) · --fg-3 (labels)
+  --accent (teal) · --good · --bad · --warn
+
+THEMES        Auto · Light · Dark (Teal) · Mono · Ocean · Forest · Ember ·
+              Violet · Midnight · Crimson · Slate · Amber · Rose
+
+COMPONENTS
+  [Run Benchmark]     Primary button (accent fill)
+  [Test Connection]   Ghost button (bordered)
+  [Stop Run]          Destructive (bad fill) — replaces Run while active
+  Metric card         label + mono value + sparkline + delta badge
+  Delta badges        ↑ good · ↓ bad · → neutral
+  Tier chips          Light (green) · Standard (warn) · Deep (bad)
+  Capability chips    Tools · Vision · 128K ctx · Streaming
+  Status pulse        ● idle (accent) · ● running (warn, animated) · ● error
+  Task stepper        ○ pending · ● active · ✓ complete · ✗ fail
+  Search field        rounded, accent focus ring
+  Terminal panel      #0a0c10 bg · ANSI-colored log lines · blinking caret
+
+SF SYMBOLS (sidebar)
+  Dashboard           gauge.with.dots.needle.bottom.50percent
+  Mission Control     play.circle.fill
+  Run Explorer        square.stack.3d.up
+  Skill Insights      lightbulb.fill
+  Model Health        network
+  Task Library        checklist
+  Settings            gearshape
+  Analytics           chart.xyaxis.line
+
+
+================================================================================
+1. GLOBAL APP SHELL (index.html → NavigationSplitView)
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ macOS title bar (hidden in prototype; native traffic lights)                 │
+├──────────────┬───────────────────────────────────────────────────────────────┤
+│ SIDEBAR      │ TITLE BAR                                                     │
+│ ~240px       │  (traffic)          {Screen Title}          ● status  ☀  ⚙  │
+│ collapsible  │                              last run · 14:32:08 UTC          │
+│ to ~60px     ├───────────────────────────────────────────────────────────────┤
+│              │                                                               │
+│ BigPowers  ◀ │                    CONTENT AREA                               │
+│              │              (screen fragment loaded here)                    │
+│ ───────────  │                                                               │
+│ ○ Dashboard  │                                                               │
+│ ▶ Mission    │                                                               │
+│   Control *  │                                                               │
+│ ○ Run        │                                                               │
+│   Explorer   │                                                               │
+│ ○ Skill      │                                                               │
+│   Insights   │                                                               │
+│ ○ Model      │                                                               │
+│   Health     │                                                               │
+│ ○ Task       │                                                               │
+│   Library    │                                                               │
+│ ○ Settings   │                                                               │
+│ ○ Analytics  │                                                               │
+│              │                                                               │
+└──────────────┴───────────────────────────────────────────────────────────────┘
+
+TITLE BAR RIGHT
+  ● pulse dot + status text (idle | running · T03 · 2m 14s · $0.32)
+  [☀] theme toggle (cycles light/dark in prototype; full picker in Settings)
+  [⚙] opens Settings
+
+STATES
+  Sidebar collapsed: icons only, labels hidden, ◀ becomes ▶
+  Running: pulse dot animates (warn), status line updates live
+
+
+================================================================================
+2. DASHBOARD (dashboard.html)
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ HERO KPIs (5 cards, horizontal row)                                        │
+├──────────────┬──────────────┬──────────────┬──────────────┬─────────────────┤
+│ BEST MODEL   │ FASTEST      │ CHEAPEST     │ MOST IMPROVED│ CURRENT TREND   │
+│ Claude 3.5   │ GPT-4 Turbo  │ Hermes 3 70B │ v2.7→v2.8    │ ↑ Improving       │
+│ 1.38 overall │ 3m 12s avg   │ $0.18 avg    │ +0.22 GPT-4  │ +0.15 vs v2.7    │
+└──────────────┴──────────────┴──────────────┴──────────────┴─────────────────┘
+
+MULTI-MODEL SCORE EVOLUTION (full-width chart card)
+  Legend: — Claude · — GPT-4 · — Gemini · — Hermes
+  X-axis: v2.0 … v2.8 … HEAD
+  Y: overall score 0.0–1.5
+
+TWO-COLUMN ROW (2fr | 1fr)
+┌────────────────────────────────────────────┬─────────────────────────────────┐
+│ MODEL × TASK PERFORMANCE (heatmap grid)    │ SKILL COVERAGE (radar chart)    │
+│         T01   T02   T03   T04   T05        │      investigate-bug            │
+│ Claude  1.50  1.25  1.50  1.25  1.50       │    develop-tdd    plan-work     │
+│ GPT-4   1.25  1.50  1.25  1.00  1.25       │      debug        refactor      │
+│ Gemini  1.00  1.25  1.00  1.00  1.00       │         spec-first              │
+│ Hermes  0.75  1.00  0.75  0.75  1.00       │                                 │
+└────────────────────────────────────────────┴─────────────────────────────────┘
+
+RECENT REGRESSIONS (list)
+  [↓] GPT-4o overall dropped 0.18 v2.7→v2.8 on T04          badge ↓ -0.18
+  [↓] Gemini artifact_score declined on T03                badge ↓ -0.10
+  [↓] Hermes code_pass dropped on T05                      badge ↓ -0.25
+
+RECENT RUNS (list → click → Mission Control)
+  ● Claude 3.5 Sonnet  v2.8.0  5 tasks · 8m 42s     1.38
+  ● GPT-4 Turbo        v2.8.0  5 tasks · 6m 18s     1.25
+  ● Gemini 1.5 Pro     v2.8.0  5 tasks · 7m 32s     1.05
+  ● Hermes 3 70B       v2.7.0  3 of 5 · error       0.60  (failed)
+  ● Claude 3.5 Sonnet  v2.7.0  5 tasks · 9m 05s     1.20
+
+
+================================================================================
+3. MISSION CONTROL (mission-control.html) — PRIMARY RUN COCKPIT
+================================================================================
+
+CONTROL STRIP
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [Model ▼ GPT-4 Turbo (OpenRouter)] [Standard]  [Ref ▼ HEAD]                  │
+│ bp_bench_runs/run_20260523_143208                    [Test Connection] [▶ Run]│
+└──────────────────────────────────────────────────────────────────────────────┘
+  Run → becomes [■ Stop Run] (destructive) while active
+
+TASK STEPPER (T01–T05)
+  (✓ T01)──(✓ T02)──(● T03)──(○ T04)──(○ T05)     2m 14s elapsed · $0.32
+
+SPLIT LAYOUT (~55% cockpit | ~45% terminal)
+┌─────────────────────────────────────┬────────────────────────────────────────┐
+│ COCKPIT (scroll)                    │ TERMINAL PANEL                         │
+├─────────────────────────────────────┤ ●●● Live · bench:progress [T03] path   │
+│ METRICS 2×2                         │ [T01][T02][T03][T04][T05]  [copy][clr]│
+│ ┌─────────┬─────────┐               ├────────────────────────────────────────┤
+│ │ Overall │Code Pass│               │ 14:32:03 [agent] reading CLAUDE.md    │
+│ │  1.25   │  4/5    │               │ 14:32:04 [skill] invoke investigate…  │
+│ │ spark ↑ │ spark ↑ │               │ 14:32:24 ! FAIL src/limiter.test.js   │
+│ ├─────────┼─────────┤               │ 14:32:34 ✓ 14 tests passed            │
+│ │Artifact │Convent. │               │ 14:33:28 [agent] analyzing god fn█    │
+│ │  7/10   │  6/10   │               │                                        │
+│ └─────────┴─────────┘               │ (autoscroll · ANSI colors · caret)     │
+│                                     │                                        │
+│ SCORE EVOLUTION                     │                                        │
+│ [Last 5][Last 10*][All]             │                                        │
+│ ~~~ line chart (overall + dashed)   │                                        │
+│                                     │                                        │
+│ TASKS TABLE                         │                                        │
+│     Task          Dur   Cost  Ovr Δ │                                        │
+│ ✓ bug-investig.   28s  $0.08 1.50 ↑ │                                        │
+│ ✓ feature-slice   42s  $0.12 1.25 → │                                        │
+│ ● refactor        1m4s $0.12  —   — │                                        │
+│ ○ spec-first       —    —    —   —  │                                        │
+│ ○ race-condition   —    —    —   —  │                                        │
+└─────────────────────────────────────┴────────────────────────────────────────┘
+
+
+================================================================================
+4. RUN EXPLORER (run-explorer.html)
+================================================================================
+
+CONTROLS
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [Search runs…………………]  Model▼  Ref▼  Task▼  [Export▼]  [Compare Selected (0)] │
+└──────────────────────────────────────────────────────────────────────────────┘
+  Compare enabled when exactly 2 rows checked
+
+RUNS TABLE (virtualized · sortable)
+┌──┬──────────────┬─────────────────┬──────────────────┬──────┬───┬───┬───┬────┬────┐
+│☐ │ Timestamp    │ Model           │ Task             │ Ref  │Cod│Art│Con│Ovr │Dur │
+├──┼──────────────┼─────────────────┼──────────────────┼──────┼───┼───┼───┼────┼────┤
+│☐ │ 2026-05-23…  │ Claude 3.5      │ bug-investigation│v2.8.0│ 1 │ 2 │ 2 │1.50│ 28s│
+│☐ │ …            │ GPT-4 Turbo     │ feature-slice    │v2.8.0│ 1 │ 2 │ 2 │1.50│ 42s│
+│☐ │ …            │ Gemini 1.5 Pro  │ spec-first       │v2.8.0│ 1 │ 2 │ 0 │1.00│ 58s│
+│… │ (more rows)  │                 │                  │      │   │   │   │    │    │
+└──┴──────────────┴─────────────────┴──────────────────┴──────┴───┴───┴───┴────┴────┘
+  Row click → opens detail drawer (right slide-in)
+
+DETAIL DRAWER (inspector / sheet)
+┌────────────────────────────────────────┐
+│ Run: bug-investigation · Claude 3.5  [×]│
+│ run_20260523_143208 · v2.8.0 · UTC    │
+├────────────────────────────────────────┤
+│ DETERMINISTIC SCORING                  │
+│ Code Pass 1 │ Artifact 2 │ Conv. 2   │
+│ Overall 1.50                           │
+├────────────────────────────────────────┤
+│ EVIDENCE                               │
+│  Test Output (code block)              │
+│  Artifact Checklist (✓ items)          │
+│  Git Log — Conventional Commits        │
+├────────────────────────────────────────┤
+│ SKILLS INVOKED                         │
+│ [investigate-bug][develop-tdd][plan-work]│
+├────────────────────────────────────────┤
+│ ENVIRONMENT                            │
+│ App · Runner · Daytona workspace · OS  │
+└────────────────────────────────────────┘
+
+COMPARE MODE (2 selected): side-by-side metrics, logs, diffs (alert stub)
+
+
+================================================================================
+5. SKILL INSIGHTS (skill-insights.html)
+================================================================================
+
+HEADER
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Model: Claude 3.5 │ Ref: v2.8.0 │ 2026-05-23 14:32 │  1.38 ↑+0.18          │
+│                                    [↻ Re-run with Proposed Edits]            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+Insights · Prescriptive Feedback Loop     [This Run*] [Across All Runs]
+
+INSIGHT FEED (stacked cards)
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [CRITICAL] investigate-bug never invoked on T04 (spec-first)                 │
+│   Evidence: log excerpt                                                      │
+│   Hypothesis: spec-first prompt too implicit                                 │
+│   Proposed edit: diff block → /skills/spec-first/SKILL.md                    │
+│   [Open in Editor] [Copy Patch] [Mark Addressed] [Snooze Until Next Ref]     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [WARNING] Convention score dropped — commits missing type(scope):            │
+│   … diff block → plan-work/SKILL.md …                                        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ [NIT] DIAGNOSIS.md formatting inconsistent                                   │
+│   [Copy Patch] [Dismiss]                                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+SKILL-BY-SKILL PERFORMANCE (table)
+┌──────────────────┬───────────────┬──────────────┬────────┬────────────┐
+│ Skill            │ Invocation    │ Success      │ Trend  │ Regression │
+├──────────────────┼───────────────┼──────────────┼────────┼────────────┤
+│ investigate-bug  │ 4/5           │ 100%         │ ~~~    │ → 0.00     │
+│ develop-tdd      │ 5/5           │ 80%          │ ~~~    │ ↑ +0.12    │
+│ plan-work        │ 5/5           │ 60%          │ ~~~    │ ↓ -0.15    │
+│ refactor         │ 1/5           │ 100%         │ ~~~    │ → 0.00     │
+│ spec-first       │ 1/5           │ 0%           │ ~~~    │ ↓ -0.25    │
+│ debug            │ 3/5           │ 67%          │ ~~~    │ → 0.00     │
+└──────────────────┴───────────────┴──────────────┴────────┴────────────┘
+
+
+================================================================================
+6. MODEL HEALTH (model-health.html)
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ [▶ Ping All]  [Schedule Periodic — Coming Soon]    Provider▼  Tier▼        │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Last ping: 2m 14s ago              12 models · 11 responsive · 1 timeout   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Token Count [100]  Parallelism [5]  Timeout (ms) [30000]                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ LEADERBOARD                                                                  │
+│ # │ Model            │ Latency Bar ████ │ p50  │ p95  │ p99  │ t/s │ OK │ ● │
+├───┼──────────────────┼──────────────────┼──────┼──────┼──────┼─────┼────┼───┤
+│ 1 │ GPT-4 Turbo      │ ████████████████ │ 142ms│ 280ms│ 420ms│ 68  │50/50│ ● │
+│ 2 │ Claude 3.5 Sonnet│ ███████████████░ │ 168ms│ 320ms│ 485ms│ 62  │48/50│ ● │
+│ … │ (ranked rows)    │ race bar visual  │      │      │      │     │     │   │
+└───┴──────────────────┴──────────────────┴──────┴──────┴──────┴─────┴────┴───┘
+  Health dot: live · stale · timeout/error
+
+
+================================================================================
+7. TASK LIBRARY (task-library.html)
+================================================================================
+
+┌────────────┬─────────────────────────────────────────────────────────────────┐
+│ SUITES     │ 5 Canonical Tasks                          [+ New Task — Soon]   │
+│            ├─────────────────────────────────────────────────────────────────┤
+│ Canonical 5│ ┌─ T01 bug-investigation ─────────────────── [Easy][Deterministic]│
+│   (active) │ │ Rate-limiter off-by-one…                                    │
+│            │ │ ~30s · Bug Fix · Last tested 2m ago                           │
+│            │ ├─ T02 feature-slice ──────────────────── [Easy][Deterministic]│
+│            │ ├─ T03 refactor ───────────────────────── [Med][Deterministic] │
+│            │ ├─ T04 spec-first ─────────────────────── [Med][Deterministic] │
+│            │ └─ T05 race-condition ─────────────────── [Hard][Deterministic]│
+└────────────┴─────────────────────────────────────────────────────────────────┘
+
+TASK DETAIL DRAWER (click card)
+┌────────────────────────────────────────┐
+│ T01 bug-investigation               [×]│
+│ [▶ Run This Task Only] [View History]  │
+├────────────────────────────────────────┤
+│ Description (long form)                │
+│ Reference Scaffold (SANDBOX/ tree)     │
+│ Expected Artifacts (checklist)         │
+│ Conventional Commit Examples           │
+│ Historical Scores chart (by model)     │
+└────────────────────────────────────────┘
+
+
+================================================================================
+8. SETTINGS & MODEL REGISTRY (settings.html)
+================================================================================
+
+TWO-PANE: settings rail (~320px) | registry main (flex)
+
+SETTINGS RAIL                          REGISTRY MAIN
+┌─────────────────────────┐  ┌──────────────────────────────────────────────┐
+│ PROVIDERS               │  │ [Search models…] [All][Tools][Vision]… [Cards] │
+│ ┌ OpenRouter      [ON] │  ├──────────────────────────────────────────────┤
+│ │ ✓ API key from env     │  │ ★ Model      Provider Context Price  Cap Tier│
+│ │ Test Connection        │  ├──────────────────────────────────────────────┤
+│ ├ Anthropic       [ON] │  │ ★ Claude 3.5 Anthropic 200K  $3/$15  … Std ●│
+│ ├ Nous Research   [ON] │  │ ★ GPT-4 Turbo OpenRouter 128K …      … Std ●│
+│ ├ Google          [OFF]│  │   Hermes 3 70B Nous …                Light ●│
+│ │ ✗ Missing API key      │  │   Gemini 1.5 Pro Google …            Deep  ○│
+│ └ Cursor          [OFF]│  │   … more rows …                              │
+├─────────────────────────┤  └──────────────────────────────────────────────┘
+│ GENERAL                 │  Row: pin star · tier dropdown · health dot
+│ Appearance [Dark ▼]     │  Inspector (future): model detail slide-in
+│ Launch at Login [OFF]   │
+│ Results Dir runs/data/  │
+│ [Reveal in Finder]      │
+├─────────────────────────┤
+│ GITOPS                  │
+│ Auto-commit [ON]        │
+│ Auto-push [OFF]         │
+│ Last Commit a3f8c2d     │
+├─────────────────────────┤
+│ NOTIFICATIONS           │
+│ Run Complete [ON]       │
+│ Run Failed [ON]         │
+│ Regression [OFF]        │
+└─────────────────────────┘
+
+API keys: Keychain only (never files). OpenRouter may read env in prototype.
+
+
+================================================================================
+9. ANALYTICS (analytics.html) — PLACEHOLDER / ROADMAP
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         [chart icon]                                         │
+│                    Advanced Analytics                                        │
+│   Cross-run stats, methodology waterfall, skill frequency — future release   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ PLANNED FEATURES (2×3 card grid)                                             │
+│  Regression Detection │ Methodology Waterfall │ Skill Usage Frequency        │
+│  Cross-Run Correlation│ Cost Trends           │ Export & Sharing             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ ROADMAP TIMELINE                                                            │
+│  v1.0 Current — core runner, 5 tasks, health, insights, GitOps              │
+│  v1.1 — statistical regression detection                                    │
+│  v1.2 — advanced visualizations                                             │
+│  v1.3 — user-authored tasks                                                 │
+│  v2.0 — multi-run orchestration, scheduling, cost caps                       │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+10. OVERLAYS & SECONDARY UI
+================================================================================
+
+COMMAND PALETTE (future · SWIFTUI_HANDOFF)
+  Hidden title bar window · .searchable · global hotkey
+  Actions: navigate screens, run benchmark, open recent run, toggle theme
+
+MODEL INSPECTOR (Settings registry row → .inspector)
+  Context, pricing, capabilities, tier, health history
+
+COMPARE RUNS (Run Explorer, 2 rows selected)
+  Split view: synced metrics · logs · score diffs
+
+EXPORT MENU (Run Explorer)
+  Copy summary (Markdown) · CSV · JSON · shareable report
+
+NOTIFICATIONS (UNUserNotificationCenter)
+  Run complete · Run failed · Regression detected (optional)
+  Actionable notification buttons
+
+MULTI-WINDOW
+  Separate WindowGroups: main shell, Mission Control, Run Explorer
+  Shared @Observable BenchmarkStore via .environment
+
+
+================================================================================
+11. MENU BAR EXTRA
+================================================================================
+
+Menu bar icon: gauge.with.dots.needle.bottom.50percent
+
+┌─────────────────────────┐
+│ ● Running · T03 · 2m 14s│
+│ Overall: 1.25           │
+│ ─────────────────────── │
+│ Open Mission Control    │
+│ Open Dashboard          │
+│ Stop Run                │
+│ ─────────────────────── │
+│ Quit                    │
+└─────────────────────────┘
+
+
+================================================================================
+12. DATA & NAVIGATION MAP
+================================================================================
+
+PERSISTENCE
+  ~/runs/data/          BenchRow JSON shards (GitOps)
+  File watcher          external git pull refreshes UI
+  Keychain              provider API keys by ID
+
+SCORING (0–1.5 scale per task)
+  code_pass (0|1) + artifact (0–2) + convention (0–2) = overall
+
+CANONICAL TASKS
+  T01 bug-investigation   T02 feature-slice   T03 refactor
+  T04 spec-first          T05 race-condition
+
+SCREEN → FILE
+  Shell          index.html
+  Dashboard      dashboard.html
+  Mission Control mission-control.html  ← default load
+  Run Explorer   run-explorer.html
+  Skill Insights skill-insights.html
+  Model Health   model-health.html
+  Task Library   task-library.html
+  Settings       settings.html
+  Analytics      analytics.html
+  Design System  design-system.html  (standalone reference, not in nav shell)
+
+NAVIGATION FLOWS
+  Dashboard recent run ──────────────► Mission Control
+  Task Library "Run This Task" ──────► Mission Control (single task)
+  Task Library "View History" ───────► Run Explorer (filtered)
+  Run Explorer row ──────────────────► Detail drawer
+  Settings gear (title bar) ─────────► Settings
+  Regression list item ──────────────► Run Explorer / Skill Insights (implied)
+
+================================================================================
+END WIREFRAME
+================================================================================

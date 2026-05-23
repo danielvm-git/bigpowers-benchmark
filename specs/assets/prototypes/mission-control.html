@@ -1,0 +1,796 @@
+<style>
+  .mission-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+    height: calc(100vh - 52px - 48px);
+  }
+  
+  .control-strip {
+    display: flex;
+    gap: var(--s-12);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .control-group {
+    display: flex;
+    gap: var(--s-8);
+    align-items: center;
+  }
+  
+  .select-field {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-8) var(--s-12);
+    font-size: 13px;
+    color: var(--fg);
+    min-width: 180px;
+    cursor: pointer;
+  }
+  
+  .select-field:hover {
+    border-color: var(--border-2);
+    background: var(--surface-2);
+  }
+  
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg-2);
+  }
+  
+  .chip-tier-standard {
+    background: rgba(251,191,36,.12);
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+  
+  .task-stepper {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    padding: var(--s-24) var(--s-16) var(--s-16) var(--s-16);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+  }
+  
+  .stepper-node {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    border: 2px solid var(--border);
+    background: var(--surface-2);
+    color: var(--fg-3);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .stepper-node:hover {
+    border-color: var(--border-2);
+    transform: scale(1.05);
+  }
+  
+  .stepper-node.complete {
+    border-color: var(--good);
+    background: rgba(52,211,153,.12);
+    color: var(--good);
+  }
+  
+  .stepper-node.active {
+    border-color: var(--accent);
+    background: var(--accent-f);
+    color: var(--accent);
+    animation: pulse-ring 2s ease infinite;
+  }
+  
+  .stepper-node.fail {
+    border-color: var(--bad);
+    background: rgba(248,113,113,.12);
+    color: var(--bad);
+  }
+  
+  .stepper-node.pending {
+    border-color: var(--border);
+    background: var(--surface-2);
+    color: var(--fg-4);
+  }
+  
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(45, 212, 191, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+    }
+  }
+  
+  .stepper-label {
+    font-size: 9px;
+    margin-bottom: var(--s-4);
+    position: absolute;
+    top: -20px;
+    white-space: nowrap;
+  }
+  
+  .stepper-line {
+    width: 32px;
+    height: 2px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  
+  .stepper-line.complete {
+    background: var(--good);
+  }
+  
+  .split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-16);
+    flex: 1;
+    min-height: 0;
+  }
+  
+  .cockpit-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    overflow-y: auto;
+    padding-right: var(--s-8);
+  }
+  
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-12);
+  }
+  
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-16);
+  }
+  
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  
+  .range-chips {
+    display: flex;
+    gap: var(--s-4);
+  }
+  
+  .range-chip {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-3);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .range-chip.active {
+    background: var(--accent-f);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .chart-canvas {
+    width: 100%;
+    height: 180px;
+    position: relative;
+  }
+  
+  .tasks-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  
+  .table-header {
+    display: grid;
+    grid-template-columns: 40px 2fr 1fr 1fr 1fr 1fr;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .table-row {
+    display: grid;
+    grid-template-columns: 40px 2fr 1fr 1fr 1fr 1fr;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--fg-2);
+    transition: all var(--t-fast) ease;
+    cursor: pointer;
+    align-items: center;
+  }
+  
+  .table-row:last-child {
+    border-bottom: none;
+  }
+  
+  .table-row:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  
+  .status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  
+  .status-icon.complete {
+    background: rgba(52,211,153,.12);
+    color: var(--good);
+  }
+  
+  .status-icon.active {
+    background: var(--accent-f);
+    color: var(--accent);
+  }
+  
+  .status-icon.pending {
+    background: var(--surface-2);
+    color: var(--fg-4);
+  }
+  
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .terminal-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--s-8) var(--s-12);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-1);
+    flex-shrink: 0;
+  }
+  
+  .terminal-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  
+  .traffic-lights {
+    display: flex;
+    gap: var(--s-4);
+  }
+  
+  .traffic-light {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  
+  .traffic-light.close { background: #ff5f57; }
+  .traffic-light.minimize { background: #ffbd2e; }
+  .traffic-light.maximize { background: #28ca42; }
+  
+  .terminal-title {
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .terminal-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  
+  .task-filter {
+    display: flex;
+    gap: var(--s-4);
+  }
+  
+  .task-chip {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--fg-3);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .task-chip.active {
+    background: var(--accent-f);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .terminal-body {
+    flex: 1;
+    background: #0a0c10;
+    padding: var(--s-12);
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #c9d1d9;
+  }
+  
+  [data-theme="light"] .terminal-body {
+    background: #1a1d23;
+  }
+  
+  .terminal-line {
+    display: flex;
+    gap: var(--s-8);
+    margin-bottom: var(--s-4);
+  }
+  
+  .terminal-time {
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+  
+  .terminal-type-info { color: #c9d1d9; }
+  .terminal-type-ok { color: var(--good); }
+  .terminal-type-warn { color: var(--warn); }
+  .terminal-type-err { color: var(--bad); }
+  .terminal-type-cmd { color: var(--accent); }
+  
+  .terminal-caret {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .terminal-caret {
+      animation: none;
+      opacity: 0.7;
+    }
+  }
+  
+  .workspace-path {
+    font-size: 10px;
+    color: var(--fg-4);
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+
+<div class="mission-control">
+  <!-- Control strip -->
+  <div class="control-strip">
+    <div class="control-group">
+      <select class="select-field" id="modelSelect">
+        <option>GPT-4 Turbo (OpenRouter)</option>
+        <option>Claude 3.5 Sonnet (Anthropic)</option>
+        <option>Hermes 3 70B (Nous Research)</option>
+        <option>Gemini 1.5 Pro (Google)</option>
+      </select>
+      <span class="chip chip-tier-standard">Standard</span>
+    </div>
+    
+    <div class="control-group">
+      <select class="select-field" id="refSelect">
+        <option>HEAD</option>
+        <option>v2.8.0</option>
+        <option>v2.7.0</option>
+        <option>v2.6.0</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <span class="workspace-path">bp_bench_runs/run_20260523_143208</span>
+    </div>
+    
+    <div style="margin-left: auto; display: flex; gap: var(--s-8);">
+      <button class="btn btn-ghost" onclick="testConnection()">Test Connection</button>
+      <button class="btn btn-primary" id="runBtn" onclick="startRun()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        Run Benchmark
+      </button>
+    </div>
+  </div>
+  
+  <!-- Task stepper -->
+  <div class="task-stepper">
+    <div class="stepper-node complete" data-task="T01">
+      <span>✓</span>
+      <span class="stepper-label">T01</span>
+    </div>
+    <div class="stepper-line complete"></div>
+    
+    <div class="stepper-node complete" data-task="T02">
+      <span>✓</span>
+      <span class="stepper-label">T02</span>
+    </div>
+    <div class="stepper-line complete"></div>
+    
+    <div class="stepper-node active" data-task="T03">
+      <span>●</span>
+      <span class="stepper-label">T03</span>
+    </div>
+    <div class="stepper-line"></div>
+    
+    <div class="stepper-node pending" data-task="T04">
+      <span>○</span>
+      <span class="stepper-label">T04</span>
+    </div>
+    <div class="stepper-line"></div>
+    
+    <div class="stepper-node pending" data-task="T05">
+      <span>○</span>
+      <span class="stepper-label">T05</span>
+    </div>
+    
+    <div style="margin-left: auto; display: flex; align-items: center; gap: var(--s-16);">
+      <span class="mono" style="font-size: 11px; color: var(--fg-3);">2m 14s elapsed</span>
+      <span class="mono" style="font-size: 11px; color: var(--fg-3);">$0.32</span>
+    </div>
+  </div>
+  
+  <!-- Split layout -->
+  <div class="split-layout">
+    <!-- Left: Cockpit -->
+    <div class="cockpit-panel">
+      <!-- Metrics grid -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Overall</div>
+          <div class="metric-value">1.25</div>
+          <svg class="sparkline" viewBox="0 0 100 32">
+            <polyline points="0,28 14,20 28,16 42,22 56,12 70,18 84,8" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          </svg>
+          <span class="delta-badge delta-good">↑ +0.18</span>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-label">Code Pass</div>
+          <div class="metric-value">4/5</div>
+          <svg class="sparkline" viewBox="0 0 100 32">
+            <polyline points="0,24 14,20 28,18 42,20 56,16 70,18 84,12" fill="none" stroke="var(--good)" stroke-width="2.5"/>
+          </svg>
+          <span class="delta-badge delta-good">↑ +1</span>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-label">Artifact</div>
+          <div class="metric-value">7/10</div>
+          <svg class="sparkline" viewBox="0 0 100 32">
+            <polyline points="0,26 14,22 28,20 42,24 56,18 70,20 84,16" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          </svg>
+          <span class="delta-badge delta-neutral">→ 0</span>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-label">Convention</div>
+          <div class="metric-value">6/10</div>
+          <svg class="sparkline" viewBox="0 0 100 32">
+            <polyline points="0,28 14,24 28,26 42,22 56,20 70,24 84,18" fill="none" stroke="var(--warn)" stroke-width="2.5"/>
+          </svg>
+          <span class="delta-badge delta-bad">↓ -2</span>
+        </div>
+      </div>
+      
+      <!-- Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Score Evolution</div>
+          <div class="range-chips">
+            <button class="range-chip">Last 5</button>
+            <button class="range-chip active">Last 10</button>
+            <button class="range-chip">All</button>
+          </div>
+        </div>
+        <div class="chart-canvas">
+          <svg width="100%" height="100%" viewBox="0 0 600 180">
+            <!-- Grid -->
+            <line x1="0" y1="36" x2="600" y2="36" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+            <line x1="0" y1="72" x2="600" y2="72" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+            <line x1="0" y1="108" x2="600" y2="108" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+            <line x1="0" y1="144" x2="600" y2="144" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+            
+            <!-- Overall line -->
+            <polyline points="0,140 60,120 120,100 180,115 240,90 300,95 360,80 420,70 480,75 540,60" 
+                      fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+            
+            <!-- Code pass line (dashed) -->
+            <polyline points="0,135 60,125 120,110 180,120 240,105 300,110 360,95 420,85 480,90 540,75" 
+                      fill="none" stroke="var(--fg-3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+            
+            <!-- Data points -->
+            <circle cx="0" cy="140" r="3" fill="var(--accent)"/>
+            <circle cx="60" cy="120" r="3" fill="var(--accent)"/>
+            <circle cx="120" cy="100" r="3" fill="var(--accent)"/>
+            <circle cx="180" cy="115" r="3" fill="var(--accent)"/>
+            <circle cx="240" cy="90" r="3" fill="var(--accent)"/>
+            <circle cx="300" cy="95" r="3" fill="var(--accent)"/>
+            <circle cx="360" cy="80" r="3" fill="var(--accent)"/>
+            <circle cx="420" cy="70" r="3" fill="var(--accent)"/>
+            <circle cx="480" cy="75" r="3" fill="var(--accent)"/>
+            <circle cx="540" cy="60" r="4" fill="var(--accent)"/>
+            
+            <!-- X-axis labels -->
+            <text x="0" y="170" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">v2.0</text>
+            <text x="120" y="170" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">v2.2</text>
+            <text x="240" y="170" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">v2.4</text>
+            <text x="360" y="170" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">v2.6</text>
+            <text x="480" y="170" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">v2.8</text>
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Tasks table -->
+      <div class="tasks-table">
+        <div class="table-header">
+          <div></div>
+          <div>Task</div>
+          <div>Duration</div>
+          <div>Cost</div>
+          <div>Overall</div>
+          <div>Δ prev</div>
+        </div>
+        <div class="table-row">
+          <div class="status-icon complete">✓</div>
+          <div>bug-investigation</div>
+          <div class="mono">28s</div>
+          <div class="mono">$0.08</div>
+          <div class="mono">1.50</div>
+          <div><span class="delta-badge delta-good">↑ +0.25</span></div>
+        </div>
+        <div class="table-row">
+          <div class="status-icon complete">✓</div>
+          <div>feature-slice</div>
+          <div class="mono">42s</div>
+          <div class="mono">$0.12</div>
+          <div class="mono">1.25</div>
+          <div><span class="delta-badge delta-neutral">→ 0.00</span></div>
+        </div>
+        <div class="table-row">
+          <div class="status-icon active">●</div>
+          <div>refactor</div>
+          <div class="mono">1m 4s</div>
+          <div class="mono">$0.12</div>
+          <div class="mono">—</div>
+          <div>—</div>
+        </div>
+        <div class="table-row">
+          <div class="status-icon pending">○</div>
+          <div>spec-first</div>
+          <div class="mono">—</div>
+          <div class="mono">—</div>
+          <div class="mono">—</div>
+          <div>—</div>
+        </div>
+        <div class="table-row">
+          <div class="status-icon pending">○</div>
+          <div>race-condition</div>
+          <div class="mono">—</div>
+          <div class="mono">—</div>
+          <div class="mono">—</div>
+          <div>—</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right: Terminal -->
+    <div class="terminal-panel">
+      <div class="terminal-header">
+        <div class="terminal-header-left">
+          <div class="traffic-lights">
+            <div class="traffic-light close"></div>
+            <div class="traffic-light minimize"></div>
+            <div class="traffic-light maximize"></div>
+          </div>
+          <span class="terminal-title">Live · bench:progress</span>
+          <span class="chip">T03</span>
+          <span class="workspace-path">bp_bench_runs/run_20260523_143208</span>
+        </div>
+        <div class="terminal-header-right">
+          <div class="task-filter">
+            <button class="task-chip active">T01</button>
+            <button class="task-chip active">T02</button>
+            <button class="task-chip active">T03</button>
+            <button class="task-chip">T04</button>
+            <button class="task-chip">T05</button>
+          </div>
+          <button class="icon-btn" title="Copy log">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+          </button>
+          <button class="icon-btn" title="Clear">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:03</span>
+          <span class="terminal-type-info">[agent] reading CLAUDE.md</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:04</span>
+          <span class="terminal-type-cmd">[skill] invoke investigate-bug</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:08</span>
+          <span class="terminal-type-info">[tool] read src/limiter.js</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:11</span>
+          <span class="terminal-type-info">[agent] analyzing rate limiter implementation</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:14</span>
+          <span class="terminal-type-cmd">[skill] invoke develop-tdd</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:18</span>
+          <span class="terminal-type-info">[tool] edit src/limiter.js</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:21</span>
+          <span class="terminal-type-cmd">[tool] bash npm test</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:24</span>
+          <span class="terminal-type-err">! FAIL src/limiter.test.js</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:27</span>
+          <span class="terminal-type-info">[agent] fixing off-by-one error</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:31</span>
+          <span class="terminal-type-info">[tool] edit src/limiter.js</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:34</span>
+          <span class="terminal-type-ok">✓ 14 tests passed</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:35</span>
+          <span class="terminal-type-cmd">[skill] invoke plan-work</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:38</span>
+          <span class="terminal-type-info">[tool] write DIAGNOSIS.md</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:41</span>
+          <span class="terminal-type-ok">✓ T01 complete · code_pass=1 artifact=2 convention=2</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:33:15</span>
+          <span class="terminal-type-ok">✓ T02 complete · code_pass=1 artifact=2 convention=2</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:33:18</span>
+          <span class="terminal-type-info">[agent] starting T03: refactor</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:33:20</span>
+          <span class="terminal-type-cmd">[skill] invoke investigate-bug</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:33:24</span>
+          <span class="terminal-type-info">[tool] read src/processor.js</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:33:28</span>
+          <span class="terminal-type-info">[agent] analyzing god function structure<span class="terminal-caret"></span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function startRun() {
+    const btn = document.getElementById('runBtn');
+    const statusDot = document.getElementById('statusDot');
+    
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop Run';
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-destructive');
+    
+    statusDot.classList.add('running');
+    document.getElementById('statusText').textContent = 'running · T03 · 2m 14s · $0.32';
+    
+    // Simulate log streaming
+    const terminal = document.getElementById('terminalBody');
+    let lineCount = 0;
+    const logInterval = setInterval(() => {
+      if (lineCount > 10) {
+        clearInterval(logInterval);
+        return;
+      }
+      
+      const line = document.createElement('div');
+      line.className = 'terminal-line';
+      const time = new Date().toTimeString().split(' ')[0];
+      line.innerHTML = `<span class="terminal-time">${time}</span><span class="terminal-type-info">[agent] processing step ${lineCount + 1}</span>`;
+      
+      // Remove caret from previous line
+      const carets = terminal.querySelectorAll('.terminal-caret');
+      carets.forEach(c => c.remove());
+      
+      // Add caret to new line
+      line.querySelector('.terminal-type-info').innerHTML += '<span class="terminal-caret"></span>';
+      
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+      lineCount++;
+    }, 800);
+  }
+  
+  function testConnection() {
+    alert('Connection test: ✓ Provider reachable · 142ms latency · 47 models available');
+  }
+</script>

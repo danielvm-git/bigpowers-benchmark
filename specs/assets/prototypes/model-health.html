@@ -1,0 +1,478 @@
+<style>
+  .model-health {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+  
+  .health-controls {
+    display: flex;
+    gap: var(--s-12);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .status-strip {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    padding: var(--s-12) var(--s-16);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    font-size: 13px;
+    color: var(--fg-2);
+  }
+  
+  .ping-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .leaderboard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  
+  .leaderboard-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 180px 100px 100px 100px 120px 140px 100px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    background: var(--bg-1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .leaderboard-body {
+    max-height: calc(100vh - 52px - 48px - 200px);
+    overflow-y: auto;
+  }
+  
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 180px 100px 100px 100px 120px 140px 100px;
+    padding: var(--s-16);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .leaderboard-row:hover {
+    background: var(--surface-2);
+  }
+  
+  .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg-3);
+  }
+  
+  .rank.top {
+    color: var(--accent);
+  }
+  
+  .model-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  
+  .model-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+  
+  .model-provider {
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .race-bar-container {
+    position: relative;
+    height: 32px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .race-bar {
+    height: 24px;
+    border-radius: var(--r-badge);
+    transition: width var(--t-slow) ease;
+    position: relative;
+  }
+  
+  .race-bar.fast {
+    background: linear-gradient(90deg, var(--accent), var(--accent-d));
+  }
+  
+  .race-bar.medium {
+    background: linear-gradient(90deg, var(--warn), #f59e0b);
+  }
+  
+  .race-bar.slow {
+    background: linear-gradient(90deg, var(--bad), #dc2626);
+  }
+  
+  .latency-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-2);
+  }
+  
+  .success-rate {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  
+  .success-rate.good { color: var(--good); }
+  .success-rate.warn { color: var(--warn); }
+  .success-rate.bad { color: var(--bad); }
+  
+  .last-checked {
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .health-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  
+  .health-status-dot.live { background: var(--accent); }
+  .health-status-dot.stale { background: var(--fg-3); }
+  .health-status-dot.error { background: var(--bad); }
+  
+  .ping-config {
+    display: flex;
+    gap: var(--s-12);
+    align-items: center;
+    padding: var(--s-16);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+  }
+  
+  .config-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  
+  .config-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .number-input {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-4) var(--s-8);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg);
+    width: 80px;
+  }
+  
+  .number-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+</style>
+
+<div class="model-health">
+  <!-- Controls -->
+  <div class="health-controls">
+    <button class="btn btn-primary" onclick="pingAll()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      Ping All
+    </button>
+    
+    <button class="btn btn-ghost" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+      </svg>
+      Schedule Periodic
+      <span class="chip" style="margin-left: var(--s-4);">Coming Soon</span>
+    </button>
+    
+    <div class="filter-group" style="margin-left: auto;">
+      <span class="filter-label">Provider</span>
+      <select class="select-field">
+        <option>All providers</option>
+        <option>OpenRouter</option>
+        <option>Anthropic</option>
+        <option>Nous Research</option>
+        <option>Google</option>
+        <option>Cursor</option>
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <span class="filter-label">Tier</span>
+      <select class="select-field">
+        <option>All tiers</option>
+        <option>Light</option>
+        <option>Standard</option>
+        <option>Deep</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Status strip -->
+  <div class="status-strip" id="statusStrip">
+    <span>Last ping: 2m 14s ago</span>
+    <span style="margin-left: auto;">12 models checked · 11 responsive · 1 timeout</span>
+  </div>
+  
+  <!-- Ping config -->
+  <div class="ping-config">
+    <div class="config-item">
+      <span class="config-label">Token Count</span>
+      <input type="number" class="number-input" value="100" min="10" max="1000">
+    </div>
+    <div class="config-item">
+      <span class="config-label">Parallelism</span>
+      <input type="number" class="number-input" value="5" min="1" max="10">
+    </div>
+    <div class="config-item">
+      <span class="config-label">Timeout (ms)</span>
+      <input type="number" class="number-input" value="30000" min="1000" max="60000" step="1000">
+    </div>
+  </div>
+  
+  <!-- Leaderboard -->
+  <div class="leaderboard">
+    <div class="leaderboard-header">
+      <div>Rank</div>
+      <div>Model</div>
+      <div>Latency Bar</div>
+      <div>p50</div>
+      <div>p95</div>
+      <div>p99</div>
+      <div>Tokens/sec</div>
+      <div>Success Rate</div>
+      <div>Status</div>
+    </div>
+    
+    <div class="leaderboard-body">
+      <div class="leaderboard-row">
+        <div class="rank top">1</div>
+        <div class="model-info">
+          <div class="model-name">GPT-4 Turbo</div>
+          <div class="model-provider">OpenRouter</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar fast" style="width: 95%;"></div>
+        </div>
+        <div class="latency-value">142ms</div>
+        <div class="latency-value">280ms</div>
+        <div class="latency-value">420ms</div>
+        <div class="latency-value">68 t/s</div>
+        <div class="success-rate good">50/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank top">2</div>
+        <div class="model-info">
+          <div class="model-name">Claude 3.5 Sonnet</div>
+          <div class="model-provider">Anthropic</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar fast" style="width: 92%;"></div>
+        </div>
+        <div class="latency-value">168ms</div>
+        <div class="latency-value">320ms</div>
+        <div class="latency-value">485ms</div>
+        <div class="latency-value">62 t/s</div>
+        <div class="success-rate good">48/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank top">3</div>
+        <div class="model-info">
+          <div class="model-name">Hermes 3 70B</div>
+          <div class="model-provider">Nous Research</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar fast" style="width: 88%;"></div>
+        </div>
+        <div class="latency-value">195ms</div>
+        <div class="latency-value">380ms</div>
+        <div class="latency-value">550ms</div>
+        <div class="latency-value">54 t/s</div>
+        <div class="success-rate good">47/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">4</div>
+        <div class="model-info">
+          <div class="model-name">Gemini 1.5 Pro</div>
+          <div class="model-provider">Google</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar medium" style="width: 65%;"></div>
+        </div>
+        <div class="latency-value">1240ms</div>
+        <div class="latency-value">2100ms</div>
+        <div class="latency-value">2800ms</div>
+        <div class="latency-value">42 t/s</div>
+        <div class="success-rate good">49/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">5</div>
+        <div class="model-info">
+          <div class="model-name">GPT-4o</div>
+          <div class="model-provider">OpenRouter</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar medium" style="width: 58%;"></div>
+        </div>
+        <div class="latency-value">1580ms</div>
+        <div class="latency-value">2450ms</div>
+        <div class="latency-value">3200ms</div>
+        <div class="latency-value">38 t/s</div>
+        <div class="success-rate good">50/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">6</div>
+        <div class="model-info">
+          <div class="model-name">Claude 3 Opus</div>
+          <div class="model-provider">Anthropic</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar medium" style="width: 52%;"></div>
+        </div>
+        <div class="latency-value">2180ms</div>
+        <div class="latency-value">3500ms</div>
+        <div class="latency-value">4200ms</div>
+        <div class="latency-value">28 t/s</div>
+        <div class="success-rate warn">45/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">7</div>
+        <div class="model-info">
+          <div class="model-name">Gemini 1.5 Flash</div>
+          <div class="model-provider">Google</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar medium" style="width: 48%;"></div>
+        </div>
+        <div class="latency-value">2680ms</div>
+        <div class="latency-value">4200ms</div>
+        <div class="latency-value">5100ms</div>
+        <div class="latency-value">52 t/s</div>
+        <div class="success-rate good">48/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot live"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">8</div>
+        <div class="model-info">
+          <div class="model-name">Llama 3.1 405B</div>
+          <div class="model-provider">Nous Research</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar slow" style="width: 32%;"></div>
+        </div>
+        <div class="latency-value">5420ms</div>
+        <div class="latency-value">8100ms</div>
+        <div class="latency-value">9800ms</div>
+        <div class="latency-value">18 t/s</div>
+        <div class="success-rate warn">42/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot stale"></span>
+          <span class="last-checked">15m ago</span>
+        </div>
+      </div>
+      
+      <div class="leaderboard-row">
+        <div class="rank">9</div>
+        <div class="model-info">
+          <div class="model-name">Cursor Small</div>
+          <div class="model-provider">Cursor</div>
+        </div>
+        <div class="race-bar-container">
+          <div class="race-bar slow" style="width: 28%;"></div>
+        </div>
+        <div class="latency-value">6850ms</div>
+        <div class="latency-value">10200ms</div>
+        <div class="latency-value">12500ms</div>
+        <div class="latency-value">12 t/s</div>
+        <div class="success-rate bad">38/50</div>
+        <div style="display: flex; align-items: center; gap: var(--s-8);">
+          <span class="health-status-dot error"></span>
+          <span class="last-checked">2m ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function pingAll() {
+    const statusStrip = document.getElementById('statusStrip');
+    statusStrip.innerHTML = '<div class="ping-spinner"></div><span>Pinging all models...</span>';
+    
+    // Simulate ping completion
+    setTimeout(() => {
+      statusStrip.innerHTML = '<span>Last ping: just now</span><span style="margin-left: auto;">12 models checked · 11 responsive · 1 timeout</span>';
+    }, 3000);
+  }
+</script>

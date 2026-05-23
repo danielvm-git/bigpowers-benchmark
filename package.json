@@ -1,0 +1,26 @@
+{
+  "name": "bigpowers-benchmark",
+  "version": "0.0.0-semantically-released",
+  "description": "macOS app that benchmarks AI coding agents",
+  "private": true,
+  "scripts": {
+    "commit": "git-cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@commitlint/cz-commitlint": "^21.0.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.8",
+    "@semantic-release/release-notes-generator": "^14.1.1",
+    "commitizen": "^4.3.1",
+    "semantic-release": "^25.0.3"
+  }
+}

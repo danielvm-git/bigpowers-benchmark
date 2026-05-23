@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BigPowers-Benchmark</title>
+<style>
+  :root {
+    /* Dark mode tokens (canonical) - WCAG AA compliant */
+    --bg: #0f1117;
+    --bg-1: #141823;
+    --surface: #161922;
+    --surface-2: #1c2030;
+    --border: #232838;
+    --border-2: #2d3346;
+    
+    --fg: #e6e8ee;
+    --fg-2: #b4bac9;
+    --fg-3: #9ca3b3; /* Adjusted for 4.6:1 contrast */
+    --fg-4: #7a8191; /* Adjusted for 4.5:1 contrast */
+    
+    --accent: #2dd4bf;
+    --accent-d: #14b8a6;
+    --accent-f: rgba(45,212,191,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(255,255,255,0.04);
+    --grid-2: rgba(255,255,255,0.07);
+    
+    --s-4: 4px;
+    --s-8: 8px;
+    --s-12: 12px;
+    --s-16: 16px;
+    --s-24: 24px;
+    --s-32: 32px;
+    
+    --r-badge: 4px;
+    --r-button: 6px;
+    --r-card: 8px;
+    --r-pill: 9999px;
+    
+    --shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 8px 24px rgba(0,0,0,.35);
+    
+    --t-fast: 120ms;
+    --t-base: 200ms;
+    --t-slow: 320ms;
+  }
+  
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --bg-1: #f8f9fa;
+    --surface: #ffffff;
+    --surface-2: #f1f3f5;
+    --border: #e1e4e8;
+    --border-2: #d1d5db;
+    
+    --fg: #1a1d23;
+    --fg-2: #4a5160;
+    --fg-3: #6b7280;
+    --fg-4: #9ca3af;
+    
+    --accent: #14b8a6;
+    --accent-d: #0d9488;
+    --accent-f: rgba(20,184,166,.12);
+    --good: #10b981;
+    --bad: #ef4444;
+    --warn: #f59e0b;
+    
+    --grid: rgba(0,0,0,0.04);
+    --grid-2: rgba(0,0,0,0.07);
+    
+    --shadow: 0 1px 0 rgba(0,0,0,.03) inset, 0 8px 24px rgba(0,0,0,.08);
+  }
+  
+  /* Theme: Monochrome - Pure grayscale */
+  [data-theme="mono"] {
+    --bg: #0d0d0d;
+    --bg-1: #141414;
+    --surface: #1a1a1a;
+    --surface-2: #202020;
+    --border: #2a2a2a;
+    --border-2: #353535;
+    
+    --fg: #f0f0f0;
+    --fg-2: #c0c0c0;
+    --fg-3: #a0a0a0;
+    --fg-4: #808080;
+    
+    --accent: #ffffff;
+    --accent-d: #e8e8e8;
+    --accent-f: rgba(255,255,255,.1);
+    --good: #b0b0b0;
+    --bad: #707070;
+    --warn: #909090;
+    
+    --grid: rgba(255,255,255,0.05);
+    --grid-2: rgba(255,255,255,0.08);
+    
+    --shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 8px 24px rgba(0,0,0,.6);
+  }
+  
+  /* Theme: Ocean - Deep blue palette */
+  [data-theme="ocean"] {
+    --bg: #0a1628;
+    --bg-1: #0d1b33;
+    --surface: #12213d;
+    --surface-2: #1a2d4f;
+    --border: #1e3a5f;
+    --border-2: #2a4a75;
+    
+    --fg: #e1f0ff;
+    --fg-2: #b5d5f0;
+    --fg-3: #90b8da;
+    --fg-4: #6b9bc4;
+    
+    --accent: #38bdf8;
+    --accent-d: #0ea5e9;
+    --accent-f: rgba(56,189,248,.12);
+    --good: #22d3ee;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(56,189,248,0.05);
+    --grid-2: rgba(56,189,248,0.08);
+    
+    --shadow: 0 1px 0 rgba(56,189,248,.03) inset, 0 8px 24px rgba(0,10,20,.5);
+  }
+  
+  /* Theme: Forest - Dark green */
+  [data-theme="forest"] {
+    --bg: #0a1510;
+    --bg-1: #0e1d18;
+    --surface: #122520;
+    --surface-2: #1a332d;
+    --border: #1f3d35;
+    --border-2: #2a5045;
+    
+    --fg: #e6f5ed;
+    --fg-2: #b8dbca;
+    --fg-3: #92c2a8;
+    --fg-4: #6da886;
+    
+    --accent: #10b981;
+    --accent-d: #059669;
+    --accent-f: rgba(16,185,129,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(16,185,129,0.04);
+    --grid-2: rgba(16,185,129,0.07);
+    
+    --shadow: 0 1px 0 rgba(16,185,129,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Ember - Warm orange/red */
+  [data-theme="ember"] {
+    --bg: #1a0f0a;
+    --bg-1: #231612;
+    --surface: #2d1f1a;
+    --surface-2: #3a2a24;
+    --border: #4a352e;
+    --border-2: #5d443b;
+    
+    --fg: #fff4ed;
+    --fg-2: #f5d0ba;
+    --fg-3: #e0b59e;
+    --fg-4: #c99a82;
+    
+    --accent: #fb923c;
+    --accent-d: #f97316;
+    --accent-f: rgba(251,146,60,.12);
+    --good: #34d399;
+    --bad: #ef4444;
+    --warn: #fbbf24;
+    
+    --grid: rgba(251,146,60,0.04);
+    --grid-2: rgba(251,146,60,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,146,60,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Violet - Rich purple */
+  [data-theme="violet"] {
+    --bg: #14091a;
+    --bg-1: #1c1023;
+    --surface: #25172e;
+    --surface-2: #31213d;
+    --border: #3d2a4d;
+    --border-2: #4d3760;
+    
+    --fg: #f4edff;
+    --fg-2: #d5c3f0;
+    --fg-3: #b8a0da;
+    --fg-4: #9b7dc4;
+    
+    --accent: #a78bfa;
+    --accent-d: #8b5cf6;
+    --accent-f: rgba(167,139,250,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(167,139,250,0.05);
+    --grid-2: rgba(167,139,250,0.08);
+    
+    --shadow: 0 1px 0 rgba(167,139,250,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Midnight - Deep navy */
+  [data-theme="midnight"] {
+    --bg: #0b0e1a;
+    --bg-1: #111528;
+    --surface: #161c33;
+    --surface-2: #1e2640;
+    --border: #252f4d;
+    --border-2: #303c5f;
+    
+    --fg: #e5e9ff;
+    --fg-2: #b8c2e8;
+    --fg-3: #8f9dcf;
+    --fg-4: #6b7ab6;
+    
+    --accent: #818cf8;
+    --accent-d: #6366f1;
+    --accent-f: rgba(129,140,248,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(129,140,248,0.04);
+    --grid-2: rgba(129,140,248,0.07);
+    
+    --shadow: 0 1px 0 rgba(129,140,248,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Crimson - Deep red */
+  [data-theme="crimson"] {
+    --bg: #1a0a0e;
+    --bg-1: #231115;
+    --surface: #2d171d;
+    --surface-2: #3d2128;
+    --border: #4d2a32;
+    --border-2: #603641;
+    
+    --fg: #ffecf0;
+    --fg-2: #f5c5d1;
+    --fg-3: #dfa0b0;
+    --fg-4: #c97d90;
+    
+    --accent: #fb7185;
+    --accent-d: #f43f5e;
+    --accent-f: rgba(251,113,133,.12);
+    --good: #34d399;
+    --bad: #ef4444;
+    --warn: #fbbf24;
+    
+    --grid: rgba(251,113,133,0.04);
+    --grid-2: rgba(251,113,133,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,113,133,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Slate - Cool gray with blue tint */
+  [data-theme="slate"] {
+    --bg: #0f1419;
+    --bg-1: #151b23;
+    --surface: #1a222d;
+    --surface-2: #222d3a;
+    --border: #2a3847;
+    --border-2: #354557;
+    
+    --fg: #e8ecf2;
+    --fg-2: #b8c5d6;
+    --fg-3: #90a0ba;
+    --fg-4: #6b7c9e;
+    
+    --accent: #64748b;
+    --accent-d: #475569;
+    --accent-f: rgba(100,116,139,.15);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(100,116,139,0.05);
+    --grid-2: rgba(100,116,139,0.08);
+    
+    --shadow: 0 1px 0 rgba(100,116,139,.03) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Amber - Warm gold */
+  [data-theme="amber"] {
+    --bg: #1a1508;
+    --bg-1: #231d0f;
+    --surface: #2d2616;
+    --surface-2: #3a3120;
+    --border: #4a3d28;
+    --border-2: #5d4d35;
+    
+    --fg: #fffaeb;
+    --fg-2: #f5e5b8;
+    --fg-3: #e0cf8f;
+    --fg-4: #c9b96b;
+    
+    --accent: #fbbf24;
+    --accent-d: #f59e0b;
+    --accent-f: rgba(251,191,36,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fb923c;
+    
+    --grid: rgba(251,191,36,0.04);
+    --grid-2: rgba(251,191,36,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,191,36,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Rose - Soft pink */
+  [data-theme="rose"] {
+    --bg: #1a0d14;
+    --bg-1: #23141c;
+    --surface: #2d1a26;
+    --surface-2: #3a2332;
+    --border: #4a2d3f;
+    --border-2: #5d3a50;
+    
+    --fg: #fff0f6;
+    --fg-2: #f5c9dd;
+    --fg-3: #dfa3c0;
+    --fg-4: #c97ea3;
+    
+    --accent: #f472b6;
+    --accent-d: #ec4899;
+    --accent-f: rgba(244,114,182,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(244,114,182,0.04);
+    --grid-2: rgba(244,114,182,0.07);
+    
+    --shadow: 0 1px 0 rgba(244,114,182,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    height: 100vh;
+  }
+  
+  .app-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 200px;
+    background: var(--bg-1);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: width var(--t-base) ease, transform var(--t-base) ease;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
+  }
+  
+  .sidebar-header {
+    padding: var(--s-16);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+  }
+  
+  .wordmark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .sidebar.collapsed .wordmark {
+    opacity: 0;
+  }
+  
+  .collapse-btn {
+    background: none;
+    border: none;
+    color: var(--fg-3);
+    cursor: pointer;
+    padding: var(--s-4);
+    border-radius: var(--r-badge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .collapse-btn:hover {
+    background: var(--surface);
+    color: var(--fg);
+  }
+  
+  .sidebar-nav {
+    flex: 1;
+    padding: var(--s-8);
+    overflow-y: auto;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-12);
+    padding: var(--s-8) var(--s-12);
+    border-radius: var(--r-button);
+    color: var(--fg-2);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all var(--t-fast) ease;
+    cursor: pointer;
+    margin-bottom: var(--s-4);
+    white-space: nowrap;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .nav-item:hover {
+    background: var(--surface);
+    color: var(--fg);
+  }
+  
+  .nav-item.active {
+    background: var(--accent-f);
+    color: var(--accent);
+  }
+  
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  
+  .sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: var(--s-8);
+  }
+  
+  .sidebar.collapsed .nav-label {
+    display: none;
+  }
+  
+  /* Main content */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* Title bar */
+  .title-bar {
+    height: 52px;
+    background: rgba(22, 25, 34, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--s-24);
+    flex-shrink: 0;
+  }
+  
+  [data-theme="light"] .title-bar {
+    background: rgba(255, 255, 255, 0.8);
+  }
+  
+  .title-bar-left {
+    display: flex;
+    align-items: center;
+    gap: var(--s-12);
+  }
+  
+  .title-bar-center {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  
+  .title-bar-right {
+    display: flex;
+    align-items: center;
+    gap: var(--s-16);
+  }
+  
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  
+  .pulse-dot.running {
+    background: var(--warn);
+    animation: pulse 2s ease infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .pulse-dot.running {
+      animation: none;
+      opacity: 0.7;
+    }
+    * {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+  
+  /* Focus indicators for keyboard navigation */
+  .nav-item:focus-visible,
+  .icon-btn:focus-visible,
+  .collapse-btn:focus-visible,
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  
+  .icon-btn {
+    background: none;
+    border: none;
+    color: var(--fg-3);
+    cursor: pointer;
+    padding: var(--s-8);
+    border-radius: var(--r-badge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .icon-btn:hover {
+    background: var(--surface);
+    color: var(--fg);
+  }
+  
+  /* Content area */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--s-24);
+    background: var(--bg);
+  }
+  
+  /* Buttons */
+  .btn {
+    font-size: 13px;
+    font-weight: 500;
+    padding: var(--s-8) var(--s-16);
+    border-radius: var(--r-button);
+    border: none;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-8);
+    white-space: nowrap;
+  }
+  
+  .btn-primary {
+    background: var(--accent);
+    color: #0f1117;
+  }
+  
+  .btn-primary:hover {
+    background: var(--accent-d);
+  }
+  
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-2);
+  }
+  
+  .btn-ghost:hover {
+    background: var(--surface);
+    border-color: var(--border-2);
+    color: var(--fg);
+  }
+  
+  .btn-destructive {
+    background: var(--bad);
+    color: white;
+  }
+  
+  .btn-destructive:hover {
+    background: #dc2626;
+  }
+  
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+    box-shadow: var(--shadow);
+  }
+  
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    box-shadow: var(--shadow);
+  }
+  
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-8);
+  }
+  
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--fg);
+    margin-bottom: var(--s-12);
+  }
+  
+  .sparkline {
+    width: 100%;
+    height: 32px;
+    margin-bottom: var(--s-8);
+  }
+  
+  .delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-pill);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  .delta-good {
+    background: rgba(52,211,153,.12);
+    color: var(--good);
+  }
+  
+  .delta-bad {
+    background: rgba(248,113,113,.12);
+    color: var(--bad);
+  }
+  
+  .delta-neutral {
+    background: var(--surface-2);
+    color: var(--fg-3);
+  }
+  
+  /* Utility */
+  .hidden {
+    display: none !important;
+  }
+  
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Screen-specific styles loaded per screen */
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" role="complementary" aria-label="Application sidebar">
+    <div class="sidebar-header">
+      <div class="wordmark" aria-label="BigPowers Benchmark">BigPowers</div>
+      <button class="collapse-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar" aria-expanded="true" id="sidebarToggle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M10 4L6 8l4 4"/>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
+      <button class="nav-item" data-screen="dashboard" onclick="navigateTo('dashboard')" aria-label="Dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      
+      <button class="nav-item active" data-screen="mission-control" onclick="navigateTo('mission-control')" aria-label="Mission Control" aria-current="page">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9 8l6 4-6 4V8z" fill="var(--bg)"/>
+        </svg>
+        <span class="nav-label">Mission Control</span>
+      </button>
+      
+      <button class="nav-item" data-screen="run-explorer" onclick="navigateTo('run-explorer')" aria-label="Run Explorer">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span class="nav-label">Run Explorer</span>
+      </button>
+      
+      <button class="nav-item" data-screen="skill-insights" onclick="navigateTo('skill-insights')" aria-label="Skill Insights">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span class="nav-label">Skill Insights</span>
+      </button>
+      
+      <button class="nav-item" data-screen="model-health" onclick="navigateTo('model-health')" aria-label="Model Health">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="2"/>
+          <circle cx="19" cy="5" r="2"/>
+          <circle cx="5" cy="5" r="2"/>
+          <circle cx="19" cy="19" r="2"/>
+          <circle cx="5" cy="19" r="2"/>
+          <path d="M12 10V7M12 17v-3M10 12H7m10 0h-3M14.5 14.5l2.1 2.1M14.5 9.5l2.1-2.1M9.5 14.5l-2.1 2.1M9.5 9.5L7.4 7.4"/>
+        </svg>
+        <span class="nav-label">Model Health</span>
+      </button>
+      
+      <button class="nav-item" data-screen="task-library" onclick="navigateTo('task-library')" aria-label="Task Library">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        <span class="nav-label">Task Library</span>
+      </button>
+      
+      <button class="nav-item" data-screen="settings" onclick="navigateTo('settings')" aria-label="Settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+        <span class="nav-label">Settings</span>
+      </button>
+      
+      <button class="nav-item" data-screen="analytics" onclick="navigateTo('analytics')" aria-label="Analytics">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 3v18h18"/>
+          <path d="M18 17l-5-5-3 3-4-4"/>
+        </svg>
+        <span class="nav-label">Analytics</span>
+      </button>
+    </nav>
+  </aside>
+  
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Title bar -->
+    <header class="title-bar" role="banner">
+      <div class="title-bar-left"></div>
+      <h1 class="title-bar-center" id="screenTitle">Mission Control</h1>
+      <div class="title-bar-right">
+        <div class="status-indicator" role="status" aria-live="polite">
+          <span class="pulse-dot" id="statusDot" aria-label="Idle status"></span>
+          <span id="statusText">last run · 14:32:08 UTC</span>
+        </div>
+        <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle light and dark theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42"/>
+          </svg>
+        </button>
+        <button class="icon-btn" onclick="navigateTo('settings')" aria-label="Open settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Content area -->
+    <div class="content-area" id="contentArea" role="main">
+      <!-- Screen content will be loaded here -->
+    </div>
+  </main>
+</div>
+
+<script>
+  const screens = {
+    'dashboard': 'dashboard.html',
+    'mission-control': 'mission-control.html',
+    'run-explorer': 'run-explorer.html',
+    'skill-insights': 'skill-insights.html',
+    'model-health': 'model-health.html',
+    'task-library': 'task-library.html',
+    'settings': 'settings.html',
+    'analytics': 'analytics.html'
+  };
+  
+  const screenTitles = {
+    'dashboard': 'Dashboard',
+    'mission-control': 'Mission Control',
+    'run-explorer': 'Run Explorer',
+    'skill-insights': 'Skill Insights',
+    'model-health': 'Model Health',
+    'task-library': 'Task Library',
+    'settings': 'Settings & Model Registry',
+    'analytics': 'Analytics'
+  };
+  
+  function navigateTo(screen) {
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.remove('active');
+      item.removeAttribute('aria-current');
+    });
+    const activeItem = document.querySelector(`[data-screen="${screen}"]`);
+    activeItem.classList.add('active');
+    activeItem.setAttribute('aria-current', 'page');
+    
+    // Update title
+    document.getElementById('screenTitle').textContent = screenTitles[screen];
+    
+    // Announce navigation to screen readers
+    const announcement = document.createElement('div');
+    announcement.setAttribute('role', 'status');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.className = 'sr-only';
+    announcement.textContent = `Navigated to ${screenTitles[screen]}`;
+    document.body.appendChild(announcement);
+    setTimeout(() => announcement.remove(), 1000);
+    
+    // Load screen content
+    fetch(screens[screen])
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('contentArea').innerHTML = html;
+        // Initialize screen if needed
+        if (window[`init${screen.replace(/-/g, '')}Screen`]) {
+          window[`init${screen.replace(/-/g, '')}Screen`]();
+        }
+      })
+      .catch(error => {
+        document.getElementById('contentArea').innerHTML = `<div style="padding: 32px; text-align: center; color: var(--fg-3);">Screen loading...</div>`;
+      });
+  }
+  
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const isCollapsed = sidebar.classList.toggle('collapsed');
+    toggle.setAttribute('aria-expanded', !isCollapsed);
+    toggle.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+  }
+  
+  function toggleTheme() {
+    const root = document.documentElement;
+    const current = root.getAttribute('data-theme');
+    root.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+  }
+  
+  // Global theme change function (called from settings.html)
+  window.changeTheme = function(theme) {
+    const root = document.documentElement;
+    if (theme === 'auto') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', theme);
+    }
+    // Store preference
+    localStorage.setItem('theme', theme);
+  };
+  
+  // Apply saved theme on load
+  (function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      window.changeTheme(savedTheme);
+    }
+  })();
+  
+  // Load initial screen
+  navigateTo('mission-control');
+</script>
+
+</body>
+</html>

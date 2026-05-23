@@ -1,0 +1,285 @@
+<style>
+  .analytics {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+  
+  .analytics-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-32);
+    text-align: center;
+  }
+  
+  .analytics-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--s-16);
+    opacity: 0.5;
+  }
+  
+  .analytics-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-8);
+  }
+  
+  .analytics-description {
+    font-size: 13px;
+    color: var(--fg-3);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto var(--s-24);
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--s-16);
+  }
+  
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+  }
+  
+  .feature-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-8);
+  }
+  
+  .feature-card-description {
+    font-size: 13px;
+    color: var(--fg-3);
+    line-height: 1.6;
+    margin-bottom: var(--s-16);
+  }
+  
+  .feature-preview {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-16);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .roadmap-timeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+  }
+  
+  .timeline-item {
+    display: flex;
+    gap: var(--s-16);
+    padding: var(--s-16) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .timeline-item:last-child {
+    border-bottom: none;
+  }
+  
+  .timeline-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-f);
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 11px;
+  }
+  
+  .timeline-content {
+    flex: 1;
+  }
+  
+  .timeline-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-4);
+  }
+  
+  .timeline-description {
+    font-size: 13px;
+    color: var(--fg-3);
+    line-height: 1.6;
+  }
+</style>
+
+<div class="analytics">
+  <div class="analytics-hero">
+    <svg class="analytics-icon" viewBox="0 0 64 64" fill="none" stroke="var(--fg-3)" stroke-width="2">
+      <path d="M8 48h48M16 40V28M24 40V20M32 40V32M40 40V24M48 40V16"/>
+    </svg>
+    
+    <div class="analytics-title">Advanced Analytics</div>
+    <div class="analytics-description">
+      Cross-run statistical analysis, methodology-version waterfall charts, skill-usage frequency tracking, and automated regression detection are coming in a future release.
+    </div>
+  </div>
+  
+  <div>
+    <h2 class="section-title">Planned Features</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-card-title">Regression Detection</div>
+        <div class="feature-card-description">
+          Automated statistical analysis to detect when a methodology change significantly impacts scores across models or tasks. Uses sliding-window comparison with configurable thresholds.
+        </div>
+        <div class="feature-preview">
+          v2.7.0 → v2.8.0<br>
+          GPT-4: -0.18 (p < 0.05)<br>
+          Gemini: -0.10 (p < 0.12)<br>
+          <br>
+          ⚠️ Significant regression on T04
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-title">Methodology Waterfall</div>
+        <div class="feature-card-description">
+          Visualize how each bigpowers_ref version moved each model's overall score. Identify which methodology changes had the largest impact.
+        </div>
+        <div class="feature-preview">
+          v2.0 ────┐<br>
+          v2.1 ─────┤ +0.08<br>
+          v2.2 ──────┤ +0.12<br>
+          v2.3 ───────┤ -0.04<br>
+          v2.4 ────────┤ +0.15
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-title">Skill Usage Frequency</div>
+        <div class="feature-card-description">
+          Track how often each bigpowers skill is invoked across all runs. Detect underutilized or over-relied-upon skills.
+        </div>
+        <div class="feature-preview">
+          investigate-bug: 89%<br>
+          develop-tdd: 100%<br>
+          plan-work: 100%<br>
+          refactor: 18%<br>
+          spec-first: 12%<br>
+          debug: 45%
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-title">Cross-Run Correlation</div>
+        <div class="feature-card-description">
+          Identify patterns between task characteristics, model architecture, and success rates. Surface which models excel at which task categories.
+        </div>
+        <div class="feature-preview">
+          Bug Fix tasks:<br>
+          Claude: 95% success<br>
+          GPT-4: 92% success<br>
+          <br>
+          Concurrency tasks:<br>
+          Claude: 72% success<br>
+          GPT-4: 58% success
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-title">Cost Trends</div>
+        <div class="feature-card-description">
+          Track monthly spend by provider, model, and task. Set soft caps with warning thresholds. Export for expense reporting.
+        </div>
+        <div class="feature-preview">
+          May 2026: $47.20<br>
+          ├─ OpenRouter: $28.40<br>
+          ├─ Anthropic: $15.60<br>
+          └─ Nous: $3.20<br>
+          <br>
+          Cap: $100 (47% used)
+        </div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-card-title">Export & Sharing</div>
+        <div class="feature-card-description">
+          Generate shareable HTML reports with embedded charts, run logs, and score breakdowns. Export raw data as CSV/JSON for external analysis.
+        </div>
+        <div class="feature-preview">
+          Export formats:<br>
+          • HTML report (standalone)<br>
+          • CSV (runs + scores)<br>
+          • JSON (full schema)<br>
+          • Markdown summary
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div>
+    <h2 class="section-title">Development Roadmap</h2>
+    <div class="roadmap-timeline">
+      <div class="timeline-item">
+        <div class="timeline-marker">v1.0</div>
+        <div class="timeline-content">
+          <div class="timeline-title">Current Release</div>
+          <div class="timeline-description">
+            Core benchmark runner, deterministic scoring, five canonical tasks, Model Health leaderboard, Skill Insights feedback loop, GitOps persistence.
+          </div>
+        </div>
+      </div>
+      
+      <div class="timeline-item">
+        <div class="timeline-marker">v1.1</div>
+        <div class="timeline-content">
+          <div class="timeline-title">Statistical Regression Detection</div>
+          <div class="timeline-description">
+            Automated alerts when methodology changes cause significant score drops. Sliding-window comparison with configurable p-value thresholds.
+          </div>
+        </div>
+      </div>
+      
+      <div class="timeline-item">
+        <div class="timeline-marker">v1.2</div>
+        <div class="timeline-content">
+          <div class="timeline-title">Advanced Visualizations</div>
+          <div class="timeline-description">
+            Methodology waterfall, skill-usage heatmaps, cross-run correlation matrices. Export charts as PNG/SVG.
+          </div>
+        </div>
+      </div>
+      
+      <div class="timeline-item">
+        <div class="timeline-marker">v1.3</div>
+        <div class="timeline-content">
+          <div class="timeline-title">User-Authored Tasks</div>
+          <div class="timeline-description">
+            Create custom tasks with your own SANDBOX scaffolds, expected artifacts, and grading criteria. Import/export task suites.
+          </div>
+        </div>
+      </div>
+      
+      <div class="timeline-item">
+        <div class="timeline-marker">v2.0</div>
+        <div class="timeline-content">
+          <div class="timeline-title">Multi-Run Orchestration</div>
+          <div class="timeline-description">
+            Queue batch runs across multiple models × refs × tasks. Scheduled periodic runs. Cost caps with hard limits.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

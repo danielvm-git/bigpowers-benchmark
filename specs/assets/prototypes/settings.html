@@ -1,0 +1,661 @@
+<style>
+  .settings {
+    display: flex;
+    gap: var(--s-24);
+    height: calc(100vh - 52px - 48px);
+  }
+  
+  .settings-rail {
+    width: 280px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  
+  .rail-section {
+    margin-bottom: var(--s-24);
+  }
+  
+  .rail-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-12);
+  }
+  
+  .provider-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-12);
+    margin-bottom: var(--s-8);
+  }
+  
+  .provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-8);
+  }
+  
+  .provider-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  
+  .toggle-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: var(--r-pill);
+    position: relative;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .toggle-switch.on {
+    background: var(--accent);
+  }
+  
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .toggle-switch.on::after {
+    left: 18px;
+  }
+  
+  .provider-status {
+    font-size: 11px;
+    color: var(--fg-3);
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  
+  .status-check {
+    color: var(--good);
+  }
+  
+  .status-missing {
+    color: var(--bad);
+  }
+  
+  .provider-action {
+    font-size: 11px;
+    color: var(--accent);
+    cursor: pointer;
+    margin-top: var(--s-4);
+  }
+  
+  .provider-action:hover {
+    text-decoration: underline;
+  }
+  
+  .pref-item {
+    margin-bottom: var(--s-16);
+  }
+  
+  .pref-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    margin-bottom: var(--s-8);
+  }
+  
+  .pref-description {
+    font-size: 11px;
+    color: var(--fg-3);
+    margin-bottom: var(--s-8);
+  }
+  
+  .registry-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    overflow: hidden;
+  }
+  
+  .registry-controls {
+    display: flex;
+    gap: var(--s-12);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .filter-rail {
+    display: flex;
+    gap: var(--s-8);
+    flex-wrap: wrap;
+  }
+  
+  .filter-chip {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 11px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--fg-3);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .filter-chip:hover {
+    border-color: var(--border-2);
+    color: var(--fg-2);
+  }
+  
+  .filter-chip.active {
+    background: var(--accent-f);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .registry-table {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .registry-table-header {
+    display: grid;
+    grid-template-columns: 40px 2fr 140px 120px 140px 200px 100px 100px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    background: var(--bg-1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .registry-table-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .registry-row {
+    display: grid;
+    grid-template-columns: 40px 2fr 140px 120px 140px 200px 100px 100px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--fg-2);
+    transition: all var(--t-fast) ease;
+    cursor: pointer;
+    align-items: center;
+  }
+  
+  .registry-row:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  
+  .star-icon {
+    cursor: pointer;
+    color: var(--border);
+    transition: all var(--t-fast) ease;
+  }
+  
+  .star-icon:hover {
+    color: var(--warn);
+  }
+  
+  .star-icon.pinned {
+    color: var(--warn);
+  }
+  
+  .capability-badges {
+    display: flex;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+  }
+  
+  .capability-badge {
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-badge);
+    font-size: 9px;
+    font-weight: 600;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--fg-3);
+  }
+  
+  .provider-badge {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--accent-f);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  
+  .tier-select {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-4) var(--s-8);
+    font-size: 11px;
+    color: var(--fg);
+    cursor: pointer;
+  }
+  
+  .pricing {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+</style>
+
+<div class="settings">
+  <!-- Settings rail -->
+  <div class="settings-rail">
+    <div class="rail-section">
+      <div class="rail-section-title">Providers</div>
+      
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">OpenRouter</div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="provider-status status-check">✓ API key from env</div>
+        <div class="provider-action">Test Connection</div>
+      </div>
+      
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">Anthropic</div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="provider-status status-check">✓ Keychain</div>
+        <div class="provider-action">Test Connection</div>
+      </div>
+      
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">Nous Research</div>
+          <div class="toggle-switch on"></div>
+        </div>
+        <div class="provider-status status-check">✓ Keychain</div>
+        <div class="provider-action">Test Connection</div>
+      </div>
+      
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">Google</div>
+          <div class="toggle-switch"></div>
+        </div>
+        <div class="provider-status status-missing">✗ Missing API key</div>
+        <div class="provider-action">Configure</div>
+      </div>
+      
+      <div class="provider-card">
+        <div class="provider-header">
+          <div class="provider-name">Cursor</div>
+          <div class="toggle-switch"></div>
+        </div>
+        <div class="provider-status status-missing">✗ Missing API key</div>
+        <div class="provider-action">Configure</div>
+      </div>
+    </div>
+    
+    <div class="rail-section">
+      <div class="rail-section-title">General</div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Appearance</div>
+        <select class="select-field" id="themeSelect">
+          <option value="auto">Auto</option>
+          <option value="light">Light</option>
+          <option value="dark" selected>Dark (Teal)</option>
+          <option value="mono">Monochrome</option>
+          <option value="ocean">Ocean</option>
+          <option value="forest">Forest</option>
+          <option value="ember">Ember</option>
+          <option value="violet">Violet</option>
+          <option value="midnight">Midnight</option>
+          <option value="crimson">Crimson</option>
+          <option value="slate">Slate</option>
+          <option value="amber">Amber</option>
+          <option value="rose">Rose</option>
+        </select>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Launch at Login</div>
+        <div class="toggle-switch"></div>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Results Directory</div>
+        <div class="pref-description">runs/data/</div>
+        <button class="btn btn-ghost btn-sm">Reveal in Finder</button>
+      </div>
+    </div>
+    
+    <div class="rail-section">
+      <div class="rail-section-title">GitOps</div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Auto-commit Results</div>
+        <div class="pref-description">Commit JSON shards after each run</div>
+        <div class="toggle-switch on"></div>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Auto-push After Run</div>
+        <div class="pref-description">Push to remote after commit</div>
+        <div class="toggle-switch"></div>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Last Commit</div>
+        <div class="pref-description mono">a3f8c2d · 2m ago</div>
+      </div>
+    </div>
+    
+    <div class="rail-section">
+      <div class="rail-section-title">Notifications</div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Run Complete</div>
+        <div class="toggle-switch on"></div>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Run Failed</div>
+        <div class="toggle-switch on"></div>
+      </div>
+      
+      <div class="pref-item">
+        <div class="pref-label">Regression Detected</div>
+        <div class="toggle-switch"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Registry main -->
+  <div class="registry-main">
+    <div class="registry-controls">
+      <input type="text" class="search-field" placeholder="Search models..." style="flex: 1; max-width: 320px;">
+      
+      <div class="filter-rail">
+        <button class="filter-chip active">All</button>
+        <button class="filter-chip">Tools</button>
+        <button class="filter-chip">Vision</button>
+        <button class="filter-chip">Streaming</button>
+        <button class="filter-chip">128K+ ctx</button>
+      </div>
+      
+      <button class="btn btn-ghost" style="margin-left: auto;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+        Card View
+      </button>
+    </div>
+    
+    <div class="registry-table">
+      <div class="registry-table-header">
+        <div></div>
+        <div>Model</div>
+        <div>Provider</div>
+        <div>Context</div>
+        <div>Pricing (in/out)</div>
+        <div>Capabilities</div>
+        <div>Tier</div>
+        <div>Health</div>
+      </div>
+      
+      <div class="registry-table-body">
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon pinned" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">Claude 3.5 Sonnet</div>
+          <div><span class="provider-badge">Anthropic</span></div>
+          <div class="mono">200K</div>
+          <div class="pricing">$3.00 / $15.00</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Vision</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option>Light</option>
+              <option selected>Standard</option>
+              <option>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot live"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">2m ago</span>
+          </div>
+        </div>
+        
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon pinned" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">GPT-4 Turbo</div>
+          <div><span class="provider-badge">OpenRouter</span></div>
+          <div class="mono">128K</div>
+          <div class="pricing">$10.00 / $30.00</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Vision</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option>Light</option>
+              <option selected>Standard</option>
+              <option>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot live"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">2m ago</span>
+          </div>
+        </div>
+        
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">Hermes 3 70B</div>
+          <div><span class="provider-badge">Nous Research</span></div>
+          <div class="mono">128K</div>
+          <div class="pricing">$0.35 / $0.40</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option selected>Light</option>
+              <option>Standard</option>
+              <option>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot live"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">2m ago</span>
+          </div>
+        </div>
+        
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon pinned" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">Gemini 1.5 Pro</div>
+          <div><span class="provider-badge">Google</span></div>
+          <div class="mono">1M</div>
+          <div class="pricing">$1.25 / $5.00</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Vision</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option>Light</option>
+              <option>Standard</option>
+              <option selected>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot stale"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">15m ago</span>
+          </div>
+        </div>
+        
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">GPT-4o</div>
+          <div><span class="provider-badge">OpenRouter</span></div>
+          <div class="mono">128K</div>
+          <div class="pricing">$5.00 / $15.00</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Vision</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option>Light</option>
+              <option selected>Standard</option>
+              <option>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot live"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">2m ago</span>
+          </div>
+        </div>
+        
+        <div class="registry-row">
+          <div>
+            <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div style="font-weight: 500;">Claude 3 Opus</div>
+          <div><span class="provider-badge">Anthropic</span></div>
+          <div class="mono">200K</div>
+          <div class="pricing">$15.00 / $75.00</div>
+          <div class="capability-badges">
+            <span class="capability-badge">Tools</span>
+            <span class="capability-badge">Vision</span>
+            <span class="capability-badge">Stream</span>
+          </div>
+          <div>
+            <select class="tier-select">
+              <option>Light</option>
+              <option>Standard</option>
+              <option selected>Deep</option>
+            </select>
+          </div>
+          <div>
+            <span class="health-status-dot live"></span>
+            <span style="font-size: 11px; color: var(--fg-3); margin-left: var(--s-4);">2m ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-sm {
+    padding: var(--s-4) var(--s-12);
+    font-size: 12px;
+  }
+  
+  .select-field {
+    width: 100%;
+    padding: var(--s-8) var(--s-12);
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    color: var(--fg);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .select-field:hover {
+    border-color: var(--border-2);
+  }
+  
+  .select-field:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  // Initialize theme select with current value and set up listener
+  (function() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const select = document.getElementById('themeSelect');
+    
+    if (select) {
+      select.value = savedTheme;
+      
+      // Add change listener
+      select.addEventListener('change', function(e) {
+        const theme = e.target.value;
+        
+        // Change theme on root document
+        if (theme === 'auto') {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          window.top.document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        } else {
+          window.top.document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Save preference
+        localStorage.setItem('theme', theme);
+      });
+    }
+  })();
+</script>

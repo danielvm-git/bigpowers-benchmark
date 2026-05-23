@@ -1,0 +1,528 @@
+<style>
+  .skill-insights {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 0;
+  }
+  
+  .insights-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .run-context {
+    display: flex;
+    gap: var(--s-24);
+    align-items: center;
+  }
+  
+  .context-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  
+  .context-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .context-value {
+    font-size: 13px;
+    color: var(--fg);
+  }
+  
+  .overall-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: var(--s-12);
+  }
+  
+  .insight-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+  }
+  
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+    transition: all var(--t-fast) ease;
+  }
+  
+  .insight-card:hover {
+    border-color: var(--border-2);
+    box-shadow: var(--shadow);
+  }
+  
+  .insight-header {
+    display: flex;
+    gap: var(--s-16);
+    margin-bottom: var(--s-16);
+  }
+  
+  .severity-badge {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    flex-shrink: 0;
+  }
+  
+  .severity-critical {
+    background: rgba(248,113,113,.12);
+    border: 1px solid var(--bad);
+    color: var(--bad);
+  }
+  
+  .severity-warning {
+    background: rgba(251,191,36,.12);
+    border: 1px solid var(--warn);
+    color: var(--warn);
+  }
+  
+  .severity-nit {
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    color: var(--fg-3);
+  }
+  
+  .insight-headline {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg);
+    flex: 1;
+  }
+  
+  .insight-section {
+    margin-bottom: var(--s-16);
+  }
+  
+  .insight-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .insight-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-8);
+  }
+  
+  .insight-content {
+    font-size: 13px;
+    color: var(--fg-2);
+    line-height: 1.6;
+  }
+  
+  .log-excerpt {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #c9d1d9;
+    margin: var(--s-12) 0;
+    overflow-x: auto;
+  }
+  
+  [data-theme="light"] .log-excerpt {
+    background: #1a1d23;
+  }
+  
+  .diff-block {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    overflow-x: auto;
+    margin: var(--s-12) 0;
+  }
+  
+  [data-theme="light"] .diff-block {
+    background: #1a1d23;
+  }
+  
+  .diff-line-add {
+    color: var(--good);
+  }
+  
+  .diff-line-remove {
+    color: var(--bad);
+  }
+  
+  .diff-line-context {
+    color: var(--fg-3);
+  }
+  
+  .insight-actions {
+    display: flex;
+    gap: var(--s-8);
+    margin-top: var(--s-16);
+  }
+  
+  .scoreboard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  
+  .scoreboard-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    background: var(--bg-1);
+  }
+  
+  .scoreboard-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--fg-2);
+    transition: all var(--t-fast) ease;
+    cursor: pointer;
+    align-items: center;
+  }
+  
+  .scoreboard-row:last-child {
+    border-bottom: none;
+  }
+  
+  .scoreboard-row:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  
+  .mini-sparkline {
+    width: 80px;
+    height: 24px;
+  }
+  
+  .mode-toggle {
+    display: inline-flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    overflow: hidden;
+  }
+  
+  .mode-option {
+    padding: var(--s-8) var(--s-16);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg-3);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .mode-option.active {
+    background: var(--accent-f);
+    color: var(--accent);
+  }
+  
+  .mode-option:hover:not(.active) {
+    background: var(--surface-2);
+    color: var(--fg-2);
+  }
+</style>
+
+<div class="skill-insights">
+  <!-- Header -->
+  <div class="insights-header">
+    <div class="run-context">
+      <div class="context-item">
+        <div class="context-label">Model</div>
+        <div class="context-value">Claude 3.5 Sonnet</div>
+      </div>
+      <div class="context-item">
+        <div class="context-label">Ref</div>
+        <div class="context-value mono">v2.8.0</div>
+      </div>
+      <div class="context-item">
+        <div class="context-label">Timestamp</div>
+        <div class="context-value mono">2026-05-23 14:32</div>
+      </div>
+      <div class="overall-score">
+        1.38
+        <span class="delta-badge delta-good">↑ +0.18</span>
+      </div>
+    </div>
+    <button class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      Re-run with Proposed Edits
+    </button>
+  </div>
+  
+  <!-- Mode toggle -->
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2 class="section-title">Insights · Prescriptive Feedback Loop</h2>
+    <div class="mode-toggle">
+      <button class="mode-option active">This Run</button>
+      <button class="mode-option">Across All Runs</button>
+    </div>
+  </div>
+  
+  <!-- Insight feed -->
+  <div class="insight-feed">
+    <!-- Critical insight -->
+    <div class="insight-card">
+      <div class="insight-header">
+        <span class="severity-badge severity-critical">Critical</span>
+        <div class="insight-headline">investigate-bug skill never invoked on T04 (spec-first)</div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Evidence</div>
+        <div class="insight-content">
+          Agent proceeded directly to code generation without analyzing requirements. Log shows no tool_call to read CLAUDE.md or invoke investigate-bug before first edit.
+        </div>
+        <div class="log-excerpt">
+14:27:18 [agent] starting T04: spec-first<br>
+14:27:20 [tool] edit src/retry.js<br>
+14:27:24 [tool] bash npm test<br>
+14:27:28 ! FAIL: missing spec file
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Hypothesis</div>
+        <div class="insight-content">
+          The spec-first skill prompt may be too implicit. Agent interprets "write a spec" as "write code immediately" rather than "analyze requirements → draft spec → implement."
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Proposed Methodology Edit</div>
+        <div class="diff-block">
+<span class="diff-line-context">File: /skills/spec-first/SKILL.md</span><br>
+<br>
+<span class="diff-line-remove">- When given underspecified requirements, draft a spec first.</span><br>
+<span class="diff-line-add">+ CRITICAL: Before writing any code, invoke investigate-bug to understand the problem space.</span><br>
+<span class="diff-line-add">+ Then draft a SPEC.md that documents:</span><br>
+<span class="diff-line-add">+   - Input/output contract</span><br>
+<span class="diff-line-add">+   - Edge cases</span><br>
+<span class="diff-line-add">+   - Test scenarios</span><br>
+<span class="diff-line-add">+ Only after SPEC.md exists should you write implementation code.</span>
+        </div>
+      </div>
+      
+      <div class="insight-actions">
+        <button class="btn btn-primary btn-sm">Open in Editor</button>
+        <button class="btn btn-ghost btn-sm">Copy Patch</button>
+        <button class="btn btn-ghost btn-sm">Mark as Addressed</button>
+        <button class="btn btn-ghost btn-sm">Snooze Until Next Ref</button>
+      </div>
+    </div>
+    
+    <!-- Warning insight -->
+    <div class="insight-card">
+      <div class="insight-header">
+        <span class="severity-badge severity-warning">Warning</span>
+        <div class="insight-headline">Convention score dropped: commits missing "type(scope):" prefix</div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Evidence</div>
+        <div class="insight-content">
+          3 of 5 tasks committed with plain messages instead of Conventional Commits format. Example from T03:
+        </div>
+        <div class="log-excerpt">
+<span style="color: var(--bad);">commit 7a9c2e1</span><br>
+<span style="color: var(--bad);">Fixed the stepdown refactor</span><br>
+<br>
+Expected: <span style="color: var(--good);">refactor(processor): apply stepdown rule to god function</span>
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Hypothesis</div>
+        <div class="insight-content">
+          The plan-work skill may not emphasize commit message format strongly enough. Agent treats it as optional documentation rather than a scoring criterion.
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Proposed Methodology Edit</div>
+        <div class="diff-block">
+<span class="diff-line-context">File: /skills/plan-work/SKILL.md</span><br>
+<br>
+<span class="diff-line-context"> After completing work, commit using:</span><br>
+<span class="diff-line-remove">- Conventional Commits format (type(scope): description)</span><br>
+<span class="diff-line-add">+ MANDATORY: Conventional Commits format — your commit WILL BE SCORED on this.</span><br>
+<span class="diff-line-add">+ Pattern: type(scope): imperative description</span><br>
+<span class="diff-line-add">+ Valid types: fix, feat, refactor, docs, test, chore</span><br>
+<span class="diff-line-add">+ Example: fix(limiter): correct off-by-one in counter reset</span>
+        </div>
+      </div>
+      
+      <div class="insight-actions">
+        <button class="btn btn-primary btn-sm">Open in Editor</button>
+        <button class="btn btn-ghost btn-sm">Copy Patch</button>
+        <button class="btn btn-ghost btn-sm">Mark as Addressed</button>
+      </div>
+    </div>
+    
+    <!-- Nit insight -->
+    <div class="insight-card">
+      <div class="insight-header">
+        <span class="severity-badge severity-nit">Nit</span>
+        <div class="insight-headline">DIAGNOSIS.md formatting inconsistent across tasks</div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Evidence</div>
+        <div class="insight-content">
+          T01 produced structured DIAGNOSIS.md with ## headings. T02 produced plain paragraphs. Both pass artifact check, but structure aids human review.
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Hypothesis</div>
+        <div class="insight-content">
+          The investigate-bug skill gives examples but doesn't mandate structure. Agent uses whatever format feels natural in context.
+        </div>
+      </div>
+      
+      <div class="insight-section">
+        <div class="insight-section-title">Proposed Methodology Edit</div>
+        <div class="diff-block">
+<span class="diff-line-context">File: /skills/investigate-bug/SKILL.md</span><br>
+<br>
+<span class="diff-line-add">+ DIAGNOSIS.md must contain these sections:</span><br>
+<span class="diff-line-add">+ ## Problem</span><br>
+<span class="diff-line-add">+ ## Root Cause</span><br>
+<span class="diff-line-add">+ ## Solution</span><br>
+<span class="diff-line-add">+ ## Testing Strategy</span>
+        </div>
+      </div>
+      
+      <div class="insight-actions">
+        <button class="btn btn-ghost btn-sm">Copy Patch</button>
+        <button class="btn btn-ghost btn-sm">Dismiss</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Skill scoreboard -->
+  <div>
+    <h2 class="section-title">Skill-by-Skill Performance</h2>
+    <div class="scoreboard">
+      <div class="scoreboard-header">
+        <div>Skill</div>
+        <div>Invocation Rate</div>
+        <div>Success Rate</div>
+        <div>Trend</div>
+        <div>Regression</div>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>investigate-bug</div>
+        <div class="mono">4/5 tasks</div>
+        <div class="mono">100%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,18 16,14 32,12 48,14 64,10 80,8" fill="none" stroke="var(--good)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-neutral">→ 0.00</span>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>develop-tdd</div>
+        <div class="mono">5/5 tasks</div>
+        <div class="mono">80%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,16 16,14 32,10 48,12 64,8 80,6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-good">↑ +0.12</span>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>plan-work</div>
+        <div class="mono">5/5 tasks</div>
+        <div class="mono">60%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,12 16,10 32,14 48,12 64,16 80,18" fill="none" stroke="var(--warn)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-bad">↓ -0.15</span>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>refactor</div>
+        <div class="mono">1/5 tasks</div>
+        <div class="mono">100%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,14 16,14 32,12 48,12 64,10 80,10" fill="none" stroke="var(--good)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-neutral">→ 0.00</span>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>spec-first</div>
+        <div class="mono">1/5 tasks</div>
+        <div class="mono">0%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,8 16,10 32,12 48,16 64,18 80,20" fill="none" stroke="var(--bad)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-bad">↓ -0.25</span>
+      </div>
+      
+      <div class="scoreboard-row">
+        <div>debug</div>
+        <div class="mono">3/5 tasks</div>
+        <div class="mono">67%</div>
+        <svg class="mini-sparkline" viewBox="0 0 80 24">
+          <polyline points="0,16 16,15 32,14 48,15 64,13 80,12" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        </svg>
+        <span class="delta-badge delta-neutral">→ 0.00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .btn-sm {
+    padding: var(--s-4) var(--s-12);
+    font-size: 12px;
+  }
+</style>

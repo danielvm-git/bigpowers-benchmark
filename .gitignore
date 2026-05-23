@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node (JS toolchain — commitizen, semantic-release)
+node_modules/
+
+# Design upload staging area (assets promoted to specs/assets/)
+project/uploads/
+
+# Xcode / Swift
+*.xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.xcarchive
+build/
+.build/
+
+# Misc
+*.swp
+*.swo

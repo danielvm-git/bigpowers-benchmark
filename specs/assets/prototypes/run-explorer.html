@@ -1,0 +1,623 @@
+<style>
+  .run-explorer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-24);
+    height: calc(100vh - 52px - 48px);
+  }
+  
+  .explorer-controls {
+    display: flex;
+    gap: var(--s-12);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .search-field {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-8) var(--s-12);
+    font-size: 13px;
+    color: var(--fg);
+    width: 240px;
+  }
+  
+  .search-field:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+  
+  .filter-group {
+    display: flex;
+    gap: var(--s-8);
+    align-items: center;
+  }
+  
+  .filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .export-menu {
+    margin-left: auto;
+    position: relative;
+  }
+  
+  .runs-table-container {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .runs-table-header {
+    display: grid;
+    grid-template-columns: 40px 120px 180px 140px 100px 80px 80px 80px 100px 80px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    background: var(--bg-1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .runs-table-body {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .runs-table-row {
+    display: grid;
+    grid-template-columns: 40px 120px 180px 140px 100px 80px 80px 80px 100px 80px;
+    padding: var(--s-12) var(--s-16);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--fg-2);
+    transition: all var(--t-fast) ease;
+    cursor: pointer;
+    align-items: center;
+  }
+  
+  .runs-table-row:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  
+  .runs-table-row.selected {
+    background: var(--accent-f);
+    border-color: var(--accent);
+  }
+  
+  .checkbox {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--r-badge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  
+  .detail-drawer {
+    position: fixed;
+    top: 52px;
+    right: 0;
+    width: 600px;
+    height: calc(100vh - 52px);
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    transform: translateX(100%);
+    transition: transform var(--t-base) ease;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail-drawer.open {
+    transform: translateX(0);
+  }
+  
+  .detail-header {
+    padding: var(--s-24);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  
+  .detail-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-8);
+  }
+  
+  .detail-meta {
+    display: flex;
+    gap: var(--s-16);
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .detail-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--s-24);
+  }
+  
+  .detail-section {
+    margin-bottom: var(--s-32);
+  }
+  
+  .detail-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-16);
+  }
+  
+  .score-breakdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-12);
+  }
+  
+  .score-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-12);
+    text-align: center;
+  }
+  
+  .score-item-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-4);
+  }
+  
+  .score-item-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+  
+  .evidence-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    margin-bottom: var(--s-12);
+  }
+  
+  .evidence-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-12);
+  }
+  
+  .code-block {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #c9d1d9;
+    overflow-x: auto;
+  }
+  
+  [data-theme="light"] .code-block {
+    background: #1a1d23;
+  }
+  
+  .checklist {
+    list-style: none;
+  }
+  
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    padding: var(--s-8) 0;
+    font-size: 13px;
+    color: var(--fg-2);
+  }
+  
+  .checklist-item.complete {
+    color: var(--good);
+  }
+  
+  .checklist-item.missing {
+    color: var(--bad);
+  }
+  
+  .skills-list {
+    display: flex;
+    gap: var(--s-8);
+    flex-wrap: wrap;
+  }
+  
+  .compare-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-16);
+  }
+  
+  .compare-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+  }
+  
+  .compare-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-12);
+    padding-bottom: var(--s-12);
+    border-bottom: 1px solid var(--border);
+  }
+</style>
+
+<div class="run-explorer">
+  <!-- Controls -->
+  <div class="explorer-controls">
+    <input type="text" class="search-field" placeholder="Search runs...">
+    
+    <div class="filter-group">
+      <span class="filter-label">Model</span>
+      <select class="select-field">
+        <option>All models</option>
+        <option>Claude 3.5 Sonnet</option>
+        <option>GPT-4 Turbo</option>
+        <option>Gemini 1.5 Pro</option>
+        <option>Hermes 3 70B</option>
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <span class="filter-label">Ref</span>
+      <select class="select-field">
+        <option>All refs</option>
+        <option>HEAD</option>
+        <option>v2.8.0</option>
+        <option>v2.7.0</option>
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <span class="filter-label">Task</span>
+      <select class="select-field">
+        <option>All tasks</option>
+        <option>T01 · bug-investigation</option>
+        <option>T02 · feature-slice</option>
+        <option>T03 · refactor</option>
+        <option>T04 · spec-first</option>
+        <option>T05 · race-condition</option>
+      </select>
+    </div>
+    
+    <div class="export-menu">
+      <button class="btn btn-ghost" onclick="toggleExportMenu()">
+        Export
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+    </div>
+    
+    <button class="btn btn-primary" onclick="compareRuns()" id="compareBtn" disabled>
+      Compare Selected (0)
+    </button>
+  </div>
+  
+  <!-- Table -->
+  <div class="runs-table-container">
+    <div class="runs-table-header">
+      <div></div>
+      <div>Timestamp</div>
+      <div>Model</div>
+      <div>Task</div>
+      <div>Ref</div>
+      <div>Code</div>
+      <div>Artifact</div>
+      <div>Conv.</div>
+      <div>Overall</div>
+      <div>Duration</div>
+    </div>
+    <div class="runs-table-body" id="runsTableBody">
+      <div class="runs-table-row" onclick="openDetail('run_001')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:32</div>
+        <div>Claude 3.5 Sonnet</div>
+        <div>bug-investigation</div>
+        <div class="mono">v2.8.0</div>
+        <div class="mono">1</div>
+        <div class="mono">2</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--accent);">1.50</div>
+        <div class="mono">28s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_002')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:31</div>
+        <div>GPT-4 Turbo</div>
+        <div>feature-slice</div>
+        <div class="mono">v2.8.0</div>
+        <div class="mono">1</div>
+        <div class="mono">2</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--accent);">1.50</div>
+        <div class="mono">42s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_003')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:29</div>
+        <div>Claude 3.5 Sonnet</div>
+        <div>refactor</div>
+        <div class="mono">v2.8.0</div>
+        <div class="mono">1</div>
+        <div class="mono">1</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--accent);">1.25</div>
+        <div class="mono">1m 4s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_004')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:27</div>
+        <div>Gemini 1.5 Pro</div>
+        <div>spec-first</div>
+        <div class="mono">v2.8.0</div>
+        <div class="mono">1</div>
+        <div class="mono">2</div>
+        <div class="mono">0</div>
+        <div class="mono" style="color: var(--warn);">1.00</div>
+        <div class="mono">58s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_005')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:25</div>
+        <div>GPT-4 Turbo</div>
+        <div>race-condition</div>
+        <div class="mono">v2.7.0</div>
+        <div class="mono">0</div>
+        <div class="mono">2</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--bad);">0.50</div>
+        <div class="mono">1m 12s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_006')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:22</div>
+        <div>Hermes 3 70B</div>
+        <div>bug-investigation</div>
+        <div class="mono">v2.7.0</div>
+        <div class="mono">1</div>
+        <div class="mono">1</div>
+        <div class="mono">1</div>
+        <div class="mono" style="color: var(--accent);">1.00</div>
+        <div class="mono">35s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_007')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:18</div>
+        <div>Claude 3.5 Sonnet</div>
+        <div>feature-slice</div>
+        <div class="mono">v2.7.0</div>
+        <div class="mono">1</div>
+        <div class="mono">2</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--accent);">1.50</div>
+        <div class="mono">48s</div>
+      </div>
+      
+      <div class="runs-table-row" onclick="openDetail('run_008')">
+        <div class="checkbox" onclick="event.stopPropagation(); toggleSelect(this)"></div>
+        <div class="mono" style="font-size: 11px;">2026-05-23 14:15</div>
+        <div>Gemini 1.5 Pro</div>
+        <div>refactor</div>
+        <div class="mono">v2.7.0</div>
+        <div class="mono">1</div>
+        <div class="mono">0</div>
+        <div class="mono">2</div>
+        <div class="mono" style="color: var(--warn);">0.75</div>
+        <div class="mono">1m 18s</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail drawer -->
+<div class="detail-drawer" id="detailDrawer">
+  <div class="detail-header">
+    <div style="display: flex; justify-content: space-between; align-items: start;">
+      <div>
+        <div class="detail-title">Run: bug-investigation · Claude 3.5 Sonnet</div>
+        <div class="detail-meta">
+          <span>run_20260523_143208</span>
+          <span>v2.8.0</span>
+          <span>2026-05-23 14:32:08 UTC</span>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="closeDetail()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <div class="detail-body">
+    <!-- Score breakdown -->
+    <div class="detail-section">
+      <div class="detail-section-title">Deterministic Scoring</div>
+      <div class="score-breakdown">
+        <div class="score-item">
+          <div class="score-item-label">Code Pass</div>
+          <div class="score-item-value">1</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">Artifact</div>
+          <div class="score-item-value">2</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">Convention</div>
+          <div class="score-item-value">2</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">Overall</div>
+          <div class="score-item-value" style="color: var(--accent);">1.50</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Evidence -->
+    <div class="detail-section">
+      <div class="detail-section-title">Evidence</div>
+      
+      <div class="evidence-card">
+        <div class="evidence-title">Test Output</div>
+        <div class="code-block">
+$ npm test<br>
+<span style="color: var(--good);">✓ rate limiter resets counter correctly</span><br>
+<span style="color: var(--good);">✓ rate limiter handles off-by-one edge case</span><br>
+<span style="color: var(--good);">✓ rate limiter allows up to max requests</span><br>
+<span style="color: var(--good);">✓ rate limiter blocks after max requests</span><br>
+<br>
+<span style="color: var(--good);">14 tests passed</span> in 0.42s
+        </div>
+      </div>
+      
+      <div class="evidence-card">
+        <div class="evidence-title">Artifact Checklist</div>
+        <ul class="checklist">
+          <li class="checklist-item complete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            DIAGNOSIS.md exists
+          </li>
+          <li class="checklist-item complete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            src/limiter.js edited
+          </li>
+          <li class="checklist-item complete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            tests/ passed
+          </li>
+        </ul>
+      </div>
+      
+      <div class="evidence-card">
+        <div class="evidence-title">Git Log (Conventional Commits)</div>
+        <div class="code-block">
+<span style="color: var(--accent);">commit a3f8c2d</span><br>
+<span style="color: var(--good);">fix(limiter): correct off-by-one error in counter reset</span><br>
+<br>
+- Fixed boundary condition when maxRequests reached<br>
+- Added counter reset logic for TTL expiry<br>
+- All tests now passing<br>
+<br>
+<span style="color: var(--accent);">commit 7b9e1a4</span><br>
+<span style="color: var(--good);">docs(diagnosis): add root cause analysis for rate limiter bug</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Skills invoked -->
+    <div class="detail-section">
+      <div class="detail-section-title">Skills Invoked</div>
+      <div class="skills-list">
+        <span class="chip">investigate-bug</span>
+        <span class="chip">develop-tdd</span>
+        <span class="chip">plan-work</span>
+      </div>
+    </div>
+    
+    <!-- Environment -->
+    <div class="detail-section">
+      <div class="detail-section-title">Environment</div>
+      <div class="evidence-card">
+        <div style="font-size: 11px; color: var(--fg-3); font-family: 'JetBrains Mono', monospace; line-height: 1.8;">
+          <div>App: BigPowers-Benchmark v1.0.0</div>
+          <div>Runner: OpenCode v0.8.2</div>
+          <div>Daytona: bp_bench_runs/run_20260523_143208</div>
+          <div>OS: macOS 14.3 (Sonoma)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedCount = 0;
+  
+  function toggleSelect(checkbox) {
+    checkbox.classList.toggle('checked');
+    if (checkbox.classList.contains('checked')) {
+      selectedCount++;
+      checkbox.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0f1117" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+    } else {
+      selectedCount--;
+      checkbox.innerHTML = '';
+    }
+    
+    const compareBtn = document.getElementById('compareBtn');
+    compareBtn.disabled = selectedCount !== 2;
+    compareBtn.textContent = `Compare Selected (${selectedCount})`;
+  }
+  
+  function openDetail(runId) {
+    document.getElementById('detailDrawer').classList.add('open');
+  }
+  
+  function closeDetail() {
+    document.getElementById('detailDrawer').classList.remove('open');
+  }
+  
+  function compareRuns() {
+    alert('Compare mode: Side-by-side view of 2 selected runs with synced metrics, logs, and diffs.');
+  }
+  
+  function toggleExportMenu() {
+    alert('Export options:\n• Copy summary (Markdown)\n• Export CSV\n• Export JSON\n• Generate shareable report');
+  }
+</script>

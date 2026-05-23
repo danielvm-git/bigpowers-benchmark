@@ -1,0 +1,26 @@
+pre-commit:
+  parallel: true
+  commands:
+    swiftformat:
+      glob: "**/*.swift"
+      run: swiftformat --config .swiftformat {staged_files}
+      stage_fixed: true
+    swiftlint:
+      glob: "**/*.swift"
+      run: swiftlint --fix --strict --no-cache {staged_files} && swiftlint --strict --no-cache {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx --no-install commitlint --edit {1}
+
+pre-push:
+  commands:
+    swift-test:
+      run: >
+        if [ -f Package.swift ]; then
+          swift test;
+        else
+          echo "[pre-push] No Package.swift found — skipping tests";
+        fi

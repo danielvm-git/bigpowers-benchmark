@@ -1,0 +1,544 @@
+<style>
+  .task-library {
+    display: flex;
+    gap: var(--s-24);
+    height: calc(100vh - 52px - 48px);
+  }
+  
+  .suites-rail {
+    width: 240px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    flex-shrink: 0;
+  }
+  
+  .suite-header {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-12);
+  }
+  
+  .suite-item {
+    padding: var(--s-8) var(--s-12);
+    border-radius: var(--r-button);
+    font-size: 13px;
+    color: var(--fg-2);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+    margin-bottom: var(--s-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .suite-item:hover {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  
+  .suite-item.active {
+    background: var(--accent-f);
+    color: var(--accent);
+  }
+  
+  .suite-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .tasks-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-16);
+    overflow-y: auto;
+  }
+  
+  .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .task-card:hover {
+    border-color: var(--border-2);
+    box-shadow: var(--shadow);
+  }
+  
+  .task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--s-16);
+  }
+  
+  .task-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: var(--s-4);
+  }
+  
+  .task-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    margin-bottom: var(--s-4);
+  }
+  
+  .task-tags {
+    display: flex;
+    gap: var(--s-8);
+  }
+  
+  .difficulty-chip {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  
+  .difficulty-easy {
+    background: rgba(52,211,153,.12);
+    border: 1px solid var(--good);
+    color: var(--good);
+  }
+  
+  .difficulty-medium {
+    background: rgba(251,191,36,.12);
+    border: 1px solid var(--warn);
+    color: var(--warn);
+  }
+  
+  .difficulty-hard {
+    background: rgba(248,113,113,.12);
+    border: 1px solid var(--bad);
+    color: var(--bad);
+  }
+  
+  .grading-badge {
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--accent-f);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  
+  .task-description {
+    font-size: 13px;
+    color: var(--fg-2);
+    line-height: 1.6;
+    margin-bottom: var(--s-16);
+  }
+  
+  .task-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-12);
+    padding-top: var(--s-16);
+    border-top: 1px solid var(--border);
+  }
+  
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  
+  .meta-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .meta-value {
+    font-size: 13px;
+    color: var(--fg);
+  }
+  
+  .task-detail-drawer {
+    position: fixed;
+    top: 52px;
+    right: 0;
+    width: 700px;
+    height: calc(100vh - 52px);
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    transform: translateX(100%);
+    transition: transform var(--t-base) ease;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-detail-drawer.open {
+    transform: translateX(0);
+  }
+  
+  .detail-header {
+    padding: var(--s-24);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  
+  .detail-actions {
+    display: flex;
+    gap: var(--s-8);
+    margin-top: var(--s-16);
+  }
+  
+  .scaffold-tree {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: var(--r-badge);
+    padding: var(--s-12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #c9d1d9;
+    overflow-x: auto;
+    line-height: 1.8;
+  }
+  
+  [data-theme="light"] .scaffold-tree {
+    background: #1a1d23;
+  }
+  
+  .tree-folder {
+    color: var(--accent);
+  }
+  
+  .tree-file {
+    color: var(--fg-2);
+  }
+  
+  .history-chart {
+    width: 100%;
+    height: 120px;
+    margin-top: var(--s-12);
+  }
+</style>
+
+<div class="task-library">
+  <!-- Suites rail -->
+  <div class="suites-rail">
+    <div class="suite-header">Suites</div>
+    <div class="suite-item active">
+      <span>Canonical</span>
+      <span class="suite-count">5</span>
+    </div>
+  </div>
+  
+  <!-- Tasks main -->
+  <div class="tasks-main">
+    <div class="tasks-header">
+      <h2 class="section-title">5 Canonical Tasks</h2>
+      <button class="btn btn-ghost" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14m-7-7h14"/>
+        </svg>
+        New Task
+        <span class="chip" style="margin-left: var(--s-4);">Coming Soon</span>
+      </button>
+    </div>
+    
+    <!-- T01 -->
+    <div class="task-card" onclick="openTaskDetail('T01')">
+      <div class="task-card-header">
+        <div>
+          <div class="task-id">T01</div>
+          <div class="task-name">bug-investigation</div>
+          <div class="task-description">
+            Rate-limiter implementation with off-by-one error in counter reset logic and boundary condition bug when maxRequests is reached.
+          </div>
+        </div>
+        <div class="task-tags">
+          <span class="difficulty-chip difficulty-easy">Easy</span>
+          <span class="grading-badge">Deterministic</span>
+        </div>
+      </div>
+      <div class="task-meta">
+        <div class="meta-item">
+          <div class="meta-label">Expected Runtime</div>
+          <div class="meta-value mono">~30s</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">Bug Fix</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Tested</div>
+          <div class="meta-value">2m ago</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- T02 -->
+    <div class="task-card" onclick="openTaskDetail('T02')">
+      <div class="task-card-header">
+        <div>
+          <div class="task-id">T02</div>
+          <div class="task-name">feature-slice</div>
+          <div class="task-description">
+            Add pagination support to User list endpoint. Requires query param parsing, offset/limit logic, and updating response schema.
+          </div>
+        </div>
+        <div class="task-tags">
+          <span class="difficulty-chip difficulty-easy">Easy</span>
+          <span class="grading-badge">Deterministic</span>
+        </div>
+      </div>
+      <div class="task-meta">
+        <div class="meta-item">
+          <div class="meta-label">Expected Runtime</div>
+          <div class="meta-value mono">~45s</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">Feature</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Tested</div>
+          <div class="meta-value">5m ago</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- T03 -->
+    <div class="task-card" onclick="openTaskDetail('T03')">
+      <div class="task-card-header">
+        <div>
+          <div class="task-id">T03</div>
+          <div class="task-name">refactor</div>
+          <div class="task-description">
+            Apply Stepdown Rule to a 200-line god-function. Break into single-responsibility functions with clear abstraction levels.
+          </div>
+        </div>
+        <div class="task-tags">
+          <span class="difficulty-chip difficulty-medium">Medium</span>
+          <span class="grading-badge">Deterministic</span>
+        </div>
+      </div>
+      <div class="task-meta">
+        <div class="meta-item">
+          <div class="meta-label">Expected Runtime</div>
+          <div class="meta-value mono">~1m 15s</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">Refactor</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Tested</div>
+          <div class="meta-value">8m ago</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- T04 -->
+    <div class="task-card" onclick="openTaskDetail('T04')">
+      <div class="task-card-header">
+        <div>
+          <div class="task-id">T04</div>
+          <div class="task-name">spec-first</div>
+          <div class="task-description">
+            Implement retry-with-exponential-backoff from underspecified requirements. Must draft SPEC.md before coding to clarify contract and edge cases.
+          </div>
+        </div>
+        <div class="task-tags">
+          <span class="difficulty-chip difficulty-medium">Medium</span>
+          <span class="grading-badge">Deterministic</span>
+        </div>
+      </div>
+      <div class="task-meta">
+        <div class="meta-item">
+          <div class="meta-label">Expected Runtime</div>
+          <div class="meta-value mono">~1m</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">Spec-Driven</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Tested</div>
+          <div class="meta-value">12m ago</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- T05 -->
+    <div class="task-card" onclick="openTaskDetail('T05')">
+      <div class="task-card-header">
+        <div>
+          <div class="task-id">T05</div>
+          <div class="task-name">race-condition</div>
+          <div class="task-description">
+            TTL cache with concurrent-write bug. Multiple threads can write simultaneously, corrupting state. Requires proper locking or atomic operations.
+          </div>
+        </div>
+        <div class="task-tags">
+          <span class="difficulty-chip difficulty-hard">Hard</span>
+          <span class="grading-badge">Deterministic</span>
+        </div>
+      </div>
+      <div class="task-meta">
+        <div class="meta-item">
+          <div class="meta-label">Expected Runtime</div>
+          <div class="meta-value mono">~1m 30s</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Category</div>
+          <div class="meta-value">Concurrency</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Last Tested</div>
+          <div class="meta-value">18m ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task detail drawer -->
+<div class="task-detail-drawer" id="taskDetailDrawer">
+  <div class="detail-header">
+    <div style="display: flex; justify-content: space-between; align-items: start;">
+      <div>
+        <div class="task-id">T01</div>
+        <div class="task-name">bug-investigation</div>
+      </div>
+      <button class="icon-btn" onclick="closeTaskDetail()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-primary" onclick="navigateTo('mission-control')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        Run This Task Only
+      </button>
+      <button class="btn btn-ghost" onclick="navigateTo('run-explorer')">View History</button>
+    </div>
+  </div>
+  
+  <div class="detail-body">
+    <div class="detail-section">
+      <div class="detail-section-title">Description</div>
+      <div class="insight-content">
+        The rate-limiter module has two bugs: an off-by-one error when checking if maxRequests has been reached, and incorrect counter reset logic when the TTL window expires. The tests are already written and failing — the agent's job is to diagnose the root cause, fix the implementation, and ensure all tests pass.
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <div class="detail-section-title">Reference Scaffold (SANDBOX/)</div>
+      <div class="scaffold-tree">
+<span class="tree-folder">T01_bug_investigation/</span><br>
+├── <span class="tree-file">README.md</span><br>
+├── <span class="tree-file">package.json</span><br>
+├── <span class="tree-folder">src/</span><br>
+│   └── <span class="tree-file">limiter.js</span>      <span style="color: var(--bad);"># Contains the bugs</span><br>
+├── <span class="tree-folder">tests/</span><br>
+│   └── <span class="tree-file">limiter.test.js</span> <span style="color: var(--good);"># All tests written, currently failing</span><br>
+└── <span class="tree-file">.gitignore</span>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <div class="detail-section-title">Expected Artifacts</div>
+      <ul class="checklist">
+        <li class="checklist-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          DIAGNOSIS.md with root cause analysis
+        </li>
+        <li class="checklist-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          src/limiter.js edited to fix both bugs
+        </li>
+        <li class="checklist-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          All tests passing (14/14)
+        </li>
+      </ul>
+    </div>
+    
+    <div class="detail-section">
+      <div class="detail-section-title">Conventional Commit Examples</div>
+      <div class="log-excerpt">
+<span style="color: var(--good);">fix(limiter): correct off-by-one error in counter reset</span><br>
+<span style="color: var(--good);">docs(diagnosis): add root cause analysis for rate limiter bug</span><br>
+<span style="color: var(--good);">test(limiter): verify TTL expiry edge case</span>
+      </div>
+    </div>
+    
+    <div class="detail-section">
+      <div class="detail-section-title">Historical Scores (v2.8.0)</div>
+      <svg class="history-chart" viewBox="0 0 400 120">
+        <!-- Grid -->
+        <line x1="0" y1="30" x2="400" y2="30" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="60" x2="400" y2="60" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="90" x2="400" y2="90" stroke="var(--fg-3)" stroke-width="1" opacity="0.3"/>
+        
+        <!-- Line -->
+        <polyline points="0,80 50,70 100,60 150,65 200,50 250,55 300,40 350,35 400,30" 
+                  fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        
+        <!-- Points -->
+        <circle cx="0" cy="80" r="3" fill="var(--accent)"/>
+        <circle cx="50" cy="70" r="3" fill="var(--accent)"/>
+        <circle cx="100" cy="60" r="3" fill="var(--accent)"/>
+        <circle cx="150" cy="65" r="3" fill="var(--accent)"/>
+        <circle cx="200" cy="50" r="3" fill="var(--accent)"/>
+        <circle cx="250" cy="55" r="3" fill="var(--accent)"/>
+        <circle cx="300" cy="40" r="3" fill="var(--accent)"/>
+        <circle cx="350" cy="35" r="3" fill="var(--accent)"/>
+        <circle cx="400" cy="30" r="4" fill="var(--accent)"/>
+        
+        <!-- Labels -->
+        <text x="0" y="110" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">Claude</text>
+        <text x="100" y="110" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">GPT-4</text>
+        <text x="200" y="110" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">Gemini</text>
+        <text x="300" y="110" font-size="9" fill="var(--fg-3)" font-family="JetBrains Mono">Hermes</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openTaskDetail(taskId) {
+    document.getElementById('taskDetailDrawer').classList.add('open');
+  }
+  
+  function closeTaskDetail() {
+    document.getElementById('taskDetailDrawer').classList.remove('open');
+  }
+</script>

@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BigPowers-Benchmark Design System</title>
+<style>
+  :root {
+    /* Dark mode tokens (canonical) - WCAG AA compliant */
+    --bg: #0f1117;
+    --bg-1: #141823;
+    --surface: #161922;
+    --surface-2: #1c2030;
+    --border: #232838;
+    --border-2: #2d3346;
+    
+    --fg: #e6e8ee;
+    --fg-2: #b4bac9;
+    --fg-3: #9ca3b3; /* Adjusted for 4.6:1 contrast */
+    --fg-4: #7a8191; /* Adjusted for 4.5:1 contrast */
+    
+    --accent: #2dd4bf;
+    --accent-d: #14b8a6;
+    --accent-f: rgba(45,212,191,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(255,255,255,0.04);
+    --grid-2: rgba(255,255,255,0.07);
+    
+    /* Spacing */
+    --s-4: 4px;
+    --s-8: 8px;
+    --s-12: 12px;
+    --s-16: 16px;
+    --s-24: 24px;
+    --s-32: 32px;
+    
+    /* Radius */
+    --r-badge: 4px;
+    --r-button: 6px;
+    --r-card: 8px;
+    --r-pill: 9999px;
+    
+    /* Elevation */
+    --shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 8px 24px rgba(0,0,0,.35);
+    
+    /* Motion */
+    --t-fast: 120ms;
+    --t-base: 200ms;
+    --t-slow: 320ms;
+  }
+  
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --bg-1: #f8f9fa;
+    --surface: #ffffff;
+    --surface-2: #f1f3f5;
+    --border: #e1e4e8;
+    --border-2: #d1d5db;
+    
+    --fg: #1a1d23;
+    --fg-2: #4a5160;
+    --fg-3: #6b7280;
+    --fg-4: #9ca3af;
+    
+    --accent: #14b8a6;
+    --accent-d: #0d9488;
+    --accent-f: rgba(20,184,166,.12);
+    --good: #10b981;
+    --bad: #ef4444;
+    --warn: #f59e0b;
+    
+    --grid: rgba(0,0,0,0.04);
+    --grid-2: rgba(0,0,0,0.07);
+    
+    --shadow: 0 1px 0 rgba(0,0,0,.03) inset, 0 8px 24px rgba(0,0,0,.08);
+  }
+  
+  /* Theme: Monochrome - Pure grayscale */
+  [data-theme="mono"] {
+    --bg: #0d0d0d;
+    --bg-1: #141414;
+    --surface: #1a1a1a;
+    --surface-2: #202020;
+    --border: #2a2a2a;
+    --border-2: #353535;
+    
+    --fg: #f0f0f0;
+    --fg-2: #c0c0c0;
+    --fg-3: #a0a0a0;
+    --fg-4: #808080;
+    
+    --accent: #ffffff;
+    --accent-d: #e8e8e8;
+    --accent-f: rgba(255,255,255,.1);
+    --good: #b0b0b0;
+    --bad: #707070;
+    --warn: #909090;
+    
+    --grid: rgba(255,255,255,0.05);
+    --grid-2: rgba(255,255,255,0.08);
+    
+    --shadow: 0 1px 0 rgba(255,255,255,.02) inset, 0 8px 24px rgba(0,0,0,.6);
+  }
+  
+  /* Theme: Ocean - Deep blue palette */
+  [data-theme="ocean"] {
+    --bg: #0a1628;
+    --bg-1: #0d1b33;
+    --surface: #12213d;
+    --surface-2: #1a2d4f;
+    --border: #1e3a5f;
+    --border-2: #2a4a75;
+    
+    --fg: #e1f0ff;
+    --fg-2: #b5d5f0;
+    --fg-3: #90b8da;
+    --fg-4: #6b9bc4;
+    
+    --accent: #38bdf8;
+    --accent-d: #0ea5e9;
+    --accent-f: rgba(56,189,248,.12);
+    --good: #22d3ee;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(56,189,248,0.05);
+    --grid-2: rgba(56,189,248,0.08);
+    
+    --shadow: 0 1px 0 rgba(56,189,248,.03) inset, 0 8px 24px rgba(0,10,20,.5);
+  }
+  
+  /* Theme: Forest - Dark green */
+  [data-theme="forest"] {
+    --bg: #0a1510;
+    --bg-1: #0e1d18;
+    --surface: #122520;
+    --surface-2: #1a332d;
+    --border: #1f3d35;
+    --border-2: #2a5045;
+    
+    --fg: #e6f5ed;
+    --fg-2: #b8dbca;
+    --fg-3: #92c2a8;
+    --fg-4: #6da886;
+    
+    --accent: #10b981;
+    --accent-d: #059669;
+    --accent-f: rgba(16,185,129,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(16,185,129,0.04);
+    --grid-2: rgba(16,185,129,0.07);
+    
+    --shadow: 0 1px 0 rgba(16,185,129,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Ember - Warm orange/red */
+  [data-theme="ember"] {
+    --bg: #1a0f0a;
+    --bg-1: #231612;
+    --surface: #2d1f1a;
+    --surface-2: #3a2a24;
+    --border: #4a352e;
+    --border-2: #5d443b;
+    
+    --fg: #fff4ed;
+    --fg-2: #f5d0ba;
+    --fg-3: #e0b59e;
+    --fg-4: #c99a82;
+    
+    --accent: #fb923c;
+    --accent-d: #f97316;
+    --accent-f: rgba(251,146,60,.12);
+    --good: #34d399;
+    --bad: #ef4444;
+    --warn: #fbbf24;
+    
+    --grid: rgba(251,146,60,0.04);
+    --grid-2: rgba(251,146,60,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,146,60,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Violet - Rich purple */
+  [data-theme="violet"] {
+    --bg: #14091a;
+    --bg-1: #1c1023;
+    --surface: #25172e;
+    --surface-2: #31213d;
+    --border: #3d2a4d;
+    --border-2: #4d3760;
+    
+    --fg: #f4edff;
+    --fg-2: #d5c3f0;
+    --fg-3: #b8a0da;
+    --fg-4: #9b7dc4;
+    
+    --accent: #a78bfa;
+    --accent-d: #8b5cf6;
+    --accent-f: rgba(167,139,250,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(167,139,250,0.05);
+    --grid-2: rgba(167,139,250,0.08);
+    
+    --shadow: 0 1px 0 rgba(167,139,250,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Midnight - Deep navy */
+  [data-theme="midnight"] {
+    --bg: #0b0e1a;
+    --bg-1: #111528;
+    --surface: #161c33;
+    --surface-2: #1e2640;
+    --border: #252f4d;
+    --border-2: #303c5f;
+    
+    --fg: #e5e9ff;
+    --fg-2: #b8c2e8;
+    --fg-3: #8f9dcf;
+    --fg-4: #6c7ab6;
+    
+    --accent: #818cf8;
+    --accent-d: #6366f1;
+    --accent-f: rgba(129,140,248,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(129,140,248,0.04);
+    --grid-2: rgba(129,140,248,0.07);
+    
+    --shadow: 0 1px 0 rgba(129,140,248,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Crimson - Deep red */
+  [data-theme="crimson"] {
+    --bg: #1a0a0e;
+    --bg-1: #231115;
+    --surface: #2d171d;
+    --surface-2: #3d2128;
+    --border: #4d2a32;
+    --border-2: #603641;
+    
+    --fg: #ffecf0;
+    --fg-2: #f5c5d1;
+    --fg-3: #dfa0b0;
+    --fg-4: #c97d90;
+    
+    --accent: #fb7185;
+    --accent-d: #f43f5e;
+    --accent-f: rgba(251,113,133,.12);
+    --good: #34d399;
+    --bad: #ef4444;
+    --warn: #fbbf24;
+    
+    --grid: rgba(251,113,133,0.04);
+    --grid-2: rgba(251,113,133,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,113,133,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Slate - Cool gray with blue tint */
+  [data-theme="slate"] {
+    --bg: #0f1419;
+    --bg-1: #151b23;
+    --surface: #1a222d;
+    --surface-2: #222d3a;
+    --border: #2a3847;
+    --border-2: #354557;
+    
+    --fg: #e8ecf2;
+    --fg-2: #b8c5d6;
+    --fg-3: #90a0ba;
+    --fg-4: #6b7c9e;
+    
+    --accent: #64748b;
+    --accent-d: #475569;
+    --accent-f: rgba(100,116,139,.15);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(100,116,139,0.05);
+    --grid-2: rgba(100,116,139,0.08);
+    
+    --shadow: 0 1px 0 rgba(100,116,139,.03) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  /* Theme: Amber - Warm gold */
+  [data-theme="amber"] {
+    --bg: #1a1508;
+    --bg-1: #231d0f;
+    --surface: #2d2616;
+    --surface-2: #3a3120;
+    --border: #4a3d28;
+    --border-2: #5d4d35;
+    
+    --fg: #fffaeb;
+    --fg-2: #f5e5b8;
+    --fg-3: #e0cf8f;
+    --fg-4: #c9b96b;
+    
+    --accent: #fbbf24;
+    --accent-d: #f59e0b;
+    --accent-f: rgba(251,191,36,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fb923c;
+    
+    --grid: rgba(251,191,36,0.04);
+    --grid-2: rgba(251,191,36,0.07);
+    
+    --shadow: 0 1px 0 rgba(251,191,36,.02) inset, 0 8px 24px rgba(0,0,0,.5);
+  }
+  
+  /* Theme: Rose - Soft pink */
+  [data-theme="rose"] {
+    --bg: #1a0d14;
+    --bg-1: #23141c;
+    --surface: #2d1a26;
+    --surface-2: #3a2332;
+    --border: #4a2d3f;
+    --border-2: #5d3a50;
+    
+    --fg: #fff0f6;
+    --fg-2: #f5c9dd;
+    --fg-3: #dfa3c0;
+    --fg-4: #c97ea3;
+    
+    --accent: #f472b6;
+    --accent-d: #ec4899;
+    --accent-f: rgba(244,114,182,.12);
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+    
+    --grid: rgba(244,114,182,0.04);
+    --grid-2: rgba(244,114,182,0.07);
+    
+    --shadow: 0 1px 0 rgba(244,114,182,.02) inset, 0 8px 24px rgba(0,0,0,.45);
+  }
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    padding: var(--s-32);
+    line-height: 1.5;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--s-32);
+    padding-bottom: var(--s-24);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .wordmark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  
+  .theme-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-8) var(--s-16);
+    color: var(--fg-2);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .theme-toggle:hover {
+    background: var(--surface-2);
+    border-color: var(--border-2);
+    color: var(--fg);
+  }
+  
+  .theme-toggle:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: var(--s-8);
+    color: var(--fg);
+  }
+  
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: var(--s-32);
+    margin-bottom: var(--s-16);
+    color: var(--fg);
+  }
+  
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: var(--s-24);
+    margin-bottom: var(--s-12);
+    color: var(--fg-2);
+  }
+  
+  .section {
+    margin-bottom: var(--s-32);
+  }
+  
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--s-12);
+    margin-bottom: var(--s-32);
+  }
+  
+  .token-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-8);
+  }
+  
+  .token-swatch {
+    height: 60px;
+    border-radius: var(--r-badge);
+    border: 1px solid var(--border);
+  }
+  
+  .token-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .token-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+  
+  .type-specimen {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+    margin-bottom: var(--s-16);
+  }
+  
+  .t-display {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: var(--s-8);
+  }
+  
+  .t-h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: var(--s-8);
+  }
+  
+  .t-h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: var(--s-8);
+  }
+  
+  .t-body {
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: var(--s-8);
+    color: var(--fg-2);
+  }
+  
+  .t-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+  }
+  
+  .t-mono-lg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: var(--s-8);
+  }
+  
+  .t-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: var(--s-8);
+  }
+  
+  .t-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--s-24);
+  }
+  
+  .component-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-24);
+  }
+  
+  .component-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: var(--s-16);
+    color: var(--fg);
+  }
+  
+  .component-states {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-12);
+  }
+  
+  .state-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-4);
+  }
+  
+  .swift-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: var(--s-12);
+    padding: var(--s-8);
+    background: var(--accent-f);
+    border-radius: var(--r-badge);
+  }
+  
+  /* Component demos */
+  
+  .btn {
+    font-size: 13px;
+    font-weight: 500;
+    padding: var(--s-8) var(--s-16);
+    border-radius: var(--r-button);
+    border: none;
+    cursor: pointer;
+    transition: all var(--t-fast) ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  
+  .btn-primary {
+    background: var(--accent);
+    color: #0f1117;
+  }
+  
+  .btn-primary:hover {
+    background: var(--accent-d);
+  }
+  
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--fg-2);
+  }
+  
+  .btn-ghost:hover {
+    background: var(--surface);
+    border-color: var(--border-2);
+    color: var(--fg);
+  }
+  
+  .btn-destructive {
+    background: var(--bad);
+    color: white;
+  }
+  
+  .btn-destructive:hover {
+    background: #dc2626;
+  }
+  
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: var(--s-16);
+    box-shadow: var(--shadow);
+  }
+  
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-8);
+  }
+  
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--fg);
+    margin-bottom: var(--s-12);
+  }
+  
+  .sparkline {
+    width: 100%;
+    height: 32px;
+    margin-bottom: var(--s-8);
+  }
+  
+  .delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-pill);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  .delta-good {
+    background: rgba(52,211,153,.12);
+    color: var(--good);
+  }
+  
+  .delta-bad {
+    background: rgba(248,113,113,.12);
+    color: var(--bad);
+  }
+  
+  .delta-neutral {
+    background: var(--surface-2);
+    color: var(--fg-3);
+  }
+  
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--s-4) var(--s-8);
+    border-radius: var(--r-badge);
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--fg-2);
+  }
+  
+  .chip-tier-light {
+    background: rgba(52,211,153,.12);
+    border-color: var(--good);
+    color: var(--good);
+  }
+  
+  .chip-tier-standard {
+    background: rgba(251,191,36,.12);
+    border-color: var(--warn);
+    color: var(--warn);
+  }
+  
+  .chip-tier-deep {
+    background: rgba(248,113,113,.12);
+    border-color: var(--bad);
+    color: var(--bad);
+  }
+  
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .pulse-idle { background: var(--accent); }
+  .pulse-running { background: var(--warn); animation: pulse 2s ease infinite; }
+  .pulse-error { background: var(--bad); }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+  }
+  
+  .stepper-node {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--fg-3);
+  }
+  
+  .stepper-node.active {
+    border-color: var(--accent);
+    background: var(--accent-f);
+    color: var(--accent);
+  }
+  
+  .stepper-node.complete {
+    border-color: var(--good);
+    background: rgba(52,211,153,.12);
+    color: var(--good);
+  }
+  
+  .stepper-node.fail {
+    border-color: var(--bad);
+    background: rgba(248,113,113,.12);
+    color: var(--bad);
+  }
+  
+  .stepper-line {
+    width: 24px;
+    height: 2px;
+    background: var(--border);
+  }
+  
+  .terminal-panel {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: var(--s-12);
+    color: #c9d1d9;
+    overflow: auto;
+    max-height: 200px;
+  }
+  
+  .terminal-line {
+    display: flex;
+    gap: var(--s-8);
+    margin-bottom: var(--s-4);
+  }
+  
+  .terminal-time {
+    color: var(--fg-3);
+  }
+  
+  .terminal-type-info { color: var(--fg-2); }
+  .terminal-type-ok { color: var(--good); }
+  .terminal-type-warn { color: var(--warn); }
+  .terminal-type-err { color: var(--bad); }
+  .terminal-type-cmd { color: var(--accent); }
+  
+  .search-field {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-button);
+    padding: var(--s-8) var(--s-12);
+    font-size: 13px;
+    color: var(--fg);
+    width: 100%;
+    transition: all var(--t-fast) ease;
+  }
+  
+  .search-field:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+  
+  .search-field::placeholder {
+    color: var(--fg-3);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="wordmark">BigPowers</div>
+  <select class="theme-toggle" id="themeSelect" onchange="changeTheme(this.value)">
+    <option value="auto">Auto</option>
+    <option value="light">Light</option>
+    <option value="dark" selected>Dark (Teal)</option>
+    <option value="mono">Monochrome</option>
+    <option value="ocean">Ocean</option>
+    <option value="forest">Forest</option>
+    <option value="ember">Ember</option>
+    <option value="violet">Violet</option>
+    <option value="midnight">Midnight</option>
+    <option value="crimson">Crimson</option>
+    <option value="slate">Slate</option>
+    <option value="amber">Amber</option>
+    <option value="rose">Rose</option>
+  </select>
+</div>
+
+<h1>BigPowers-Benchmark Design System</h1>
+<p class="t-body">Native macOS design language for the bigpowers methodology benchmark cockpit. Swift/SwiftUI target, macOS 14+ (Sonoma), Apple Silicon-first.</p>
+
+<div class="section">
+  <h2>Design Tokens</h2>
+  
+  <h3>Surface Colors</h3>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--bg);"></div>
+      <div class="token-name">--bg</div>
+      <div class="token-value">#0f1117 / #ffffff</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--bg-1);"></div>
+      <div class="token-name">--bg-1</div>
+      <div class="token-value">#141823 / #f8f9fa</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--surface);"></div>
+      <div class="token-name">--surface</div>
+      <div class="token-value">#161922 / #ffffff</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--surface-2);"></div>
+      <div class="token-name">--surface-2</div>
+      <div class="token-value">#1c2030 / #f1f3f5</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--border);"></div>
+      <div class="token-name">--border</div>
+      <div class="token-value">#232838 / #e1e4e8</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--border-2);"></div>
+      <div class="token-name">--border-2</div>
+      <div class="token-value">#2d3346 / #d1d5db</div>
+    </div>
+  </div>
+  
+  <h3>Foreground Colors</h3>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--fg);"></div>
+      <div class="token-name">--fg</div>
+      <div class="token-value">#e6e8ee / #1a1d23</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--fg-2);"></div>
+      <div class="token-name">--fg-2</div>
+      <div class="token-value">#b4bac9 / #4a5160</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--fg-3);"></div>
+      <div class="token-name">--fg-3</div>
+      <div class="token-value">#8b92a5 / #6b7280</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--fg-4);"></div>
+      <div class="token-name">--fg-4</div>
+      <div class="token-value">#5a6275 / #9ca3af</div>
+    </div>
+  </div>
+  
+  <h3>Signal Colors</h3>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--accent);"></div>
+      <div class="token-name">--accent</div>
+      <div class="token-value">#2dd4bf / #14b8a6</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--accent-d);"></div>
+      <div class="token-name">--accent-d</div>
+      <div class="token-value">#14b8a6 / #0d9488</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--good);"></div>
+      <div class="token-name">--good</div>
+      <div class="token-value">#34d399 / #10b981</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--bad);"></div>
+      <div class="token-name">--bad</div>
+      <div class="token-value">#f87171 / #ef4444</div>
+    </div>
+    <div class="token-card">
+      <div class="token-swatch" style="background: var(--warn);"></div>
+      <div class="token-name">--warn</div>
+      <div class="token-value">#fbbf24 / #f59e0b</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Typography</h2>
+  
+  <div class="type-specimen">
+    <div class="t-display">Display — Inter 28/600</div>
+    <div class="t-h1">Heading 1 — Inter 18/600</div>
+    <div class="t-h2">Heading 2 — Inter 13/600 uppercase</div>
+    <div class="t-body">Body — Inter 13/400 · All text content uses this size for readability at native macOS scale</div>
+    <div class="t-label">Label — Inter 11/600 uppercase</div>
+  </div>
+  
+  <div class="type-specimen">
+    <div class="t-mono-lg">1.25 — JetBrains Mono 22/500</div>
+    <div class="t-mono">0.87 — JetBrains Mono 13/500</div>
+    <div class="t-meta">14:32:03 — JetBrains Mono 11</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Spacing & Layout</h2>
+  <p class="t-body" style="margin-bottom: 16px;">4px · 8px · 12px · 16px · 24px · 32px scale</p>
+  <p class="t-body" style="margin-bottom: 16px;"><strong>Radius:</strong> 4px (badge) · 6px (button) · 8px (card) · 9999px (pill)</p>
+  <p class="t-body"><strong>Motion:</strong> 120ms (fast) · 200ms (base) · 320ms (slow) — honors Reduce Motion</p>
+</div>
+
+<div class="section">
+  <h2>Components</h2>
+  
+  <div class="component-grid">
+    
+    <div class="component-card">
+      <div class="component-title">Primary Button</div>
+      <div class="component-states">
+        <div>
+          <div class="state-label">Default</div>
+          <button class="btn btn-primary">Run Benchmark</button>
+        </div>
+        <div>
+          <div class="state-label">Hover</div>
+          <button class="btn btn-primary" style="background: var(--accent-d);">Run Benchmark</button>
+        </div>
+        <div>
+          <div class="state-label">Disabled</div>
+          <button class="btn btn-primary" disabled>Run Benchmark</button>
+        </div>
+      </div>
+      <div class="swift-note">Button(.buttonStyle(.borderedProminent), tint: .accent)</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Ghost Button</div>
+      <div class="component-states">
+        <div>
+          <div class="state-label">Default</div>
+          <button class="btn btn-ghost">Test Connection</button>
+        </div>
+        <div>
+          <div class="state-label">Hover</div>
+          <button class="btn btn-ghost" style="background: var(--surface); border-color: var(--border-2);">Test Connection</button>
+        </div>
+      </div>
+      <div class="swift-note">Button(.buttonStyle(.bordered))</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Destructive Button</div>
+      <div class="component-states">
+        <div>
+          <div class="state-label">Default</div>
+          <button class="btn btn-destructive">Stop Run</button>
+        </div>
+      </div>
+      <div class="swift-note">Button(.buttonStyle(.borderedProminent), role: .destructive)</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Metric Card</div>
+      <div class="metric-card">
+        <div class="metric-label">Overall</div>
+        <div class="metric-value">1.25</div>
+        <svg class="sparkline" viewBox="0 0 100 32">
+          <polyline points="0,28 14,20 28,16 42,22 56,12 70,18 84,8 100,6" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        </svg>
+        <span class="delta-badge delta-good">↑ +0.18</span>
+      </div>
+      <div class="swift-note">GroupBox + VStack + Text(.font(.system(.largeTitle, design: .monospaced)))</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Delta Badges</div>
+      <div class="component-states">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="delta-badge delta-good">↑ +0.18</span>
+          <span class="delta-badge delta-bad">↓ -0.12</span>
+          <span class="delta-badge delta-neutral">→ 0.00</span>
+        </div>
+      </div>
+      <div class="swift-note">HStack + Image(systemName: "arrow.up") + Text</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Tier Chips</div>
+      <div class="component-states">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="chip chip-tier-light">Light</span>
+          <span class="chip chip-tier-standard">Standard</span>
+          <span class="chip chip-tier-deep">Deep</span>
+        </div>
+      </div>
+      <div class="swift-note">Text + .padding + .background(RoundedRectangle) + foregroundStyle</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Status Pulse Dot</div>
+      <div class="component-states">
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <span class="pulse-dot pulse-idle"></span>
+          <span style="font-size: 11px; color: var(--fg-3);">Idle</span>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <span class="pulse-dot pulse-running"></span>
+          <span style="font-size: 11px; color: var(--fg-3);">Running</span>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <span class="pulse-dot pulse-error"></span>
+          <span style="font-size: 11px; color: var(--fg-3);">Error</span>
+        </div>
+      </div>
+      <div class="swift-note">Circle().fill(Color.accent).frame(8,8) + animation</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Task Stepper</div>
+      <div class="stepper">
+        <div class="stepper-node complete">✓</div>
+        <div class="stepper-line"></div>
+        <div class="stepper-node complete">✓</div>
+        <div class="stepper-line"></div>
+        <div class="stepper-node active">●</div>
+        <div class="stepper-line"></div>
+        <div class="stepper-node">○</div>
+        <div class="stepper-line"></div>
+        <div class="stepper-node">○</div>
+      </div>
+      <div class="swift-note">HStack + ForEach + Circle + Rectangle</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Search Field</div>
+      <input type="text" class="search-field" placeholder="Search models...">
+      <div class="swift-note">TextField + .textFieldStyle(.roundedBorder) + .searchable</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Terminal Panel</div>
+      <div class="terminal-panel">
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:03</span>
+          <span class="terminal-type-info">[agent] reading CLAUDE.md</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:04</span>
+          <span class="terminal-type-cmd">[skill] invoke investigate-bug</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:08</span>
+          <span class="terminal-type-ok">✓ 14 tests passed</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-time">14:32:11</span>
+          <span class="terminal-type-err">✗ artifact check failed</span>
+        </div>
+      </div>
+      <div class="swift-note">NSViewRepresentable(NSTextView) + ANSI parser + AsyncStream</div>
+    </div>
+    
+    <div class="component-card">
+      <div class="component-title">Capability Chips</div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="chip">Tools</span>
+        <span class="chip">Vision</span>
+        <span class="chip">128K ctx</span>
+        <span class="chip">Streaming</span>
+      </div>
+      <div class="swift-note">Text + .padding + .background + .clipShape(Capsule)</div>
+    </div>
+    
+  </div>
+</div>
+
+<div class="section">
+  <h2>SF Symbols Reference</h2>
+  <p class="t-body" style="margin-bottom: 12px;">Native iconography via SF Symbols 5+:</p>
+  <ul style="list-style: none; font-size: 13px; color: var(--fg-2); line-height: 2;">
+    <li><strong>gauge.with.dots.needle.bottom.50percent</strong> — Dashboard</li>
+    <li><strong>play.circle.fill</strong> — Mission Control (Run)</li>
+    <li><strong>square.stack.3d.up</strong> — Run Explorer</li>
+    <li><strong>lightbulb.fill</strong> — Skill Insights</li>
+    <li><strong>network</strong> — Model Health</li>
+    <li><strong>checklist</strong> — Task Library</li>
+    <li><strong>gearshape</strong> — Settings</li>
+    <li><strong>chart.xyaxis.line</strong> — Analytics</li>
+    <li><strong>terminal.fill</strong> — Terminal panel</li>
+    <li><strong>arrow.triangle.2.circlepath</strong> — Retry/refresh</li>
+    <li><strong>stop.circle.fill</strong> — Stop run</li>
+    <li><strong>checkmark.circle.fill</strong> — Success state</li>
+    <li><strong>xmark.circle.fill</strong> — Error state</li>
+    <li><strong>clock.arrow.circlepath</strong> — In progress</li>
+    <li><strong>magnifyingglass</strong> — Search</li>
+    <li><strong>slider.horizontal.3</strong> — Filter</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>SwiftUI Architecture Notes</h2>
+  <div class="type-specimen">
+    <p class="t-body" style="margin-bottom: 12px;"><strong>App Shell:</strong> App protocol + Scene + WindowGroup per top-level destination. MenuBarExtra for menu bar item with live run progress.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Navigation:</strong> NavigationSplitView (sidebar · content · detail). Collapsible sidebar with @SceneStorage for persistent selection. SF Symbols on every sidebar Label.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Toolbar:</strong> .toolbar(content:) + ToolbarItemGroup(placement: .principal / .primaryAction / .navigation). Status pulse in .principal, primary actions in .primaryAction.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Data Tables:</strong> Table + TableColumn for sortable, virtualized rows (Tasks Table, Run Explorer, Model Health). TableRow selection for compare-mode multi-select.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Charts:</strong> Swift Charts — Chart + LineMark (score evolution), AreaMark (fill under), RuleMark (gridlines), PointMark (data points), BarMark (heatmap → RectangleMark). Skill radar via Canvas + Path + polar coordinate helper.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Forms:</strong> Form + Section + LabeledContent + Toggle + Picker(.menu) + SecureField. Settings master-detail via .inspector placement.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Sheets & Inspectors:</strong> .sheet(isPresented:) for modals; .inspector(isPresented:) for slide-in detail panels (Registry model inspector).</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Terminal Panel:</strong> NSViewRepresentable wrapping NSTextView + NSAttributedString from ANSI parser. Blinking caret via Timer + accessibilityReduceMotion. Autoscroll via scrollRangeToVisible.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Run Streaming:</strong> Process() + Pipe + AsyncStream&lt;LogLine&gt; consumed by @Observable view model. bench:progress / bench:result map to AsyncStreams on BenchmarkRunner actor.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Persistence:</strong> File-backed runs/data/ for GitOps. FileManager + JSONEncoder for BenchRow. DispatchSource.makeFileSystemObjectSource watches directory for external git pulls.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Git Operations:</strong> Process() shell-out to system git for commit/push. Avoid bundling libgit2 in v1.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Keychain:</strong> Security framework — SecItemAdd / SecItemCopyMatching for API keys keyed by provider ID.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Notifications:</strong> UserNotifications (UNUserNotificationCenter) for run-complete / failed / regression. UNNotificationAction for actionable buttons.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Command Palette:</strong> Custom Window(_:id:) + .windowStyle(.hiddenTitleBar) + .searchable. Global hotkey via NSEvent.addGlobalMonitorForEvents or HotKey SPM.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Multi-Window:</strong> Each WindowGroup gets @SceneStorage view model; shared data via app-level @Observable store + .environment.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Sleep Prevention:</strong> IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleSystemSleep) while run active; release on completion.</p>
+    
+    <p class="t-body" style="margin-bottom: 12px;"><strong>Light/Dark:</strong> Color extensions with init(light:dark:). Default .colorScheme is .dark (canonical); .preferredColorScheme follows user pick.</p>
+    
+    <p class="t-body"><strong>Accessibility:</strong> @Environment(\.accessibilityReduceMotion) gates animations. VoiceOver labels on charts with data-table fallback. Keyboard nav + visible focus rings.</p>
+  </div>
+</div>
+
+<script>
+  function changeTheme(theme) {
+    const root = document.documentElement;
+    if (theme === 'auto') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('theme', theme);
+  }
+  
+  // Apply saved theme on load
+  (function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      changeTheme(savedTheme);
+      const select = document.getElementById('themeSelect');
+      if (select) select.value = savedTheme;
+    }
+  })();
+</script>
+
+</body>
+</html>
