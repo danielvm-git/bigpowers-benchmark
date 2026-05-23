@@ -58,10 +58,10 @@ public struct ContentView: View {
             OnboardingSheet()
         }
         .onAppear {
-            showOnboarding = !store.isRunsDirectoryGitRepo
+            store.checkGitRepoStatus()
         }
         .onChange(of: store.isRunsDirectoryGitRepo) { _, isRepo in
-            if isRepo { showOnboarding = false }
+            showOnboarding = !isRepo
         }
     }
 

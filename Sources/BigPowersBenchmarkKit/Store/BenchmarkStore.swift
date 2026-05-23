@@ -2,8 +2,8 @@ import Foundation
 import Observation
 
 @Observable
-// @unchecked: watchSource is only mutated from startWatching/stopWatching (main-thread APIs);
-// event and cancel handlers access no instance state — data races on watchSource are impossible.
+// @unchecked: watchSource and pendingWatchTask are mutated only from @MainActor context
+// (startWatching, stopWatching, and the inner @MainActor tasks in makeWatchSource).
 public final class BenchmarkStore: @unchecked Sendable {
     public static let runsDidChangeNotification = Notification.Name("BenchmarkStore.runsDidChange")
 
@@ -14,12 +14,12 @@ public final class BenchmarkStore: @unchecked Sendable {
     public var autoCommit = false
     public var autoPush = false
 
+    /// Optimistic default: assume repo exists until checkGitRepoStatus() confirms otherwise.
+    public private(set) var isRunsDirectoryGitRepo = true
+
     private let gitService: GitServiceProtocol
     private var watchSource: DispatchSourceFileSystemObject?
-
-    public var isRunsDirectoryGitRepo: Bool {
-        gitService.isGitRepo(at: runsURL)
-    }
+    private var pendingWatchTask: Task<Void, Never>?
 
     public init(
         runsURL: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("runs/data"),
@@ -27,6 +27,13 @@ public final class BenchmarkStore: @unchecked Sendable {
     ) {
         self.runsURL = runsURL
         self.gitService = gitService
+    }
+
+    public func checkGitRepoStatus() {
+        Task.detached { [gitService, runsURL, weak self] in
+            let isRepo = gitService.isGitRepo(at: runsURL)
+            await MainActor.run { self?.isRunsDirectoryGitRepo = isRepo }
+        }
     }
 
     public func saveBenchRow(_ row: BenchRow) throws {
@@ -71,6 +78,7 @@ public final class BenchmarkStore: @unchecked Sendable {
         loadErrors = errors
     }
 
+    @MainActor
     public func startWatching() {
         stopWatching()
         let fileDescriptor = open(runsURL.path, O_EVTONLY)
@@ -87,14 +95,19 @@ public final class BenchmarkStore: @unchecked Sendable {
         )
         source.setEventHandler { [weak self] in
             guard let self else { return }
+            // Hop to main actor so pendingWatchTask mutations are actor-isolated.
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                try? await Task.sleep(for: .milliseconds(200))
-                try? loadAllRuns()
-                NotificationCenter.default.post(
-                    name: BenchmarkStore.runsDidChangeNotification,
-                    object: self
-                )
+                pendingWatchTask?.cancel()
+                pendingWatchTask = Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    try? await Task.sleep(for: .milliseconds(200))
+                    try? loadAllRuns()
+                    NotificationCenter.default.post(
+                        name: BenchmarkStore.runsDidChangeNotification,
+                        object: self
+                    )
+                }
             }
         }
         source.setCancelHandler {
@@ -103,7 +116,10 @@ public final class BenchmarkStore: @unchecked Sendable {
         return source
     }
 
+    @MainActor
     private func stopWatching() {
+        pendingWatchTask?.cancel()
+        pendingWatchTask = nil
         watchSource?.cancel()
         watchSource = nil
     }

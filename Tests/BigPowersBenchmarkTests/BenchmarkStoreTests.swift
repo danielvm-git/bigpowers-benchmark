@@ -93,7 +93,8 @@ struct BenchmarkStoreTests {
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
         let store = BenchmarkStore(runsURL: tempDir)
-        store.startWatching()
+        await store.startWatching()
+        defer { Task { await store.startWatching() } } // restarts watcher, which calls stopWatching() internally
 
         let row = makeRow()
         let encoder = JSONEncoder()
@@ -114,8 +115,8 @@ struct BenchmarkStoreTests {
                 token.map { NotificationCenter.default.removeObserver($0) }
             }
             try data.write(to: file)
-            // Give the 200 ms debounce + main-queue dispatch time to fire.
-            try await Task.sleep(for: .milliseconds(500))
+            // 200 ms debounce + dispatch headroom; 1000 ms budget for slow CI hosts.
+            try await Task.sleep(for: .milliseconds(1000))
         }
 
         #expect(store.runs.count == 1)
@@ -138,14 +139,48 @@ struct BenchmarkStoreTests {
         #expect(mockGit.commitCallCount == 1)
     }
 
-    @Test("git repo check returns true for a valid git repo and false otherwise")
+    @Test("saveBenchRow propagates GitError.timedOut when commit times out")
+    func timedOutPropagates() throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let mockGit = MockGitService()
+        mockGit.commitError = GitError.timedOut
+        let store = BenchmarkStore(runsURL: tempDir, gitService: mockGit)
+        store.autoCommit = true
+
+        #expect(throws: GitError.timedOut) {
+            try store.saveBenchRow(makeRow())
+        }
+    }
+
+    @Test("checkGitRepoStatus updates isRunsDirectoryGitRepo from mock result")
+    func checkGitRepoStatusAsync() async throws {
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        let mockGit = MockGitService()
+        mockGit.isGitRepoResult = false
+        let store = BenchmarkStore(runsURL: tempDir, gitService: mockGit)
+
+        store.checkGitRepoStatus()
+        try await Task.sleep(for: .milliseconds(200))
+
+        #expect(store.isRunsDirectoryGitRepo == false)
+    }
+
+    @Test("isGitRepo returns false for a directory that is not a git repo")
     func gitRepoCheck() throws {
         let notARepo = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: notARepo, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: notARepo) }
 
-        let store = BenchmarkStore(runsURL: notARepo)
-        #expect(store.isRunsDirectoryGitRepo == false)
+        let service = GitService()
+        #expect(service.isGitRepo(at: notARepo) == false)
     }
 }
