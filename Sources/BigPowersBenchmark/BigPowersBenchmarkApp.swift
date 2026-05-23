@@ -2,15 +2,19 @@ import AppKit
 import BigPowersBenchmarkKit
 import SwiftUI
 
-@main
-struct BigPowersBenchmarkApp: App {
-    private let benchmarkStore = BenchmarkStore()
-    private let themeManager = ThemeManager()
-
-    init() {
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
     }
+}
+
+@main
+struct BigPowersBenchmarkApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    private let benchmarkStore = BenchmarkStore()
+    private let themeManager = ThemeManager()
 
     var body: some Scene {
         WindowGroup {
