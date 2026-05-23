@@ -15,6 +15,13 @@ opt_in_rules:
   - force_unwrapping
   - sorted_imports
 
+
+identifier_name:
+  excluded:
+    - id
+    - bg
+    - fg
+
 line_length:
   warning: 120
   error: 160

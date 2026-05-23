@@ -6,5 +6,5 @@
 --wrapparameters before-first
 --wrapcollections before-first
 --semicolons never
---importgrouping testable-bottom
+--importgrouping alphabetized
 --exclude .build,project
