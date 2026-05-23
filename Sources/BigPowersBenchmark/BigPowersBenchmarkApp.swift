@@ -1,10 +1,35 @@
+import BigPowersBenchmarkKit
 import SwiftUI
 
 @main
 struct BigPowersBenchmarkApp: App {
+    @State private var benchmarkStore = BenchmarkStore()
+    @State private var themeManager = ThemeManager()
+
     var body: some Scene {
         WindowGroup {
-            Text("Loading")
+            ContentView()
+                .environment(benchmarkStore)
+                .environment(themeManager)
         }
+
+        WindowGroup(id: "mission-control") {
+            MissionControlView()
+                .environment(benchmarkStore)
+                .environment(themeManager)
+        }
+
+        WindowGroup(id: "run-explorer") {
+            RunExplorerView()
+                .environment(benchmarkStore)
+                .environment(themeManager)
+        }
+
+        MenuBarExtra("BigPowers", systemImage: "gauge.with.dots.needle.bottom.50percent") {
+            MenuBarContent()
+                .environment(benchmarkStore)
+                .environment(themeManager)
+        }
+        .menuBarExtraStyle(.window)
     }
 }
