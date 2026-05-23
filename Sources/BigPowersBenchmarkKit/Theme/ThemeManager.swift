@@ -1,34 +1,29 @@
 import AppKit
-import Observation
+import SwiftUI
 
 @Observable
-@MainActor
 public final class ThemeManager {
     private static let defaultsKey = "bigpowers.theme"
+    private let defaults: UserDefaults
 
     public var current: Theme {
         didSet { defaults.set(current.rawValue, forKey: Self.defaultsKey) }
     }
 
-    private let defaults: UserDefaults
-
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         if let raw = defaults.string(forKey: Self.defaultsKey),
-           let saved = Theme(rawValue: raw) {
-            current = saved
+           let theme = Theme(rawValue: raw) {
+            current = theme
         } else {
             current = .dark
         }
     }
 
+    @MainActor
     public var resolvedTheme: Theme {
         guard current == .auto else { return current }
-        let isDark = NSApp?.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let isDark = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
         return isDark ? .dark : .light
-    }
-
-    public var tokens: ThemeTokens {
-        resolvedTheme.tokens
     }
 }

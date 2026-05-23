@@ -1,39 +1,35 @@
 import AppKit
 @testable import BigPowersBenchmarkKit
-import Foundation
 import Testing
 
-@Suite("ThemeManager")
 @MainActor
+@Suite("ThemeManager")
 struct ThemeManagerTests {
     @Test("default theme is .dark")
-    func defaultTheme() throws {
-        let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))
-        let manager = ThemeManager(defaults: defaults)
+    func defaultTheme() {
+        let manager = ThemeManager()
         #expect(manager.current == .dark)
     }
 
     @Test("persists and restores current theme via UserDefaults")
-    func persistence() throws {
-        let suiteName = UUID().uuidString
-        defer { UserDefaults.standard.removePersistentDomain(forName: suiteName) }
+    func persistence() {
+        let manager = ThemeManager()
+        manager.current = .light
 
-        let defaults1 = try #require(UserDefaults(suiteName: suiteName))
-        let manager1 = ThemeManager(defaults: defaults1)
-        manager1.current = .ocean
+        let newManager = ThemeManager()
+        #expect(newManager.current == .light)
 
-        let defaults2 = try #require(UserDefaults(suiteName: suiteName))
-        let manager2 = ThemeManager(defaults: defaults2)
-        #expect(manager2.current == .ocean)
+        // Cleanup
+        UserDefaults.standard.removeObject(forKey: "bigpowers.theme")
     }
 
     @Test(".auto resolves to .dark or .light, never .auto itself")
-    func autoResolution() throws {
-        let defaults = try #require(UserDefaults(suiteName: UUID().uuidString))
-        let manager = ThemeManager(defaults: defaults)
+    func autoResolution() {
+        let manager = ThemeManager()
         manager.current = .auto
+
         let resolved = manager.resolvedTheme
-        #expect(resolved == .dark || resolved == .light)
         #expect(resolved != .auto)
+        #expect(resolved == .dark || resolved == .light)
     }
 }
