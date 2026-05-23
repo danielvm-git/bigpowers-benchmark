@@ -15,6 +15,9 @@ opt_in_rules:
   - force_unwrapping
   - sorted_imports
 
+sorted_imports:
+  grouping: attributes
+
 line_length:
   warning: 120
   error: 160
