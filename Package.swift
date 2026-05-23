@@ -12,7 +12,8 @@ let package = Package(
         .executableTarget(
             name: "BigPowersBenchmark",
             dependencies: ["BigPowersBenchmarkKit"],
-            path: "Sources/BigPowersBenchmark"
+            path: "Sources/BigPowersBenchmark",
+            exclude: ["BigPowersBenchmark.entitlements"]
         ),
         .testTarget(
             name: "BigPowersBenchmarkTests",

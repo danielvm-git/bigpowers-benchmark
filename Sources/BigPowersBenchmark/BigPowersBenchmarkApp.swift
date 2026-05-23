@@ -3,8 +3,8 @@ import SwiftUI
 
 @main
 struct BigPowersBenchmarkApp: App {
-    @State private var benchmarkStore = BenchmarkStore()
-    @State private var themeManager = ThemeManager()
+    private let benchmarkStore = BenchmarkStore()
+    private let themeManager = ThemeManager()
 
     var body: some Scene {
         WindowGroup {
