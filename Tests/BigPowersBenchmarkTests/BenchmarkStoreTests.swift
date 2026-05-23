@@ -183,4 +183,21 @@ struct BenchmarkStoreTests {
         let service = GitService()
         #expect(service.isGitRepo(at: notARepo) == false)
     }
+
+    @Test("isGitRepo is immune to GIT_DIR inherited from a git hook environment")
+    func gitRepoDirEnvIsolation() throws {
+        let notARepo = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: notARepo, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: notARepo) }
+
+        // Simulate what git injects into the environment before running pre-push hooks.
+        // Process.environment is not set here, so any unguarded subprocess would inherit
+        // the C env and see GIT_DIR — exactly the regression this guards against.
+        setenv("GIT_DIR", notARepo.path, 1)
+        defer { unsetenv("GIT_DIR") }
+
+        let service = GitService()
+        #expect(service.isGitRepo(at: notARepo) == false)
+    }
 }

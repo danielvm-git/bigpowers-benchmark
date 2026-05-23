@@ -43,6 +43,13 @@ public final class GitService: GitServiceProtocol, Sendable {
         }
     }
 
+    /// Git sets GIT_DIR (and friends) when invoking hooks; strip them so subprocesses
+    /// are not tricked into using the hook repo as the working repo.
+    private static let gitEnvOverrideKeys = [
+        "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
+        "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR"
+    ]
+
     private func makeProcess(args: [String], in directory: URL) -> Process {
         let process = Process()
         process.executableURL = Self.gitExecutable
@@ -50,6 +57,11 @@ public final class GitService: GitServiceProtocol, Sendable {
         process.currentDirectoryURL = directory
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice
+        var env = ProcessInfo.processInfo.environment
+        for key in Self.gitEnvOverrideKeys {
+            env.removeValue(forKey: key)
+        }
+        process.environment = env
         return process
     }
 
