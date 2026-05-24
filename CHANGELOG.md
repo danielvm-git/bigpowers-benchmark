@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.1.0...v1.1.1) (2026-05-24)
+
+
+### Bug Fixes
+
+* sandbox path resolution tries both benchmark and benchmark-old directories ([7a5f7a2](https://github.com/danielvm-git/bigpowers-benchmark/commit/7a5f7a2433ad6d93f10769a5cf652f895c66d747))
+
 # [1.1.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.0.0...v1.1.0) (2026-05-24)
 
 
