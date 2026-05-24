@@ -37,8 +37,17 @@ public final class GitService: GitServiceProtocol, Sendable {
         try process.run()
         scheduleTermination(of: process, after: processTimeout)
         process.waitUntilExit()
-        if process.terminationReason == .uncaughtSignal { throw GitError.timedOut }
+        if process.terminationReason == .uncaughtSignal {
+            AppLogger.git.error("Git command timed out", metadata: [
+                "args": .string(args.joined(separator: " ")),
+            ])
+            throw GitError.timedOut
+        }
         guard process.terminationStatus == 0 else {
+            AppLogger.git.error("Git command failed", metadata: [
+                "args": .string(args.joined(separator: " ")),
+                "exitCode": .stringConvertible(process.terminationStatus),
+            ])
             throw GitError.nonZeroExit(Int(process.terminationStatus))
         }
     }
@@ -47,7 +56,7 @@ public final class GitService: GitServiceProtocol, Sendable {
     /// are not tricked into using the hook repo as the working repo.
     private static let gitEnvOverrideKeys = [
         "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE",
-        "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR"
+        "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR",
     ]
 
     private func makeProcess(args: [String], in directory: URL) -> Process {

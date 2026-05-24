@@ -160,6 +160,8 @@ open BigPowersBenchmark.xcodeproj
 - [ ] Create at least one Daytona sandbox with the bigpowers skillset pre-installed
 - [ ] The sandbox label should reflect the `bigpowersRef` (e.g. `bigpowers-v1.2.0`)
 
+**Debugging:** Logs go to `~/Library/Logs/BigPowersBenchmark/debug.ndjson`. Use **Help → Copy Debug Log** (⇧⌘L) to paste NDJSON into Cursor, or `tail -f` that file while reproducing an issue. Run `bash scripts/setup.sh` once to create log and runs directories.
+
 ---
 
 ## Data format

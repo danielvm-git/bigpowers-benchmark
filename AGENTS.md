@@ -9,10 +9,22 @@ Stack: Swift / SwiftUI / macOS 14+
 ## Commands
 | Action | Command |
 |--------|---------|
-| Run    | TBD     |
-| Test   | TBD     |
-| Build  | TBD     |
-| Lint   | TBD     |
+| Build  | `swift build` |
+| Test   | `swift test` |
+| Run    | `swift run BigPowersBenchmark` |
+| Setup  | `bash scripts/setup.sh` |
+| Lint   | `lefthook run pre-commit` |
+
+## Observability
+
+| What | Command |
+|------|---------|
+| Tail debug log | `tail -f ~/Library/Logs/BigPowersBenchmark/debug.ndjson` |
+| Copy for AI | App menu **Help → Copy Debug Log** (⇧⌘L) |
+| Reveal log file | App menu **Help → Reveal Log File** |
+| Recent runs | `ls -t ~/runs/data/*.json \| head -5` |
+| Check runner | `opencode --version` |
+| Check sandbox | `daytona workspace list` |
 
 ## Architecture
 HTML/CSS/JS prototypes in `project/` serve as pixel-perfect design references; the real app is a native SwiftUI macOS app built around a `NavigationSplitView` shell with `Table` for data grids, Swift Charts for score visualizations, a `Canvas+Path` skill radar, an `NSViewRepresentable(NSTextView)` ANSI terminal panel, and a `Process+Pipe+AsyncStream` benchmark runner that writes `BenchRow` JSON shards to `~/runs/data/`.

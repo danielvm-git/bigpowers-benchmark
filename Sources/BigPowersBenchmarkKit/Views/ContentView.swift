@@ -11,6 +11,7 @@ public struct ContentView: View {
     public init() {}
 
     public var body: some View {
+        let tokens = themeManager.resolvedTheme.tokens
         NavigationSplitView(columnVisibility: $columnVisibility) {
             List(Screen.allCases, id: \.self, selection: $selectedScreen) { screen in
                 Label(screen.title, systemImage: screen.systemImage)
@@ -20,10 +21,32 @@ public struct ContentView: View {
             .listStyle(.sidebar)
         } detail: {
             if let screen = selectedScreen {
-                Text(screen.title)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                switch screen {
+                case .dashboard:
+                    DashboardView()
+                case .missionControl:
+                    MissionControlView()
+                case .runExplorer:
+                    RunExplorerView()
+                case .skillInsights:
+                    SkillInsightsView()
+                case .modelHealth:
+                    ModelHealthView()
+                case .taskLibrary:
+                    TaskLibraryView()
+                case .settings:
+                    SettingsView()
+                case .analytics:
+                    AnalyticsView()
+                }
             } else {
-                ContentUnavailableView("Select a screen", systemImage: "sidebar.left")
+                ThemedEmptyState(
+                    icon: "sidebar.left",
+                    title: "Select a Screen",
+                    subtitle: "Choose a section from the sidebar to get started.",
+                    tokens: tokens
+                )
+                .background(tokens.bg)
             }
         }
         .toolbar {
@@ -54,6 +77,7 @@ public struct ContentView: View {
                 .accessibilityLabel("Settings")
             }
         }
+        .background(tokens.bg)
         .sheet(isPresented: $showOnboarding) {
             OnboardingSheet()
         }
