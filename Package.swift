@@ -4,9 +4,17 @@ import PackageDescription
 let package = Package(
     name: "BigPowersBenchmark",
     platforms: [.macOS(.v14)],
+    dependencies: [
+        .package(url: "https://github.com/migueldeicaza/SwiftTerm.git", from: "1.13.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0")
+    ],
     targets: [
         .target(
             name: "BigPowersBenchmarkKit",
+            dependencies: [
+                "SwiftTerm",
+                .product(name: "Logging", package: "swift-log")
+            ],
             path: "Sources/BigPowersBenchmarkKit"
         ),
         .executableTarget(

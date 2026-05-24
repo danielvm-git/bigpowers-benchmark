@@ -45,6 +45,12 @@ public final class BenchmarkStore: @unchecked Sendable {
         let data = try encoder.encode(row)
         try data.write(to: fileURL, options: .atomic)
 
+        AppLogger.store.info("Saved BenchRow", metadata: [
+            "runId": .string(row.id.uuidString),
+            "taskId": .string(row.taskId),
+            "path": .string(fileURL.path),
+        ])
+
         if autoCommit {
             try gitService.commit(message: "chore: add run \(row.id)", in: runsURL)
             if autoPush {
@@ -71,6 +77,10 @@ public final class BenchmarkStore: @unchecked Sendable {
                 loaded.append(row)
             } catch {
                 errors[url.standardizedFileURL] = error
+                AppLogger.store.warning("Failed to decode BenchRow shard", metadata: [
+                    "path": .string(url.path),
+                    "error": .string(LogSanitizer.sanitize(error.localizedDescription)),
+                ])
             }
         }
 

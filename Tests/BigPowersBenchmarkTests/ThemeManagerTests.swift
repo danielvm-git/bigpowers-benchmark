@@ -6,26 +6,27 @@ import Testing
 @Suite("ThemeManager")
 struct ThemeManagerTests {
     @Test("default theme is .dark")
-    func defaultTheme() {
-        let manager = ThemeManager()
+    func defaultTheme() throws {
+        let defaults = try #require(UserDefaults(suiteName: "ThemeManagerTests-\(UUID().uuidString)"))
+        let manager = ThemeManager(defaults: defaults)
         #expect(manager.current == .dark)
     }
 
     @Test("persists and restores current theme via UserDefaults")
-    func persistence() {
-        let manager = ThemeManager()
+    func persistence() throws {
+        let suiteName = "ThemeManagerTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        let manager = ThemeManager(defaults: defaults)
         manager.current = .light
 
-        let newManager = ThemeManager()
+        let newManager = ThemeManager(defaults: defaults)
         #expect(newManager.current == .light)
-
-        // Cleanup
-        UserDefaults.standard.removeObject(forKey: "bigpowers.theme")
     }
 
     @Test(".auto resolves to .dark or .light, never .auto itself")
-    func autoResolution() {
-        let manager = ThemeManager()
+    func autoResolution() throws {
+        let defaults = try #require(UserDefaults(suiteName: "ThemeManagerTests-\(UUID().uuidString)"))
+        let manager = ThemeManager(defaults: defaults)
         manager.current = .auto
 
         let resolved = manager.resolvedTheme

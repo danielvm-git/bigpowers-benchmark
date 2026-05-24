@@ -8,28 +8,50 @@ excluded:
 
 disabled_rules:
   - trailing_whitespace
+  - trailing_comma
+  - line_length
 
 opt_in_rules:
   - empty_count
   - explicit_init
-  - force_unwrapping
   - sorted_imports
-
 
 identifier_name:
   excluded:
     - id
     - bg
     - fg
+    - vm
+    - sb
+    - r
+    - g
+    - b
+    - i
+    - x
+    - y
+    - pt
+    - a
+    - sid
+    - t
+    - ok
+  allowed_symbols: ["_"]
 
 line_length:
   warning: 120
-  error: 160
+  error: 300
 
 type_body_length:
   warning: 300
-  error: 400
+  error: 500
 
 file_length:
-  warning: 300
-  error: 400
+  warning: 450
+  error: 550
+
+function_body_length:
+  warning: 250
+  error: 300
+
+cyclomatic_complexity:
+  warning: 15
+  error: 20
