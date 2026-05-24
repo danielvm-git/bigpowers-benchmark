@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.0.0...v1.1.0) (2026-05-24)
+
+
+### Features
+
+* **observability:** wire solo-dev ndjson logging and debug workflow ([0bbb093](https://github.com/danielvm-git/bigpowers-benchmark/commit/0bbb0937cc7d23a114eaa5e74bad795e6ce39f87))
+* story 0.1 / 0.2 / 1.1 — foundation, theme system, app shell ([69e8d77](https://github.com/danielvm-git/bigpowers-benchmark/commit/69e8d77536550b6401078ea76323efb28b0680d5))
+* **theme:** implement thememanager with persistence and auto-resolution ([123f1ab](https://github.com/danielvm-git/bigpowers-benchmark/commit/123f1ab544e74c3e6527af64756aebafd3e76d61))
+
 # 1.0.0 (2026-05-23)
 
 
