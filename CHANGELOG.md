@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.0...v1.3.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* **review:** address reviewer findings f1-f5 ([8372922](https://github.com/danielvm-git/bigpowers-benchmark/commit/83729227bbabe1fa4befa8bad2807968e111f99e))
+
 # [1.3.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.2.0...v1.3.0) (2026-05-25)
 
 
