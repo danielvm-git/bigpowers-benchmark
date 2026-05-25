@@ -63,8 +63,8 @@ struct NousPortalCredentialStoreTests {
         #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == "access-bearer-token")
     }
 
-    @Test("resolveAgentKey returns access_token even when expired (ping will show 401 error visibly)")
-    func bothExpiredReturnsAccessToken() throws {
+    @Test("resolveAgentKey returns nil when both tokens expired")
+    func bothExpiredReturnsNil() throws {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathComponent("auth.json")
@@ -77,7 +77,7 @@ struct NousPortalCredentialStoreTests {
             to: url
         )
 
-        #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == "stale-access-token")
+        #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == nil)
     }
 
     @Test("isConfigured returns true when any token is present")
@@ -98,5 +98,22 @@ struct NousPortalCredentialStoreTests {
             .appendingPathComponent("missing-auth.json")
         #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == nil)
         #expect(!NousPortalCredentialStore.isConfigured(from: url))
+    }
+
+    @Test("resolveAgentKey does not return expired access_token")
+    func expiredAccessTokenNotReturned() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathComponent("auth.json")
+        let expired = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-60))
+        try writeAuth(
+            agentKey: nil,
+            agentKeyExpiresAt: nil,
+            accessToken: "stale-access-token",
+            accessTokenExpiresAt: expired,
+            to: url
+        )
+
+        #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == nil)
     }
 }

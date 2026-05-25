@@ -39,15 +39,14 @@ public enum NousPortalCredentialStore {
             if !expired { return agentKey }
         }
 
-        // Fall back to access_token regardless of expiry — the inference API will
-        // return 401 if truly invalid; hermes refreshes on next `hermes login`.
+        // Fall back to access_token if not expired
         if let accessToken = nous.accessToken, !accessToken.isEmpty {
-            return accessToken
-        }
-
-        // Last resort: return expired agent_key so the ping can attempt and fail visibly
-        if let agentKey = nous.agentKey, !agentKey.isEmpty {
-            return agentKey
+            let expired: Bool = if let expiresAt = nous.expiresAt {
+                parseExpiry(expiresAt).map { $0 <= Date() } ?? false
+            } else {
+                false
+            }
+            if !expired { return accessToken }
         }
 
         return nil
