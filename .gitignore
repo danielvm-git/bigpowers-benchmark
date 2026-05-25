@@ -23,3 +23,8 @@ build/
 # Misc
 *.swp
 *.swo
+
+# Local secrets
+.env
+.env.*
+!.env.example

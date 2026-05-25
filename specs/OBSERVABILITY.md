@@ -52,6 +52,8 @@ All error strings pass through `LogSanitizer` before log or UI display.
 | `BenchmarkStore` | Save/load failures |
 | `GitService` | Non-zero exit; timeout |
 | Settings | Test Connection click + outcome |
+| `ModelRegistry` | Registry fetch start/cache hit/failure |
+| `ModelHealthViewModel` | Ping batch start/response/timeout/mismatch/complete |
 
 ## Solo-dev verify loop
 
@@ -64,7 +66,6 @@ tail -100 ~/Library/Logs/BigPowersBenchmark/debug.ndjson
 
 ## Out of scope
 
-- Model Health ping / `ModelRegistry` (Story 7.1)
 - Provider API key entry UI
 - Pulse / OpenTelemetry
 - `orchestrator.log` second file

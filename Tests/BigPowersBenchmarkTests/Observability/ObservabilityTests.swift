@@ -52,6 +52,26 @@ struct DebugLogExporterTests {
         #expect(exported.contains("{\"line\":5}"))
         #expect(!exported.contains("{\"line\":1}"))
     }
+
+    @Test("exports full log file")
+    func exportsFullLogFile() throws {
+        let tempSourceURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("source-\(UUID().uuidString).ndjson")
+        let tempDestinationURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("destination-\(UUID().uuidString).ndjson")
+        defer {
+            try? FileManager.default.removeItem(at: tempSourceURL)
+            try? FileManager.default.removeItem(at: tempDestinationURL)
+        }
+
+        let testContent = "{\"message\":\"test log 1\"}\n{\"message\":\"test log 2\"}\n"
+        try testContent.write(to: tempSourceURL, atomically: true, encoding: .utf8)
+
+        try DebugLogExporter.exportLogFile(from: tempSourceURL, to: tempDestinationURL)
+
+        let exportedContent = try String(contentsOf: tempDestinationURL, encoding: .utf8)
+        #expect(exportedContent == testContent)
+    }
 }
 
 @Suite("AppLogger")

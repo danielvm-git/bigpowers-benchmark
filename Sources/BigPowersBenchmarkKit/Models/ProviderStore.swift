@@ -52,6 +52,11 @@ public final class ProviderStore {
                 name: "Google Vertex/AI Studio",
                 baseURL: "https://generativelanguage.googleapis.com"
             ),
+            Provider(
+                id: "nousresearch-direct",
+                name: "Nous Portal",
+                baseURL: "https://inference-api.nousresearch.com/v1"
+            ),
         ]
     }
 }

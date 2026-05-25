@@ -12,4 +12,11 @@ public enum DebugLogExporter {
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
         return lines.suffix(count).joined(separator: "\n")
     }
+
+    public static func exportLogFile(from sourceURL: URL, to destinationURL: URL) throws {
+        if FileManager.default.fileExists(atPath: destinationURL.path) {
+            try FileManager.default.removeItem(at: destinationURL)
+        }
+        try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+    }
 }

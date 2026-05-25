@@ -32,6 +32,12 @@ public struct ContentView: View {
                     SkillInsightsView()
                 case .modelHealth:
                     ModelHealthView()
+                case .modelHealthHistory:
+                    ModelHealthHistoryView()
+                case .healthInventory:
+                    HealthInventoryView()
+                case .healthInsight:
+                    HealthInsightView()
                 case .taskLibrary:
                     TaskLibraryView()
                 case .settings:
@@ -81,8 +87,10 @@ public struct ContentView: View {
         .sheet(isPresented: $showOnboarding) {
             OnboardingSheet()
         }
-        .onAppear {
+        .task {
             store.checkGitRepoStatus()
+            try? store.loadAllRuns()
+            store.startWatching()
         }
         .onChange(of: store.isRunsDirectoryGitRepo) { _, isRepo in
             showOnboarding = !isRepo

@@ -4,6 +4,16 @@ import Testing
 
 @Suite("BenchmarkRunner")
 struct BenchmarkRunnerTests {
+    private func sandbox() -> Sandbox {
+        Sandbox(
+            id: "sb-1",
+            name: "s1",
+            state: .started,
+            labels: ["bigpowers_ref": "v1.0"],
+            toolboxProxyUrl: ""
+        )
+    }
+
     @Test("Workspace reset calls createSession and executeCommand")
     func workspaceReset() async {
         let mockClient = MockDaytonaClient()
@@ -11,17 +21,15 @@ struct BenchmarkRunnerTests {
         let config = DaytonaConfig(keychainService: MockKeychainService())
         config.taskRepoURL = "https://github.com/test/repo"
 
-        let runner = BenchmarkRunner(daytonaClient: mockClient, store: store, config: config)
-        let sandbox = Sandbox(
-            id: "sb-1",
-            name: "s1",
-            state: .started,
-            labels: ["bigpowers_ref": "v1.0"],
-            toolboxProxyUrl: ""
+        let runner = DaytonaRunExecutor(
+            daytonaClient: mockClient,
+            store: store,
+            config: config,
+            sandbox: sandbox()
         )
         let task = BenchmarkTask(id: "T01", name: "Task 1", description: "Desc")
 
-        let events = runner.run(sandbox: sandbox, task: task, model: "gpt-4o")
+        let events = runner.run(task: task, model: "gpt-4o")
 
         var receivedPhases: [BenchmarkPhase] = []
         for await event in events {
@@ -41,11 +49,15 @@ struct BenchmarkRunnerTests {
         let store = BenchmarkStore(gitService: MockGitService())
         let config = DaytonaConfig(keychainService: MockKeychainService())
 
-        let runner = BenchmarkRunner(daytonaClient: mockClient, store: store, config: config)
-        let sandbox = Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        let runner = DaytonaRunExecutor(
+            daytonaClient: mockClient,
+            store: store,
+            config: config,
+            sandbox: Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        )
         let task = BenchmarkTask(id: "T01", name: "Task 1", description: "Desc")
 
-        let events = runner.run(sandbox: sandbox, task: task, model: "gpt-4o")
+        let events = runner.run(task: task, model: "gpt-4o")
 
         var logLines: [LogLine] = []
         for await event in events {
@@ -56,14 +68,12 @@ struct BenchmarkRunnerTests {
             if case .failed = event { break }
         }
 
-        // Mock yields "log line 1" and "log line 2"
         #expect(logLines.count >= 2)
     }
 
     @Test("Grading phase decodes score_run.sh output correctly")
     func grading() async {
         let mockClient = MockDaytonaClient()
-        // Mock score_run.sh output
         mockClient.nextCommandOutput = """
         { "code_pass": 1, "artifact_score": 2, "convention_score": 1, "token_cost": 0.05 }
         """
@@ -71,11 +81,15 @@ struct BenchmarkRunnerTests {
         let store = BenchmarkStore(gitService: MockGitService())
         let config = DaytonaConfig(keychainService: MockKeychainService())
 
-        let runner = BenchmarkRunner(daytonaClient: mockClient, store: store, config: config)
-        let sandbox = Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        let runner = DaytonaRunExecutor(
+            daytonaClient: mockClient,
+            store: store,
+            config: config,
+            sandbox: Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        )
         let task = BenchmarkTask(id: "T01", name: "Task 1", description: "Desc")
 
-        let events = runner.run(sandbox: sandbox, task: task, model: "gpt-4o")
+        let events = runner.run(task: task, model: "gpt-4o")
 
         var completedRow: BenchRow?
         for await event in events {
@@ -96,11 +110,16 @@ struct BenchmarkRunnerTests {
         let store = BenchmarkStore(gitService: MockGitService())
         let config = DaytonaConfig(keychainService: MockKeychainService())
 
-        let runner = BenchmarkRunner(daytonaClient: mockClient, store: store, config: config, phaseTimeout: 0.1)
-        let sandbox = Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        let runner = DaytonaRunExecutor(
+            daytonaClient: mockClient,
+            store: store,
+            config: config,
+            sandbox: Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: ""),
+            phaseTimeout: 0.1
+        )
         let task = BenchmarkTask(id: "T01", name: "Task 1", description: "Desc")
 
-        let events = runner.run(sandbox: sandbox, task: task, model: "gpt-4o")
+        let events = runner.run(task: task, model: "gpt-4o")
 
         var timeoutError: RunnerError?
         for await event in events {

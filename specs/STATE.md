@@ -14,7 +14,9 @@ Story 3.2b: BenchmarkRunner — Phase 3+4+5 — [x] Done
 Story 3.3: Terminal Panel — [x] Done
 Story 3.4: Mission Control — [x] Done
 Observability: Solo-Dev Debug — [x] Done (see specs/OBSERVABILITY.md)
-Story 4.1: Run Explorer — [ ] Next
+Host runner (dual execution mode) — [x] Done (see specs/adr/host-runner.md)
+Story 4.1: Run Explorer — [x] Done
+Story 5.1: Dashboard — [ ] Next
 
 ## Artifacts
 - [x] PROJECT.md (Implied by CONTEXT.md)

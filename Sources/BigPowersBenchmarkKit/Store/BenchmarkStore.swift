@@ -59,11 +59,28 @@ public final class BenchmarkStore: @unchecked Sendable {
         }
     }
 
+    public func saveBenchFailureRow(_ row: BenchFailureRow) throws {
+        try FileManager.default.createDirectory(at: runsURL, withIntermediateDirectories: true)
+        let fileName = "\(BenchFailureRow.filePrefix)\(isoTimestamp(row.timestamp))_\(row.taskId).json"
+        let fileURL = runsURL.appendingPathComponent(fileName)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(row)
+        try data.write(to: fileURL, options: .atomic)
+
+        AppLogger.store.info("Saved BenchFailureRow", metadata: [
+            "runId": .string(row.id.uuidString),
+            "taskId": .string(row.taskId),
+            "path": .string(fileURL.path),
+            "errorKind": .string(row.errorKind),
+        ])
+    }
+
     public func loadAllRuns() throws {
         let urls = try FileManager.default.contentsOfDirectory(
             at: runsURL,
             includingPropertiesForKeys: nil
-        ).filter { $0.pathExtension == "json" }
+        ).filter { $0.pathExtension == "json" && !$0.lastPathComponent.hasPrefix(BenchFailureRow.filePrefix) }
 
         var loaded: [BenchRow] = []
         var errors: [URL: Error] = [:]

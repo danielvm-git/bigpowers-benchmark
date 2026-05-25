@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 import SwiftUI
 
 public struct RunExplorerView: View {
@@ -5,7 +6,6 @@ public struct RunExplorerView: View {
     @Environment(ThemeManager.self) private var themeManager
 
     @State private var viewModel: RunExplorerViewModel?
-    @State private var sortOrder = [KeyPathComparator(\BenchRow.timestamp, order: .reverse)]
     @State private var showComparePanel = false
 
     public init() {}
@@ -17,7 +17,11 @@ public struct RunExplorerView: View {
                 HSplitView {
                     // Left Column: Table of runs and filters
                     VStack(spacing: 0) {
-                        Table(vm.filteredRuns, selection: Bindable(vm).selectedRunIDs, sortOrder: $sortOrder) {
+                        Table(
+                            vm.filteredRuns,
+                            selection: Bindable(vm).selectedRunIDs,
+                            sortOrder: Bindable(vm).sortOrder
+                        ) {
                             TableColumn("Date", value: \.timestamp) { row in
                                 Text(row.timestamp, style: .date)
                                     .foregroundColor(tokens.fg)
@@ -30,18 +34,73 @@ public struct RunExplorerView: View {
                                 Text(row.taskId)
                                     .foregroundColor(tokens.fg2)
                             }
-                            TableColumn("Score", value: \.overallScore) { row in
+                            TableColumn("Ref", value: \.bigpowersRef) { row in
+                                Text(row.bigpowersRef)
+                                    .foregroundColor(tokens.fg3)
+                            }
+                            TableColumn("Code", value: \.codePass) { row in
+                                Text("\(row.codePass)")
+                                    .foregroundColor(tokens.fg2)
+                            }
+                            TableColumn("Artifact", value: \.artifactScore) { row in
+                                Text("\(row.artifactScore)")
+                                    .foregroundColor(tokens.fg2)
+                            }
+                            TableColumn("Conv", value: \.conventionScore) { row in
+                                Text("\(row.conventionScore)")
+                                    .foregroundColor(tokens.fg2)
+                            }
+                            TableColumn("Overall", value: \.overallScore) { row in
                                 Text(String(format: "%.1f", row.overallScore))
                                     .foregroundColor(scoreColor(row.overallScore, tokens: tokens))
                             }
+                            TableColumn("Duration", value: \.duration) { row in
+                                Text(String(format: "%.1fs", row.duration))
+                                    .foregroundColor(tokens.fg3)
+                            }
                             TableColumn("Cost", value: \.cost) { row in
-                                Text(String(format: "$%.4f", runCost(row)))
+                                Text(String(format: "$%.4f", row.cost))
                                     .foregroundColor(tokens.fg3)
                             }
                         }
                         .searchable(text: Bindable(vm).query)
                         .toolbar {
+                            ToolbarItemGroup(placement: .navigation) {
+                                Picker("Model", selection: Bindable(vm).selectedModel) {
+                                    Text("All Models").tag(nil as String?)
+                                    ForEach(vm.availableModels, id: \.self) { model in
+                                        Text(model).tag(model as String?)
+                                    }
+                                }
+                                .frame(width: 150)
+                                .accessibilityLabel("Filter by Model")
+
+                                Picker("Ref", selection: Bindable(vm).selectedRef) {
+                                    Text("All Refs").tag(nil as String?)
+                                    ForEach(vm.availableRefs, id: \.self) { ref in
+                                        Text(ref).tag(ref as String?)
+                                    }
+                                }
+                                .frame(width: 120)
+                                .accessibilityLabel("Filter by BigPowers Ref")
+
+                                Picker("Task", selection: Bindable(vm).selectedTask) {
+                                    Text("All Tasks").tag(nil as String?)
+                                    ForEach(vm.availableTasks, id: \.self) { task in
+                                        Text(task).tag(task as String?)
+                                    }
+                                }
+                                .frame(width: 100)
+                                .accessibilityLabel("Filter by Task ID")
+                            }
+
                             ToolbarItemGroup(placement: .primaryAction) {
+                                Button {
+                                    copyMarkdownSummary(vm.filteredRuns)
+                                } label: {
+                                    Label("Copy Markdown Summary", systemImage: "doc.richtext")
+                                }
+
                                 Button {
                                     exportCSV(vm.filteredRuns)
                                 } label: {
@@ -111,6 +170,19 @@ public struct RunExplorerView: View {
 
     private func runCost(_ row: BenchRow) -> Double {
         row.cost
+    }
+
+    /// Copies a markdown table of the runs to the clipboard
+    private func copyMarkdownSummary(_ runs: [BenchRow]) {
+        var markdown = "| Date | Model | Task | Score | Cost |\n| :--- | :--- | :--- | :--- | :--- |\n"
+        let fmt = DateFormatter()
+        fmt.dateStyle = .short
+        for run in runs {
+            let line = "| \(fmt.string(from: run.timestamp)) | \(run.modelId) | \(run.taskId) | \(String(format: "%.1f", run.overallScore)) | \(String(format: "$%.4f", run.cost)) |\n"
+            markdown.append(line)
+        }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(markdown, forType: .string)
     }
 
     /// CSV RFC-4180 compliant exporter
@@ -329,6 +401,8 @@ struct DetailRow: View {
                 .foregroundColor(tokens.fg)
                 .lineLimit(2)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
@@ -365,6 +439,8 @@ struct ScoreBar: View {
             }
             .frame(height: 6)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(String(format: "%.1f", score)) out of \(String(format: "%.1f", maxScore))")
     }
 }
 

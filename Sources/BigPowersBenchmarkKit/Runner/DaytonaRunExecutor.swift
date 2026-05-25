@@ -1,23 +1,26 @@
+// swiftlint:disable function_body_length
 import Foundation
 
-public actor BenchmarkRunner {
+public struct DaytonaRunExecutor: RunExecutorProtocol {
     private let daytonaClient: DaytonaClientProtocol
     private let store: BenchmarkStore
     private let config: DaytonaConfig
+    private let sandbox: Sandbox
     private let resetTimeout: Double
     private let opencodeTimeout: Double
     private let gradingTimeout: Double
-    private let logger = AppLogger.runner
 
     public init(
         daytonaClient: DaytonaClientProtocol,
         store: BenchmarkStore,
         config: DaytonaConfig,
+        sandbox: Sandbox,
         phaseTimeout: Double? = nil
     ) {
         self.daytonaClient = daytonaClient
         self.store = store
         self.config = config
+        self.sandbox = sandbox
         if let phaseTimeout {
             resetTimeout = phaseTimeout
             opencodeTimeout = phaseTimeout
@@ -29,19 +32,18 @@ public actor BenchmarkRunner {
         }
     }
 
-    public nonisolated func run(sandbox: Sandbox, task: BenchmarkTask, model: String) -> AsyncStream<RunEvent> {
+    public func run(task: BenchmarkTask, model: String, catalogModelId _: String?) -> AsyncStream<RunEvent> {
         let client = daytonaClient
         let localStore = store
         let localConfig = config
-        let resetTimeout = resetTimeout
-        let opencodeTimeout = opencodeTimeout
-        let gradingTimeout = gradingTimeout
-
         let sandboxId = sandbox.id
         let bigpowersRef = sandbox.labels["bigpowers_ref"] ?? "HEAD"
         let taskId = task.id
         let taskDescription = task.description
         let taskRepoURL = localConfig.taskRepoURL
+        let resetTimeout = resetTimeout
+        let opencodeTimeout = opencodeTimeout
+        let gradingTimeout = gradingTimeout
 
         return AsyncStream { continuation in
             Task {
@@ -49,17 +51,17 @@ public actor BenchmarkRunner {
                 let taskDir = "/home/daytona/\(taskId)"
                 let promptPath = "/tmp/bigpowers_prompt_\(runId.uuidString).txt"
 
-                logger.info("Run started", metadata: [
+                AppLogger.runner.info("Run started", metadata: [
                     "runId": .string(runId.uuidString),
                     "taskId": .string(taskId),
                     "sandboxId": .string(sandboxId),
                     "model": .string(model),
+                    "executor": .string("daytona"),
                 ])
 
                 do {
-                    // --- PHASE 1: Reset Workspace ---
                     continuation.yield(.phase(.resettingWorkspace))
-                    logger.info("Phase started", metadata: [
+                    AppLogger.runner.info("Phase started", metadata: [
                         "runId": .string(runId.uuidString),
                         "phase": .string(BenchmarkPhase.resettingWorkspace.rawValue),
                     ])
@@ -68,7 +70,6 @@ public actor BenchmarkRunner {
                         group.addTask {
                             let sid = try await client.createSession(sandboxId: sandboxId)
 
-                            // Delete old directory
                             _ = try await client.executeCommand(
                                 sandboxId: sandboxId,
                                 sessionId: sid,
@@ -76,7 +77,6 @@ public actor BenchmarkRunner {
                                 runAsync: false
                             )
 
-                            // Clone new directory
                             _ = try await client.executeCommand(
                                 sandboxId: sandboxId,
                                 sessionId: sid,
@@ -84,7 +84,6 @@ public actor BenchmarkRunner {
                                 runAsync: false
                             )
 
-                            // Checkout ref
                             _ = try await client.executeCommand(
                                 sandboxId: sandboxId,
                                 sessionId: sid,
@@ -105,14 +104,12 @@ public actor BenchmarkRunner {
                         return result
                     }
 
-                    // --- PHASE 2: Running opencode ---
                     continuation.yield(.phase(.runningOpencode))
-                    logger.info("Phase started", metadata: [
+                    AppLogger.runner.info("Phase started", metadata: [
                         "runId": .string(runId.uuidString),
                         "phase": .string(BenchmarkPhase.runningOpencode.rawValue),
                     ])
 
-                    // Write prompt to file to prevent shell injection
                     try await client.writeFile(sandboxId: sandboxId, path: promptPath, content: taskDescription)
 
                     let opencodeCmd = "opencode run --model \(model) --dir \(taskDir) --dangerously-skip-permissions --format json @\(promptPath)"
@@ -126,7 +123,6 @@ public actor BenchmarkRunner {
                                 runAsync: true
                             )
 
-                            // Stream logs
                             let logStream = client.streamLogs(
                                 sandboxId: sandboxId,
                                 sessionId: sessionId,
@@ -147,7 +143,6 @@ public actor BenchmarkRunner {
                                 }
                             }
 
-                            // Poll status for completion
                             while true {
                                 let status = try await client.getCommandStatus(
                                     sandboxId: sandboxId,
@@ -172,16 +167,15 @@ public actor BenchmarkRunner {
                     }
 
                     if opencodeExitCode != 0 {
-                        logger.error("Opencode non-zero exit", metadata: [
+                        AppLogger.runner.error("Opencode non-zero exit", metadata: [
                             "runId": .string(runId.uuidString),
                             "exitCode": .stringConvertible(opencodeExitCode),
                         ])
-                        throw RunnerError.opencodeNonZeroExit(code: opencodeExitCode)
+                        throw RunnerError.opencodeNonZeroExit(code: opencodeExitCode, stderr: nil)
                     }
 
-                    // --- PHASE 3: Grading ---
                     continuation.yield(.phase(.grading))
-                    logger.info("Phase started", metadata: [
+                    AppLogger.runner.info("Phase started", metadata: [
                         "runId": .string(runId.uuidString),
                         "phase": .string(BenchmarkPhase.grading.rawValue),
                     ])
@@ -195,7 +189,6 @@ public actor BenchmarkRunner {
 
                     let gradingResult = try await withThrowingTaskGroup(of: GradingResult.self) { group in
                         group.addTask {
-                            // Run score script
                             let scoreCmd = "score_run.sh \(taskDir)"
                             let scoreCmdId = try await client.executeCommand(
                                 sandboxId: sandboxId,
@@ -204,7 +197,6 @@ public actor BenchmarkRunner {
                                 runAsync: true
                             )
 
-                            // Poll status
                             var scoreExitCode: Int?
                             while true {
                                 let status = try await client.getCommandStatus(
@@ -223,7 +215,6 @@ public actor BenchmarkRunner {
                                 throw RunnerError.gradingScriptMissing
                             }
 
-                            // Fetch grading result logs (output is printed to stdout)
                             let logStream = client.streamLogs(
                                 sandboxId: sandboxId,
                                 sessionId: sessionId,
@@ -264,7 +255,6 @@ public actor BenchmarkRunner {
                         return result
                     }
 
-                    // Cleanup prompt temp file
                     _ = try await client.executeCommand(
                         sandboxId: sandboxId,
                         sessionId: sessionId,
@@ -272,9 +262,8 @@ public actor BenchmarkRunner {
                         runAsync: false
                     )
 
-                    // --- PHASE 4+5: Persisting ---
                     continuation.yield(.phase(.persisting))
-                    logger.info("Phase started", metadata: [
+                    AppLogger.runner.info("Phase started", metadata: [
                         "runId": .string(runId.uuidString),
                         "phase": .string(BenchmarkPhase.persisting.rawValue),
                     ])
@@ -289,14 +278,14 @@ public actor BenchmarkRunner {
                         codePass: gradingResult.codePass,
                         artifactScore: gradingResult.artifactScore,
                         conventionScore: gradingResult.conventionScore,
-                        duration: 0.0, // Calculated duration could be passed if needed
+                        duration: 0.0,
                         cost: gradingResult.cost,
                         workspace: taskDir
                     )
 
                     try localStore.saveBenchRow(benchRow)
 
-                    logger.info("Run completed", metadata: [
+                    AppLogger.runner.info("Run completed", metadata: [
                         "runId": .string(runId.uuidString),
                         "taskId": .string(taskId),
                         "overallScore": .stringConvertible(benchRow.overallScore),
@@ -306,7 +295,20 @@ public actor BenchmarkRunner {
                     continuation.finish()
 
                 } catch {
-                    logger.error("Run failed", metadata: [
+                    let described = BenchFailureRow.describe(error: error)
+                    let failure = BenchFailureRow(
+                        timestamp: Date(),
+                        modelId: model,
+                        taskId: taskId,
+                        phase: described.phase,
+                        errorKind: described.kind,
+                        errorMessage: described.message,
+                        duration: 0,
+                        workspace: taskDir
+                    )
+                    try? localStore.saveBenchFailureRow(failure)
+
+                    AppLogger.runner.error("Run failed", metadata: [
                         "runId": .string(runId.uuidString),
                         "taskId": .string(taskId),
                         "error": .string(LogSanitizer.sanitize(String(describing: error))),
@@ -318,3 +320,5 @@ public actor BenchmarkRunner {
         }
     }
 }
+
+public typealias BenchmarkRunner = DaytonaRunExecutor

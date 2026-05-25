@@ -57,6 +57,10 @@ public enum AppLogger {
         Logger(label: "settings")
     }
 
+    public static var modelHealth: Logger {
+        Logger(label: "modelHealth")
+    }
+
     public static func copyDebugLogToClipboard(lineCount: Int = 100) {
         let content = DebugLogExporter.lastLines(from: logFileURL, count: lineCount)
         NSPasteboard.general.clearContents()
@@ -70,5 +74,14 @@ public enum AppLogger {
             FileManager.default.createFile(atPath: logFileURL.path, contents: nil)
         }
         NSWorkspace.shared.activateFileViewerSelecting([logFileURL])
+    }
+
+    public static func exportLogFile(to destinationURL: URL) throws {
+        do {
+            try DebugLogExporter.exportLogFile(from: logFileURL, to: destinationURL)
+        } catch {
+            AppLogger.app.error("Failed to export log file: \(error)")
+            throw error
+        }
     }
 }

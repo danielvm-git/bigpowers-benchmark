@@ -3,9 +3,9 @@ import Testing
 
 @Suite("AppShell")
 struct AppShellTests {
-    @Test("Screen has exactly 8 cases")
+    @Test("Screen has exactly 11 cases")
     func screenCaseCount() {
-        #expect(Screen.allCases.count == 8)
+        #expect(Screen.allCases.count == 11)
     }
 
     @Test("all Screen cases have non-empty title and systemImage")

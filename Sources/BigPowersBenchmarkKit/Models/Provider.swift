@@ -1,6 +1,8 @@
 import Foundation
 
 public struct Provider: Codable, Identifiable {
+    public static let openRouterKeychainAccount = "bigpowers.benchmark.openrouter"
+
     public let id: String
     public let name: String
     public let baseURL: String
@@ -13,12 +15,30 @@ public struct Provider: Codable, Identifiable {
         self.enabled = enabled
     }
 
-    public func apiKeyStatus(keychain: KeychainServiceProtocol) -> ApiKeyStatus {
-        if keychain.load(account: "bigpowers.benchmark.\(id)") != nil {
+    public var keychainAccount: String {
+        "bigpowers.benchmark.\(id)"
+    }
+
+    public func apiKeyStatus(
+        keychain: KeychainServiceProtocol,
+        dotEnvPaths: [URL] = ProviderCredentialResolver.defaultDotEnvPaths()
+    ) -> ApiKeyStatus {
+        if ProviderCredentialResolver.isConfigured(
+            providerId: id,
+            keychain: keychain,
+            dotEnvPaths: dotEnvPaths
+        ) {
             .configured
         } else {
             .notSet
         }
+    }
+
+    public func resolvedCredential(
+        keychain: KeychainServiceProtocol = KeychainService(),
+        dotEnvPaths: [URL] = ProviderCredentialResolver.defaultDotEnvPaths()
+    ) -> ResolvedProviderCredential? {
+        ProviderCredentialResolver.resolve(providerId: id, keychain: keychain, dotEnvPaths: dotEnvPaths)
     }
 }
 

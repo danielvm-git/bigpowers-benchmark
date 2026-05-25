@@ -21,7 +21,18 @@ struct BigPowersBenchmarkApp: App {
     private let benchmarkStore = BenchmarkStore()
     private let themeManager = ThemeManager()
     private let daytonaConfig = DaytonaConfig()
+    private let hostRunConfig = HostRunConfig()
     private let providerStore = ProviderStore()
+    private let modelHealthHistoryStore = ModelHealthHistoryStore()
+    private let modelIntelStore = ModelIntelStore()
+    private let modelHealthViewModel: ModelHealthViewModel
+    private let modelRegistry = ModelRegistry()
+    private let modelHealthColumnStore = ModelHealthColumnCustomizationStore()
+
+    init() {
+        try? modelIntelStore.loadFromDisk()
+        modelHealthViewModel = ModelHealthViewModel(intelStore: modelIntelStore)
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -29,7 +40,13 @@ struct BigPowersBenchmarkApp: App {
                 .environment(benchmarkStore)
                 .environment(themeManager)
                 .environment(daytonaConfig)
+                .environment(hostRunConfig)
                 .environment(providerStore)
+                .environment(modelHealthHistoryStore)
+                .environment(modelIntelStore)
+                .environment(modelHealthViewModel)
+                .environment(modelRegistry)
+                .environment(modelHealthColumnStore)
         }
         .commands {
             CommandGroup(after: .help) {
@@ -49,7 +66,13 @@ struct BigPowersBenchmarkApp: App {
                 .environment(benchmarkStore)
                 .environment(themeManager)
                 .environment(daytonaConfig)
+                .environment(hostRunConfig)
                 .environment(providerStore)
+                .environment(modelHealthHistoryStore)
+                .environment(modelIntelStore)
+                .environment(modelHealthViewModel)
+                .environment(modelRegistry)
+                .environment(modelHealthColumnStore)
         }
 
         WindowGroup(id: "run-explorer") {
@@ -57,7 +80,13 @@ struct BigPowersBenchmarkApp: App {
                 .environment(benchmarkStore)
                 .environment(themeManager)
                 .environment(daytonaConfig)
+                .environment(hostRunConfig)
                 .environment(providerStore)
+                .environment(modelHealthHistoryStore)
+                .environment(modelIntelStore)
+                .environment(modelHealthViewModel)
+                .environment(modelRegistry)
+                .environment(modelHealthColumnStore)
         }
 
         Settings {
@@ -65,7 +94,13 @@ struct BigPowersBenchmarkApp: App {
                 .environment(benchmarkStore)
                 .environment(themeManager)
                 .environment(daytonaConfig)
+                .environment(hostRunConfig)
                 .environment(providerStore)
+                .environment(modelHealthHistoryStore)
+                .environment(modelIntelStore)
+                .environment(modelHealthViewModel)
+                .environment(modelRegistry)
+                .environment(modelHealthColumnStore)
         }
 
         MenuBarExtra("BigPowers", systemImage: "gauge.with.dots.needle.bottom.50percent") {
@@ -73,7 +108,13 @@ struct BigPowersBenchmarkApp: App {
                 .environment(benchmarkStore)
                 .environment(themeManager)
                 .environment(daytonaConfig)
+                .environment(hostRunConfig)
                 .environment(providerStore)
+                .environment(modelHealthHistoryStore)
+                .environment(modelIntelStore)
+                .environment(modelHealthViewModel)
+                .environment(modelRegistry)
+                .environment(modelHealthColumnStore)
         }
         .menuBarExtraStyle(.window)
     }
