@@ -5,8 +5,7 @@ public enum NousPortalCredentialStore {
     public nonisolated(unsafe) static var authFileURL: URL = FileManager.default.homeDirectoryForCurrentUser
         .appendingPathComponent(".hermes/auth.json")
 
-    /// Returns true if the user has valid Nous credentials.
-    /// Checks both auth file and environment variables.
+    /// Returns true if the user has valid Nous credentials (non-expired token).
     public static func isConfigured(from url: URL? = nil) -> Bool {
         resolveAgentKey(from: url) != nil
     }

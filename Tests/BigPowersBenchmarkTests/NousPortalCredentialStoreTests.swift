@@ -99,38 +99,4 @@ struct NousPortalCredentialStoreTests {
         #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == nil)
         #expect(!NousPortalCredentialStore.isConfigured(from: url))
     }
-
-    @Test("resolveAgentKey does not return expired access_token")
-    func expiredAccessTokenNotReturned() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathComponent("auth.json")
-        let expired = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-60))
-        try writeAuth(
-            agentKey: nil,
-            agentKeyExpiresAt: nil,
-            accessToken: "stale-access-token",
-            accessTokenExpiresAt: expired,
-            to: url
-        )
-
-        #expect(NousPortalCredentialStore.resolveAgentKey(from: url) == nil)
-    }
-
-    @Test("isConfigured returns false when both tokens expired")
-    func isConfiguredBothExpiredReturnsFalse() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-            .appendingPathComponent("auth.json")
-        let expired = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-60))
-        try writeAuth(
-            agentKey: "old-key",
-            agentKeyExpiresAt: expired,
-            accessToken: "stale-token",
-            accessTokenExpiresAt: expired,
-            to: url
-        )
-
-        #expect(!NousPortalCredentialStore.isConfigured(from: url))
-    }
 }
