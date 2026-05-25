@@ -5,18 +5,10 @@ public enum NousPortalCredentialStore {
     public nonisolated(unsafe) static var authFileURL: URL = FileManager.default.homeDirectoryForCurrentUser
         .appendingPathComponent(".hermes/auth.json")
 
-    /// Returns true if the user has ever logged in via `hermes login` —
-    /// i.e. `~/.hermes/auth.json` exists with a nous provider entry.
-    /// Token expiry is not checked here; pings will surface 401 errors at runtime.
+    /// Returns true if the user has valid Nous credentials.
+    /// Checks both auth file and environment variables.
     public static func isConfigured(from url: URL? = nil) -> Bool {
-        let fileURL = url ?? authFileURL
-        guard FileManager.default.fileExists(atPath: fileURL.path),
-              let data = try? Data(contentsOf: fileURL),
-              let auth = try? JSONDecoder().decode(HermesAuthFile.self, from: data),
-              let nous = auth.providers?.nous
-        else { return false }
-        return (nous.agentKey ?? "").isEmpty == false
-            || (nous.accessToken ?? "").isEmpty == false
+        resolveAgentKey(from: url) != nil
     }
 
     public static func resolveAgentKey(from url: URL? = nil) -> String? {
