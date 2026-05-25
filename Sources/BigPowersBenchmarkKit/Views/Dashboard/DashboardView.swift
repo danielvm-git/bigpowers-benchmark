@@ -4,6 +4,7 @@ import SwiftUI
 public struct DashboardView: View {
     @Environment(BenchmarkStore.self) private var store
     @Environment(ThemeManager.self) private var themeManager
+    @Environment(DashboardViewModel.self) private var vm
 
     public init() {}
 
@@ -11,228 +12,246 @@ public struct DashboardView: View {
         let tokens = themeManager.resolvedTheme.tokens
         ScrollView {
             VStack(alignment: .leading, spacing: 25) {
-                // Header
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Dashboard")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(tokens.fg)
-                    Text("Overall performance metrics and regressions.")
-                        .foregroundColor(tokens.fg3)
-                }
-
-                // Hero Metric Cards
-                LazyVGrid(
-                    columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible()),
-                        GridItem(.flexible()),
-                        GridItem(.flexible()),
-                    ],
-                    spacing: 15
-                ) {
-                    HeroCard(
-                        title: "Best Model",
-                        value: bestModel,
-                        subvalue: bestModelScore,
-                        icon: "crown.fill",
-                        color: tokens.warn
-                    )
-                    HeroCard(
-                        title: "Fastest Model",
-                        value: fastestModel,
-                        subvalue: fastestModelTime,
-                        icon: "bolt.fill",
-                        color: tokens.accent
-                    )
-                    HeroCard(
-                        title: "Lowest Cost",
-                        value: lowestCostModel,
-                        subvalue: lowestCostValue,
-                        icon: "dollarsign.circle.fill",
-                        color: tokens.good
-                    )
-                    HeroCard(
-                        title: "Most Improved",
-                        value: mostImprovedModel,
-                        subvalue: mostImprovedDelta,
-                        icon: "arrow.up.right.circle.fill",
-                        color: tokens.accent
-                    )
-                }
-
-                // Charts section
-                HSplitView {
-                    // Line Chart: Evolution of overall score per model
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Score Evolution Trend")
-                            .font(.headline)
-                            .foregroundColor(tokens.fg)
-
-                        if store.runs.isEmpty {
-                            ThemedInlineEmpty(
-                                icon: "chart.line.uptrend.xyaxis",
-                                title: "No benchmark runs yet",
-                                tokens: tokens
-                            )
-                            .frame(height: 250)
-                        } else {
-                            Chart(store.runs.sorted(by: { $0.timestamp < $1.timestamp })) { run in
-                                LineMark(
-                                    x: .value("Date", run.timestamp),
-                                    y: .value("Score", run.overallScore)
-                                )
-                                .foregroundStyle(by: .value("Model", run.modelId))
-
-                                PointMark(
-                                    x: .value("Date", run.timestamp),
-                                    y: .value("Score", run.overallScore)
-                                )
-                                .foregroundStyle(by: .value("Model", run.modelId))
-                            }
-                            .frame(height: 250)
-                            .padding()
-                            .background(tokens.surface)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
-                        }
-                    }
-                    .frame(minWidth: 400)
-                    .padding(.trailing, 10)
-
-                    // Heatmap: Task x Model performance
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Model x Task Heatmap")
-                            .font(.headline)
-                            .foregroundColor(tokens.fg)
-
-                        if store.runs.isEmpty {
-                            ThemedInlineEmpty(
-                                icon: "square.grid.3x3",
-                                title: "No heatmap data yet",
-                                tokens: tokens
-                            )
-                            .frame(height: 250)
-                        } else {
-                            Chart(store.runs) { run in
-                                BarMark(
-                                    x: .value("Task", run.taskId),
-                                    y: .value("Model", run.modelId),
-                                    width: .fixed(24),
-                                    height: .fixed(24)
-                                )
-                                .foregroundStyle(by: .value("Score", run.overallScore))
-                            }
-                            .chartForegroundStyleScale(range: Gradient(colors: [tokens.bad, tokens.warn, tokens.good]))
-                            .frame(height: 250)
-                            .padding()
-                            .background(tokens.surface)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
-                        }
-                    }
-                    .frame(minWidth: 300)
-                    .padding(.leading, 10)
-                }
-
-                // Recent Regressions list
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Recent Regressions & Anomalies")
-                        .font(.headline)
-                        .foregroundColor(tokens.fg)
-
-                    if regressions.isEmpty {
-                        Text("No regressions detected. Models are operating normally.")
-                            .foregroundColor(tokens.good)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(tokens.good.opacity(0.08))
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.good.opacity(0.2), lineWidth: 1))
-                    } else {
-                        VStack(spacing: 8) {
-                            ForEach(regressions, id: \.self) { reg in
-                                HStack {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundColor(tokens.bad)
-                                    Text(reg)
-                                        .font(.body)
-                                        .foregroundColor(tokens.fg)
-                                    Spacer()
-                                    Text("ALERT")
-                                        .font(.caption2)
-                                        .fontWeight(.bold)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(tokens.bad.opacity(0.15))
-                                        .foregroundColor(tokens.bad)
-                                        .cornerRadius(4)
-                                }
-                                .padding()
-                                .background(tokens.surface)
-                                .cornerRadius(8)
-                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
-                            }
-                        }
-                    }
-                }
+                header(tokens: tokens)
+                heroCards(tokens: tokens)
+                charts(tokens: tokens)
+                regressionsSection(tokens: tokens)
+                recentRunsSection(tokens: tokens)
             }
             .padding(30)
         }
     }
 
-    /// Computed helper values for the UI
-    private var bestModel: String {
-        guard !store.runs.isEmpty else { return "—" }
-        let groups = Dictionary(grouping: store.runs, by: { $0.modelId })
-        let averages = groups.mapValues { runs in
-            runs.map(\.overallScore).reduce(0.0, +) / Double(runs.count)
+    private func header(tokens: ThemeTokens) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Dashboard")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(tokens.fg)
+            Text("Overall performance metrics and regressions.")
+                .foregroundColor(tokens.fg3)
         }
-        return averages.max(by: { $0.value < $1.value })?.key.components(separatedBy: "/").last ?? "—"
     }
 
-    private var bestModelScore: String {
-        guard !store.runs.isEmpty else { return "" }
-        let groups = Dictionary(grouping: store.runs, by: { $0.modelId })
-        let averages = groups.mapValues { runs in
-            runs.map(\.overallScore).reduce(0.0, +) / Double(runs.count)
+    private func heroCards(tokens: ThemeTokens) -> some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+            ],
+            spacing: 15
+        ) {
+            HeroCard(
+                title: "Best Model",
+                value: vm.bestModel?.name ?? "—",
+                subvalue: vm.bestModel.map { String(format: "Avg: %.1f", $0.avgScore) } ?? "",
+                icon: "crown.fill",
+                color: tokens.warn
+            )
+            .accessibilityLabel("Best Model")
+            .accessibilityValue(vm.bestModel?.name ?? "None")
+
+            HeroCard(
+                title: "Fastest Model",
+                value: vm.fastestModel?.name ?? "—",
+                subvalue: vm.fastestModel.map { String(format: "Avg: %.1fs", $0.avgDuration) } ?? "",
+                icon: "bolt.fill",
+                color: tokens.accent
+            )
+            .accessibilityLabel("Fastest Model")
+            .accessibilityValue(vm.fastestModel?.name ?? "None")
+
+            HeroCard(
+                title: "Lowest Cost",
+                value: vm.cheapestModel?.name ?? "—",
+                subvalue: vm.cheapestModel.map { String(format: "Avg: $%.4f", $0.avgCost) } ?? "",
+                icon: "dollarsign.circle.fill",
+                color: tokens.good
+            )
+            .accessibilityLabel("Lowest Cost Model")
+            .accessibilityValue(vm.cheapestModel?.name ?? "None")
+
+            HeroCard(
+                title: "Most Improved",
+                value: vm.mostImproved?.model ?? "—",
+                subvalue: vm.mostImproved.map { String(format: "+%.1f pts", $0.delta) } ?? "Need 2+ refs",
+                icon: "arrow.up.right.circle.fill",
+                color: tokens.accent
+            )
+            .accessibilityLabel("Most Improved Model")
+            .accessibilityValue(vm.mostImproved?.model ?? "None")
         }
-        if let maxVal = averages.values.max() {
-            return String(format: "Avg: %.1f", maxVal)
+    }
+
+    private func charts(tokens: ThemeTokens) -> some View {
+        HSplitView {
+            scoreEvolutionChart(tokens: tokens)
+            heatmapChart(tokens: tokens)
         }
-        return ""
     }
 
-    private var fastestModel: String {
-        "claude-3-5"
+    private func scoreEvolutionChart(tokens: ThemeTokens) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Score Evolution Trend")
+                .font(.headline)
+                .foregroundColor(tokens.fg)
+
+            if store.runs.isEmpty {
+                ThemedInlineEmpty(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "No benchmark runs yet",
+                    tokens: tokens
+                )
+                .frame(height: 250)
+            } else {
+                Chart(store.runs.sorted(by: { $0.timestamp < $1.timestamp })) { run in
+                    LineMark(
+                        x: .value("Date", run.timestamp),
+                        y: .value("Score", run.overallScore)
+                    )
+                    .foregroundStyle(by: .value("Model", run.modelId))
+
+                    PointMark(
+                        x: .value("Date", run.timestamp),
+                        y: .value("Score", run.overallScore)
+                    )
+                    .foregroundStyle(by: .value("Model", run.modelId))
+                }
+                .frame(height: 250)
+                .padding()
+                .background(tokens.surface)
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
+                .accessibilityLabel("Score evolution chart")
+                .accessibilityValue("Shows overall score trends over time per model")
+            }
+        }
+        .frame(minWidth: 400)
+        .padding(.trailing, 10)
     }
 
-    private var fastestModelTime: String {
-        "Avg: 45.2s"
+    private func heatmapChart(tokens: ThemeTokens) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Model x Task Heatmap")
+                .font(.headline)
+                .foregroundColor(tokens.fg)
+
+            if store.runs.isEmpty {
+                ThemedInlineEmpty(
+                    icon: "square.grid.3x3",
+                    title: "No heatmap data yet",
+                    tokens: tokens
+                )
+                .frame(height: 250)
+            } else {
+                Chart(store.runs) { run in
+                    RectangleMark(
+                        x: .value("Task", run.taskId),
+                        y: .value("Model", run.modelId)
+                    )
+                    .foregroundStyle(by: .value("Score", run.overallScore))
+                }
+                .chartForegroundStyleScale(range: Gradient(colors: [tokens.bad, tokens.warn, tokens.good]))
+                .frame(height: 250)
+                .padding()
+                .background(tokens.surface)
+                .cornerRadius(8)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
+                .accessibilityLabel("Model by Task heatmap")
+                .accessibilityValue("Shows score distribution across models and tasks")
+            }
+        }
+        .frame(minWidth: 300)
+        .padding(.leading, 10)
     }
 
-    private var lowestCostModel: String {
-        "gemini-1.5"
+    private func regressionsSection(tokens: ThemeTokens) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Recent Regressions & Anomalies")
+                .font(.headline)
+                .foregroundColor(tokens.fg)
+
+            if vm.recentRegressions.isEmpty {
+                Text("No regressions detected. Models are operating normally.")
+                    .foregroundColor(tokens.good)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(tokens.good.opacity(0.08))
+                    .cornerRadius(8)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.good.opacity(0.2), lineWidth: 1))
+            } else {
+                VStack(spacing: 8) {
+                    ForEach(Array(vm.recentRegressions.enumerated()), id: \.offset) { _, reg in
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(tokens.bad)
+                            Text("\(reg.model) on \(reg.task): \(String(format: "%.1f", reg.delta)) pts")
+                                .font(.body)
+                                .foregroundColor(tokens.fg)
+                            Spacer()
+                            Text("ALERT")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(tokens.bad.opacity(0.15))
+                                .foregroundColor(tokens.bad)
+                                .cornerRadius(4)
+                        }
+                        .padding()
+                        .background(tokens.surface)
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.border, lineWidth: 1))
+                        .accessibilityLabel("Regression")
+                        .accessibilityValue(
+                            "\(reg.model) on task \(reg.task) dropped \(String(format: "%.1f", abs(reg.delta))) points"
+                        )
+                    }
+                }
+            }
+        }
     }
 
-    private var lowestCostValue: String {
-        "Avg: $0.0012"
-    }
+    private func recentRunsSection(tokens: ThemeTokens) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Recent Runs")
+                .font(.headline)
+                .foregroundColor(tokens.fg)
 
-    private var mostImprovedModel: String {
-        "gpt-4o"
-    }
-
-    private var mostImprovedDelta: String {
-        "+12.4% vs last ref"
-    }
-
-    private var regressions: [String] {
-        if store.runs.isEmpty { return [] }
-        return [
-            "gpt-4o on T03 score regressed from 85.0 to 70.0 (-17.6%)",
-            "claude-3-5-sonnet on T02 duration increased by +24.5s (+48.2%)",
-        ]
+            if store.runs.isEmpty {
+                Text("No runs yet.")
+                    .foregroundColor(tokens.fg3)
+                    .padding()
+            } else {
+                let recent = store.runs
+                    .sorted(by: { $0.timestamp > $1.timestamp })
+                    .prefix(5)
+                VStack(spacing: 6) {
+                    ForEach(Array(recent)) { run in
+                        HStack {
+                            Text(run.modelId)
+                                .font(.body)
+                                .foregroundColor(tokens.fg)
+                            Text(run.taskId)
+                                .font(.caption)
+                                .foregroundColor(tokens.fg3)
+                            Spacer()
+                            Text(String(format: "%.1f", run.overallScore))
+                                .font(.body.monospacedDigit())
+                                .foregroundColor(tokens.accent)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 6)
+                        .background(tokens.surface)
+                        .cornerRadius(6)
+                        .accessibilityLabel("Run \(run.modelId) \(run.taskId)")
+                        .accessibilityValue("Score: \(String(format: "%.1f", run.overallScore))")
+                    }
+                }
+            }
+        }
     }
 }
 

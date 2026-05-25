@@ -2,7 +2,7 @@
 import Foundation
 import Testing
 
-@Suite("ProviderCredentialResolver")
+@Suite("ProviderCredentialResolver", .serialized)
 struct ProviderCredentialResolverTests {
     @Test("keychain takes precedence over dotenv")
     func keychainPrecedence() throws {

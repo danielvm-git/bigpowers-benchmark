@@ -23,7 +23,7 @@ struct PingTransportTests {
     }
 }
 
-@Suite("StaticModelCatalogs")
+@Suite("StaticModelCatalogs", .serialized)
 struct StaticModelCatalogsTests {
     @Test("all catalogs are non-empty")
     func nonEmpty() {

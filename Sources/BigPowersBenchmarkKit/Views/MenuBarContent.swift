@@ -2,13 +2,16 @@ import SwiftUI
 
 public struct MenuBarContent: View {
     @Environment(BenchmarkStore.self) private var store
+    @Environment(ThemeManager.self) private var themeManager
 
     public init() {}
 
     public var body: some View {
+        let tokens = themeManager.resolvedTheme.tokens
         VStack(alignment: .leading, spacing: 10) {
             Text("BigPowers Benchmark")
                 .font(.headline)
+                .foregroundColor(tokens.fg)
 
             Divider()
 
@@ -28,19 +31,22 @@ public struct MenuBarContent: View {
                         .progressViewStyle(.linear)
                 }
                 .font(.caption)
+                .foregroundColor(tokens.fg)
             } else {
                 Text("Idle")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(tokens.fg3)
             }
 
             Divider()
 
             Text("Completed Runs: \(store.runs.count)")
                 .font(.caption)
+                .foregroundColor(tokens.fg)
         }
         .padding(12)
         .frame(minWidth: 200)
+        .background(tokens.bg1)
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {

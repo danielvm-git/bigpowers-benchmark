@@ -1,5 +1,4 @@
 // swiftlint:disable file_length
-// swiftlint:disable function_parameter_count
 import Foundation
 
 public struct ModelInfo: Codable, Identifiable, Sendable, Hashable {

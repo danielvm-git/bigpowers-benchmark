@@ -9,78 +9,60 @@ public struct MissionControlView: View {
     @Environment(DaytonaConfig.self) private var config
     @Environment(HostRunConfig.self) private var hostRunConfig
     @Environment(ModelIntelStore.self) private var intelStore
+    @Environment(MissionControlViewModel.self) private var viewModel
 
-    @State private var viewModel: MissionControlViewModel?
     @State private var activeTab = 0 // 0 = Log Stream, 1 = Local Terminal
 
     public init() {}
 
     public var body: some View {
         let tokens = themeManager.resolvedTheme.tokens
-        Group {
-            if let vm = viewModel {
-                VStack(spacing: 0) {
-                    controlStrip(vm: vm, tokens: tokens)
+        let vm = viewModel
+        VStack(spacing: 0) {
+            controlStrip(vm: vm, tokens: tokens)
 
-                    Rectangle()
-                        .fill(tokens.border)
-                        .frame(height: 1)
+            Rectangle()
+                .fill(tokens.border)
+                .frame(height: 1)
 
-                    if let err = vm.errorMessage {
-                        Text(err)
-                            .foregroundColor(tokens.bad)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(tokens.bad.opacity(0.1))
-                        Rectangle()
-                            .fill(tokens.border)
-                            .frame(height: 1)
-                    }
+            if let err = vm.errorMessage {
+                Text(err)
+                    .foregroundColor(tokens.bad)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(tokens.bad.opacity(0.1))
+                Rectangle()
+                    .fill(tokens.border)
+                    .frame(height: 1)
+            }
 
-                    VStack(spacing: 16) {
-                        TaskStepperView(
-                            taskResults: vm.taskResults.isEmpty
-                                ? placeholderTaskResults(for: vm)
-                                : vm.taskResults,
-                            elapsedTime: vm.elapsedTime,
-                            elapsedCost: vm.elapsedCost,
-                            isRunning: vm.runState != .idle,
-                            tokens: tokens
-                        )
-                        .padding(.horizontal)
-                        .padding(.top, 16)
+            VStack(spacing: 16) {
+                TaskStepperView(
+                    taskResults: vm.taskResults.isEmpty
+                        ? placeholderTaskResults(for: vm)
+                        : vm.taskResults,
+                    elapsedTime: vm.elapsedTime,
+                    elapsedCost: vm.elapsedCost,
+                    isRunning: vm.runState != .idle,
+                    tokens: tokens
+                )
+                .padding(.horizontal)
+                .padding(.top, 16)
 
-                        HSplitView {
-                            cockpitPanel(vm: vm, tokens: tokens)
-                            terminalPanel(vm: vm, tokens: tokens)
-                        }
-                    }
+                HSplitView {
+                    cockpitPanel(vm: vm, tokens: tokens)
+                    terminalPanel(vm: vm, tokens: tokens)
                 }
-            } else {
-                ProgressView("Initializing...")
-                    .foregroundColor(tokens.fg3)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(tokens.bg)
             }
         }
         .background(tokens.bg)
         .onAppear {
-            if viewModel == nil {
-                let daytonaClient = DaytonaClient(config: config)
-                viewModel = MissionControlViewModel(
-                    daytonaClient: daytonaClient,
-                    store: store,
-                    daytonaConfig: config,
-                    hostRunConfig: hostRunConfig,
-                    intelStore: intelStore
-                )
-                if viewModel?.selectedModel.isEmpty == true {
-                    let candidates = viewModel?.benchCandidateModels() ?? []
-                    viewModel?.selectedModel = candidates.first?.modelId ?? ""
-                }
+            if vm.selectedModel.isEmpty {
+                let candidates = vm.benchCandidateModels()
+                vm.selectedModel = candidates.first?.modelId ?? ""
             }
             Task {
-                await viewModel?.loadSandboxes()
+                await vm.loadSandboxes()
             }
         }
     }
@@ -583,18 +565,20 @@ public struct MetricCard: View {
     let title: String
     let value: String
     let color: Color
+    let tokens: ThemeTokens
 
-    public init(title: String, value: String, color: Color) {
+    public init(title: String, value: String, color: Color, tokens: ThemeTokens) {
         self.title = title
         self.value = value
         self.color = color
+        self.tokens = tokens
     }
 
     public var body: some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(tokens.fg3)
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
@@ -602,7 +586,7 @@ public struct MetricCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color.secondary.opacity(0.1))
+        .background(tokens.surface)
         .cornerRadius(8)
     }
 }

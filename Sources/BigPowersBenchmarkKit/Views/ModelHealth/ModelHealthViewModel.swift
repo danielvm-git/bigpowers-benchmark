@@ -41,6 +41,7 @@ public final class ModelHealthViewModel {
     public var pingScope: ModelPingScope = .smartFree
 
     public var showReasoningColumn = false
+    public var disabledCLITransports: Set<PingTransport> = []
 
     private let client: OpenRouterClientProtocol
     private let nousResearchClient: NousResearchClientProtocol
@@ -113,7 +114,8 @@ public final class ModelHealthViewModel {
     }
 
     public func pingTargets(from models: [ModelInfo]) -> [ModelInfo] {
-        switch pingScope {
+        let blocked = disabledCLITransports
+        let filtered: [ModelInfo] = switch pingScope {
         case .all:
             models
         case .filtered, .provider:
@@ -124,6 +126,14 @@ public final class ModelHealthViewModel {
             intelStore.smartFreeModels(from: filteredModels(from: models))
         case .benchCandidates:
             intelStore.benchCandidateModels(from: filteredModels(from: models))
+        }
+        return filtered.filter { model in
+            if blocked.contains(model.pingTransport) { return false }
+            switch model.pingTransport {
+            case .claudeCLI: return Self.isCLIOnPath("claude")
+            case .geminiCLI: return Self.isCLIOnPath("gemini")
+            default: return true
+            }
         }
     }
 
@@ -263,6 +273,17 @@ public final class ModelHealthViewModel {
         case .openCode:
             return await pingCLIModel(model, transport: .openCode)
         }
+    }
+
+    private static func isCLIOnPath(_ executable: String) -> Bool {
+        let path = ProcessInfo.processInfo.environment["PATH"] ?? "/usr/bin:/bin"
+        for dir in path.split(separator: ":") {
+            let fullPath = (String(dir) as NSString).appendingPathComponent(executable)
+            if FileManager.default.isExecutableFile(atPath: fullPath) {
+                return true
+            }
+        }
+        return false
     }
 
     private static let defaultPingPrompt = "Reply with just the word: pong"
@@ -511,3 +532,5 @@ public final class ModelHealthViewModel {
         ModelHealthStatusResolver.resolve(requestedModelId: requestedModelId, completion: completion)
     }
 }
+
+// swiftlint:enable file_length type_body_length
