@@ -128,6 +128,130 @@ struct HostRunExecutorTests {
         #expect(eventKinds.firstIndex(of: "logLine") ?? Int.max < eventKinds.firstIndex(of: "completed") ?? 0)
     }
 
+    // MARK: - extractStepMetrics unit tests
+
+    @Test("extractStepMetrics parses cost and token counts from step_finish line")
+    func extractStepMetricsParsesAll() {
+        let line = """
+        {"type":"step_finish","part":{"type":"step-finish","cost":0.042,\
+        "tokens":{"input":3200,"output":1800,"reasoning":0,\
+        "cache":{"read":800,"write":120}}}}
+        """
+        let metrics = HostRunExecutor.extractStepMetrics(from: line)
+        #expect(metrics != nil)
+        #expect(abs((metrics?.cost ?? -1) - 0.042) < 0.0001)
+        #expect(metrics?.inputTokens == 3200)
+        #expect(metrics?.outputTokens == 1800)
+        #expect(metrics?.cacheReadTokens == 800)
+        #expect(metrics?.cacheWriteTokens == 120)
+    }
+
+    @Test("extractStepMetrics returns nil for non-step_finish lines")
+    func extractStepMetricsIgnoresOtherEvents() {
+        let line = """
+        {"type":"text","part":{"type":"text","text":"hello world"}}
+        """
+        #expect(HostRunExecutor.extractStepMetrics(from: line) == nil)
+    }
+
+    @Test("extractStepMetrics returns nil for plain text lines")
+    func extractStepMetricsIgnoresPlainText() {
+        #expect(HostRunExecutor.extractStepMetrics(from: "plain log line") == nil)
+    }
+
+    @Test("completed run accumulates token counts from step_finish events")
+    func tokenCountsAccumulatedFromStream() async throws {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("host-tokens-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        let bigpowersRepo = root.appendingPathComponent("bigpowers", isDirectory: true)
+        let sandboxRoot = root.appendingPathComponent("SANDBOX", isDirectory: true)
+        let worktreeRoot = root.appendingPathComponent("worktrees", isDirectory: true)
+        let runsURL = root.appendingPathComponent("runs/data", isDirectory: true)
+        try FileManager.default.createDirectory(at: runsURL, withIntermediateDirectories: true)
+
+        try setupBigpowersRepo(at: bigpowersRepo)
+        try setupSandboxTask(at: sandboxRoot, taskId: "T01")
+
+        let scoreScript = root.appendingPathComponent("score_run.sh")
+        try """
+        #!/usr/bin/env bash
+        printf '{"code_pass":1,"artifact_score":1,"convention_score":1,"token_cost":0.0}\\n'
+        """.write(to: scoreScript, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: scoreScript.path)
+
+        let defaults = try #require(UserDefaults(suiteName: "HostRunExecutor-tokens-\(UUID().uuidString)"))
+        let config = HostRunConfig(userDefaults: defaults)
+        config.bigpowersRepo = bigpowersRepo.path
+        config.sandboxPath = sandboxRoot.path
+        config.worktreeRoot = worktreeRoot.path
+        config.bigpowersRef = "ref-v1"
+        config.scoreScriptPath = scoreScript.path
+
+        let store = BenchmarkStore(runsURL: runsURL, gitService: MockGitService())
+        let executor = HostRunExecutor(
+            store: store,
+            config: config,
+            shell: StepFinishMockShell(),
+            phaseTimeout: 5.0,
+            opencodePath: "/mock/opencode"
+        )
+
+        let task = BenchmarkTask(id: "T01", name: "Task", description: "Fix the bug")
+        var completed: BenchRow?
+        for await event in executor.run(task: task, model: "test/model") {
+            if case let .completed(row) = event { completed = row }
+            if case .failed = event { break }
+        }
+
+        let row = try #require(completed)
+        #expect(row.inputTokens == 3200)
+        #expect(row.outputTokens == 1800)
+        #expect(row.cacheReadTokens == 800)
+        #expect(row.cacheWriteTokens == 120)
+        #expect(abs(row.cost - 0.042) < 0.0001)
+    }
+
+    private struct StepFinishMockShell: ShellCommandRunning {
+        private let runner = ShellCommandRunner()
+
+        func run(
+            executable: String,
+            arguments: [String],
+            workingDirectory: URL?
+        ) throws -> ShellCommandResult {
+            try runner.run(executable: executable, arguments: arguments, workingDirectory: workingDirectory)
+        }
+
+        func streamLines(
+            executable: String,
+            arguments: [String],
+            workingDirectory: URL?
+        ) -> AsyncStream<String> {
+            runner.streamLines(executable: executable, arguments: arguments, workingDirectory: workingDirectory)
+        }
+
+        func streamOutput(
+            executable _: String,
+            arguments _: [String],
+            workingDirectory _: URL?
+        ) -> AsyncStream<ShellOutputEvent> {
+            AsyncStream { continuation in
+                Task {
+                    let stepFinish = """
+                    {"type":"step_finish","part":{"type":"step-finish","cost":0.042,\
+                    "tokens":{"input":3200,"output":1800,"reasoning":0,\
+                    "cache":{"read":800,"write":120}}}}
+                    """
+                    continuation.yield(.line(stepFinish))
+                    continuation.yield(.completed(exitCode: 0))
+                    continuation.finish()
+                }
+            }
+        }
+    }
+
     private struct DelayedLineMockShell: ShellCommandRunning {
         private let runner = ShellCommandRunner()
 
