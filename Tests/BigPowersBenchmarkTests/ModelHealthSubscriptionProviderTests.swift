@@ -2,7 +2,7 @@
 import Foundation
 import Testing
 
-@Suite("ModelHealthSubscriptionProvider")
+@Suite("ModelHealthSubscriptionProvider", .serialized)
 struct ModelHealthSubscriptionProviderTests {
     private func store(providers: [Provider]) -> ProviderStore {
         let store = ProviderStore(fileURL: FileManager.default.temporaryDirectory
