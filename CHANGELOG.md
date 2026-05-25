@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.1.1...v1.2.0) (2026-05-25)
+
+
+### Bug Fixes
+
+* **lint:** Final build and test isolation fixes ([27ede83](https://github.com/danielvm-git/bigpowers-benchmark/commit/27ede836bb1c273a22f61095b4aa5cc03518c5de))
+
+
+### Features
+
+* **runner:** Add Host execution mode and Model Health features ([7a5d2e1](https://github.com/danielvm-git/bigpowers-benchmark/commit/7a5d2e127382dde135bd4d68121b8730d28f9075))
+
 ## [1.1.1](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.1.0...v1.1.1) (2026-05-24)
 
 
