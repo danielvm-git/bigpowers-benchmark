@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.2.0...v1.3.0) (2026-05-25)
+
+
+### Features
+
+* **5.1:** dashboard viewmodel, theme fixes, navigation state-loss fix ([#3](https://github.com/danielvm-git/bigpowers-benchmark/issues/3)) ([ce7c7fe](https://github.com/danielvm-git/bigpowers-benchmark/commit/ce7c7fe8f5950744cf38548d543ecd0da0c81cc0))
+
 # [1.2.0](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.1.1...v1.2.0) (2026-05-25)
 
 
