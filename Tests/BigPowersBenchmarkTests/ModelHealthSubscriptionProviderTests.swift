@@ -23,7 +23,8 @@ struct ModelHealthSubscriptionProviderTests {
         let available = ModelHealthSubscriptionProvider.available(
             providerStore: providerStore,
             dotEnvPaths: [],
-            keychain: keychain
+            keychain: keychain,
+            environment: [:]
         )
 
         #expect(available.contains(.openrouter))
@@ -38,7 +39,8 @@ struct ModelHealthSubscriptionProviderTests {
         let available = ModelHealthSubscriptionProvider.available(
             providerStore: providerStore,
             dotEnvPaths: [],
-            keychain: MockKeychainService()
+            keychain: MockKeychainService(),
+            environment: [:]
         )
 
         #expect(!available.contains(.openrouter))
@@ -51,7 +53,8 @@ struct ModelHealthSubscriptionProviderTests {
         let available = ModelHealthSubscriptionProvider.available(
             providerStore: providerStore,
             dotEnvPaths: [],
-            keychain: MockKeychainService()
+            keychain: MockKeychainService(),
+            environment: [:]
         )
 
         #expect(available.contains(.claudecli))
@@ -88,7 +91,8 @@ struct ModelHealthSubscriptionProviderTests {
         let available = ModelHealthSubscriptionProvider.available(
             providerStore: store(providers: []),
             dotEnvPaths: [],
-            keychain: MockKeychainService()
+            keychain: MockKeychainService(),
+            environment: [:]
         )
 
         #expect(available.contains(.nousresearchDirect))
@@ -106,7 +110,8 @@ struct ModelHealthSubscriptionProviderTests {
         let available = ModelHealthSubscriptionProvider.available(
             providerStore: store(providers: []),
             dotEnvPaths: [],
-            keychain: MockKeychainService()
+            keychain: MockKeychainService(),
+            environment: [:]
         )
 
         #expect(!available.contains(.nousresearchDirect))

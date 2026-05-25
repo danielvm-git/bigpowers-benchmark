@@ -213,7 +213,7 @@ public struct SettingsView: View {
                         .font(.caption)
                         .foregroundColor(tokens.fg3)
                 } else {
-                    List(filteredRegistryModels) { model in
+                    List(filteredRegistryModels, id: \.id) { model in
                         VStack(alignment: .leading, spacing: 6) {
                             HStack {
                                 Text(model.name)

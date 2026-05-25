@@ -3,6 +3,38 @@
 import Foundation
 
 public struct ModelInfo: Codable, Identifiable, Sendable, Hashable {
+    public let id: String
+    public let name: String
+    public let provider: String
+    public let contextWindow: Int
+    public let tier: Tier
+    public let capabilities: [Capability]
+    public let pricing: ModelPricing
+    public let pingTransport: PingTransport
+    public let resolvedModelId: String?
+
+    public init(
+        id: String,
+        name: String,
+        provider: String,
+        contextWindow: Int,
+        tier: Tier,
+        capabilities: [Capability],
+        pricing: ModelPricing,
+        pingTransport: PingTransport = .openRouter,
+        resolvedModelId: String? = nil
+    ) {
+        // swiftlint:disable:previous function_parameter_count
+        self.id = id
+        self.name = name
+        self.provider = provider
+        self.contextWindow = contextWindow
+        self.tier = tier
+        self.capabilities = capabilities
+        self.pricing = pricing
+        self.pingTransport = pingTransport
+        self.resolvedModelId = resolvedModelId
+    }
 
     public var apiModelId: String {
         resolvedModelId ?? id

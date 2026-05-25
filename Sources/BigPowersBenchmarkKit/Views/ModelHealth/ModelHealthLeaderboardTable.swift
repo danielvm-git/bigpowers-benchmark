@@ -43,62 +43,62 @@ struct ModelHealthLeaderboardTable<ModelCell: View>: View {
                 BenchSuitabilityBadge(suitability: row.suitability, tokens: tokens)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.bench)
+            .customizationID(ModelHealthColumnLayout.ColumnID.bench)
 
             TableColumn("Latency") { (row: ModelHealthTableRow) in
                 LatencyCell(p50: row.p50, maxP50: maxP50, tokens: tokens)
             }
             .width(min: 130, ideal: 170, max: 220)
-            .customizationID(ModelHealthColumnLayout.ID.latency)
+            .customizationID(ModelHealthColumnLayout.ColumnID.latency)
 
             TableColumn("Free") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.isFree, tooltip: "Free tier model", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.free)
+            .customizationID(ModelHealthColumnLayout.ColumnID.free)
 
             TableColumn("Ctx") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasContext, tooltip: "Context window ≥ 32K", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.ctx)
+            .customizationID(ModelHealthColumnLayout.ColumnID.ctx)
 
             TableColumn("Clear") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.notContentFiltered, tooltip: "Not content-filtered", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.clear)
+            .customizationID(ModelHealthColumnLayout.ColumnID.clear)
 
             TableColumn("Tools") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasTools, tooltip: "Tool calling supported", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.tools)
+            .customizationID(ModelHealthColumnLayout.ColumnID.tools)
 
             TableColumn("Rsp") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.responded, tooltip: "Got a response (latency recorded)", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.rsp)
+            .customizationID(ModelHealthColumnLayout.ColumnID.rsp)
 
             TableColumn("Match") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.modelMatched, tooltip: "Responded model matches request", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.match)
+            .customizationID(ModelHealthColumnLayout.ColumnID.match)
 
             TableColumn("cost") { (row: ModelHealthTableRow) in
                 Text(String(format: "$%.4f", row.cost))
                     .foregroundColor(tokens.fg3)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.cost)
+            .customizationID(ModelHealthColumnLayout.ColumnID.cost)
 
             TableColumn("Model") { (row: ModelHealthTableRow) in
                 modelColumnWithRank(row)
             }
             .width(min: 220, ideal: 360, max: CGFloat.infinity)
-            .customizationID(ModelHealthColumnLayout.ID.model)
+            .customizationID(ModelHealthColumnLayout.ColumnID.model)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -109,62 +109,62 @@ struct ModelHealthLeaderboardTable<ModelCell: View>: View {
                 BenchSuitabilityBadge(suitability: row.suitability, tokens: tokens)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.bench)
+            .customizationID(ModelHealthColumnLayout.ColumnID.bench)
 
             TableColumn("Latency") { (row: ModelHealthTableRow) in
                 LatencyCell(p50: row.p50, maxP50: maxP50, tokens: tokens)
             }
             .width(min: 130, ideal: 170, max: 220)
-            .customizationID(ModelHealthColumnLayout.ID.latency)
+            .customizationID(ModelHealthColumnLayout.ColumnID.latency)
 
             TableColumn("Free") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.isFree, tooltip: "Free tier model", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.free)
+            .customizationID(ModelHealthColumnLayout.ColumnID.free)
 
             TableColumn("Ctx") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasContext, tooltip: "Context window ≥ 32K", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.ctx)
+            .customizationID(ModelHealthColumnLayout.ColumnID.ctx)
 
             TableColumn("Clear") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.notContentFiltered, tooltip: "Not content-filtered", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.clear)
+            .customizationID(ModelHealthColumnLayout.ColumnID.clear)
 
             TableColumn("Tools") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasTools, tooltip: "Tool calling supported", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.tools)
+            .customizationID(ModelHealthColumnLayout.ColumnID.tools)
 
             TableColumn("Rsp") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.responded, tooltip: "Got a response (latency recorded)", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.rsp)
+            .customizationID(ModelHealthColumnLayout.ColumnID.rsp)
 
             TableColumn("Match") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.modelMatched, tooltip: "Responded model matches request", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.match)
+            .customizationID(ModelHealthColumnLayout.ColumnID.match)
 
             TableColumn("reason") { (row: ModelHealthTableRow) in
                 Text(row.reasoningTokens > 0 ? "\(row.reasoningTokens)" : "—")
                     .foregroundColor(tokens.warn)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.reason)
+            .customizationID(ModelHealthColumnLayout.ColumnID.reason)
 
             TableColumn("Model") { (row: ModelHealthTableRow) in
                 modelColumnWithRank(row)
             }
             .width(min: 220, ideal: 360, max: CGFloat.infinity)
-            .customizationID(ModelHealthColumnLayout.ID.model)
+            .customizationID(ModelHealthColumnLayout.ColumnID.model)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -175,62 +175,62 @@ struct ModelHealthLeaderboardTable<ModelCell: View>: View {
                 BenchSuitabilityBadge(suitability: row.suitability, tokens: tokens)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.bench)
+            .customizationID(ModelHealthColumnLayout.ColumnID.bench)
 
             TableColumn("Latency") { (row: ModelHealthTableRow) in
                 LatencyCell(p50: row.p50, maxP50: maxP50, tokens: tokens)
             }
             .width(min: 130, ideal: 170, max: 220)
-            .customizationID(ModelHealthColumnLayout.ID.latency)
+            .customizationID(ModelHealthColumnLayout.ColumnID.latency)
 
             TableColumn("Free") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.isFree, tooltip: "Free tier model", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.free)
+            .customizationID(ModelHealthColumnLayout.ColumnID.free)
 
             TableColumn("Ctx") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasContext, tooltip: "Context window ≥ 32K", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.ctx)
+            .customizationID(ModelHealthColumnLayout.ColumnID.ctx)
 
             TableColumn("Clear") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.notContentFiltered, tooltip: "Not content-filtered", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.clear)
+            .customizationID(ModelHealthColumnLayout.ColumnID.clear)
 
             TableColumn("Tools") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.hasTools, tooltip: "Tool calling supported", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.tools)
+            .customizationID(ModelHealthColumnLayout.ColumnID.tools)
 
             TableColumn("Rsp") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.responded, tooltip: "Got a response (latency recorded)", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.rsp)
+            .customizationID(ModelHealthColumnLayout.ColumnID.rsp)
 
             TableColumn("Match") { (row: ModelHealthTableRow) in
                 SignalCell(pass: row.modelMatched, tooltip: "Responded model matches request", tokens: tokens)
             }
             .width(min: 44, ideal: 52, max: 60)
-            .customizationID(ModelHealthColumnLayout.ID.match)
+            .customizationID(ModelHealthColumnLayout.ColumnID.match)
 
             TableColumn("cost") { (row: ModelHealthTableRow) in
                 Text(String(format: "$%.4f", row.cost))
                     .foregroundColor(tokens.fg3)
             }
             .width(min: 72, ideal: 88, max: 110)
-            .customizationID(ModelHealthColumnLayout.ID.cost)
+            .customizationID(ModelHealthColumnLayout.ColumnID.cost)
 
             TableColumn("Model") { (row: ModelHealthTableRow) in
                 modelCell(row)
             }
             .width(min: 220, ideal: 360, max: CGFloat.infinity)
-            .customizationID(ModelHealthColumnLayout.ID.model)
+            .customizationID(ModelHealthColumnLayout.ColumnID.model)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

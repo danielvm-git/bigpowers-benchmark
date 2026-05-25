@@ -28,7 +28,8 @@ public enum ProviderCredentialResolver {
     public static func resolve(
         providerId: String,
         keychain: KeychainServiceProtocol = KeychainService(),
-        dotEnvPaths: [URL] = defaultDotEnvPaths()
+        dotEnvPaths: [URL] = defaultDotEnvPaths(),
+        environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> ResolvedProviderCredential? {
         let account = "bigpowers.benchmark.\(providerId)"
         if let key = keychain.load(account: account), !key.isEmpty {
@@ -36,7 +37,7 @@ public enum ProviderCredentialResolver {
         }
 
         if let envName = environmentVariableNames[providerId],
-           let value = ProcessInfo.processInfo.environment[envName],
+           let value = environment[envName],
            !value.isEmpty {
             return ResolvedProviderCredential(value: value, source: .environment)
         }
@@ -53,9 +54,10 @@ public enum ProviderCredentialResolver {
     public static func isConfigured(
         providerId: String,
         keychain: KeychainServiceProtocol = KeychainService(),
-        dotEnvPaths: [URL] = defaultDotEnvPaths()
+        dotEnvPaths: [URL] = defaultDotEnvPaths(),
+        environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> Bool {
-        resolve(providerId: providerId, keychain: keychain, dotEnvPaths: dotEnvPaths) != nil
+        resolve(providerId: providerId, keychain: keychain, dotEnvPaths: dotEnvPaths, environment: environment) != nil
     }
 
     public static func defaultDotEnvPaths(projectRoot: URL? = nil) -> [URL] {

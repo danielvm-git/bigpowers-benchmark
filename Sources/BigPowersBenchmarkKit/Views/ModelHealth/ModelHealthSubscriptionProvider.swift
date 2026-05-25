@@ -39,13 +39,15 @@ public enum ModelHealthSubscriptionProvider: String, CaseIterable, Sendable {
     public static func available(
         providerStore: ProviderStore,
         dotEnvPaths: [URL],
-        keychain: KeychainServiceProtocol = KeychainService()
+        keychain: KeychainServiceProtocol = KeychainService(),
+        environment: [String: String] = ProcessInfo.processInfo.environment
     ) -> [ModelHealthSubscriptionProvider] {
         allCases.filter {
             $0.isAvailable(
                 providerStore: providerStore,
                 dotEnvPaths: dotEnvPaths,
-                keychain: keychain
+                keychain: keychain,
+                environment: environment
             )
         }
     }
@@ -53,7 +55,8 @@ public enum ModelHealthSubscriptionProvider: String, CaseIterable, Sendable {
     private func isAvailable(
         providerStore: ProviderStore,
         dotEnvPaths: [URL],
-        keychain: KeychainServiceProtocol
+        keychain: KeychainServiceProtocol,
+        environment: [String: String]
     ) -> Bool {
         switch self {
         case .openrouter:
@@ -61,7 +64,8 @@ public enum ModelHealthSubscriptionProvider: String, CaseIterable, Sendable {
                 && ProviderCredentialResolver.isConfigured(
                     providerId: "openrouter",
                     keychain: keychain,
-                    dotEnvPaths: dotEnvPaths
+                    dotEnvPaths: dotEnvPaths,
+                    environment: environment
                 )
         case .nousresearchDirect:
             NousPortalCredentialStore.isConfigured()

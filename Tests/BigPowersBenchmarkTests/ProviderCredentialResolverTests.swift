@@ -19,7 +19,8 @@ struct ProviderCredentialResolverTests {
         let resolved = ProviderCredentialResolver.resolve(
             providerId: "openrouter",
             keychain: keychain,
-            dotEnvPaths: [envFile]
+            dotEnvPaths: [envFile],
+            environment: [:]
         )
 
         #expect(resolved?.value == "from-keychain")
@@ -39,7 +40,8 @@ struct ProviderCredentialResolverTests {
         let resolved = ProviderCredentialResolver.resolve(
             providerId: "openrouter",
             keychain: keychain,
-            dotEnvPaths: [envFile]
+            dotEnvPaths: [envFile],
+            environment: [:]
         )
 
         #expect(resolved?.value == "sk-or-test")
@@ -52,7 +54,8 @@ struct ProviderCredentialResolverTests {
         let resolved = ProviderCredentialResolver.resolve(
             providerId: "openrouter",
             keychain: keychain,
-            dotEnvPaths: []
+            dotEnvPaths: [],
+            environment: [:]
         )
         #expect(resolved == nil)
     }
