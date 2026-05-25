@@ -35,6 +35,9 @@ struct BigPowersBenchmarkApp: App {
     init() {
         try? modelIntelStore.loadFromDisk()
         modelHealthViewModel = ModelHealthViewModel(intelStore: modelIntelStore)
+        if hostRunConfig.executionMode == .host {
+            modelHealthViewModel.disabledCLITransports = [.claudeCLI, .geminiCLI]
+        }
         let daytonaClient = DaytonaClient(config: daytonaConfig)
         missionControlViewModel = MissionControlViewModel(
             daytonaClient: daytonaClient,

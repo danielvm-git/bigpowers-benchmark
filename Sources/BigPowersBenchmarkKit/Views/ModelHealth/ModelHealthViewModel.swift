@@ -41,6 +41,7 @@ public final class ModelHealthViewModel {
     public var pingScope: ModelPingScope = .smartFree
 
     public var showReasoningColumn = false
+    public var disabledCLITransports: Set<PingTransport> = []
 
     private let client: OpenRouterClientProtocol
     private let nousResearchClient: NousResearchClientProtocol
@@ -113,13 +114,7 @@ public final class ModelHealthViewModel {
     }
 
     public func pingTargets(from models: [ModelInfo]) -> [ModelInfo] {
-        let available: (ModelInfo) -> Bool = { model in
-            switch model.pingTransport {
-            case .claudeCLI: Self.isCLIOnPath("claude")
-            case .geminiCLI: Self.isCLIOnPath("gemini")
-            default: true
-            }
-        }
+        let blocked = disabledCLITransports
         let filtered: [ModelInfo] = switch pingScope {
         case .all:
             models
@@ -132,7 +127,14 @@ public final class ModelHealthViewModel {
         case .benchCandidates:
             intelStore.benchCandidateModels(from: filteredModels(from: models))
         }
-        return filtered.filter(available)
+        return filtered.filter { model in
+            if blocked.contains(model.pingTransport) { return false }
+            switch model.pingTransport {
+            case .claudeCLI: return Self.isCLIOnPath("claude")
+            case .geminiCLI: return Self.isCLIOnPath("gemini")
+            default: return true
+            }
+        }
     }
 
     public func startPingAll(
