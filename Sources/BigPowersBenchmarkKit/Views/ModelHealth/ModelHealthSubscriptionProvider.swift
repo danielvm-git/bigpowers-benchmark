@@ -68,7 +68,7 @@ public enum ModelHealthSubscriptionProvider: String, CaseIterable, Sendable {
                     environment: environment
                 )
         case .nousresearchDirect:
-            NousPortalCredentialStore.isConfigured()
+            NousPortalCredentialStore.isConfigured(environment: environment)
         case .opencode, .claudecli, .geminicli:
             true
         }

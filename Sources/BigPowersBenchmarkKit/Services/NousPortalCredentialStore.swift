@@ -6,17 +6,27 @@ public enum NousPortalCredentialStore {
         .appendingPathComponent(".hermes/auth.json")
 
     /// Returns true if the user has valid Nous credentials (non-expired token).
-    public static func isConfigured(from url: URL? = nil) -> Bool {
-        resolveAgentKey(from: url) != nil
+    public static func isConfigured(
+        from url: URL? = nil,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> Bool {
+        resolveAgentKey(from: url, environment: environment) != nil
     }
 
-    public static func resolveAgentKey(from url: URL? = nil) -> String? {
+    public static func resolveAgentKey(
+        from url: URL? = nil,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> String? {
         let fileURL = url ?? authFileURL
         guard FileManager.default.fileExists(atPath: fileURL.path),
               let data = try? Data(contentsOf: fileURL),
               let auth = try? JSONDecoder().decode(HermesAuthFile.self, from: data),
               let nous = auth.providers?.nous
         else {
+            // If auth file doesn't exist, check environment variable
+            if let envKey = environment["NOUSPORTAL_API_KEY"], !envKey.isEmpty {
+                return envKey
+            }
             return nil
         }
 
@@ -38,6 +48,11 @@ public enum NousPortalCredentialStore {
                 false
             }
             if !expired { return accessToken }
+        }
+
+        // Fall back to environment variable if auth file tokens are expired
+        if let envKey = environment["NOUSPORTAL_API_KEY"], !envKey.isEmpty {
+            return envKey
         }
 
         return nil
