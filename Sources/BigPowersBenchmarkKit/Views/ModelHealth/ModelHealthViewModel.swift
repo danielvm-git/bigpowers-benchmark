@@ -113,7 +113,14 @@ public final class ModelHealthViewModel {
     }
 
     public func pingTargets(from models: [ModelInfo]) -> [ModelInfo] {
-        switch pingScope {
+        let available: (ModelInfo) -> Bool = { model in
+            switch model.pingTransport {
+            case .claudeCLI: Self.isCLIOnPath("claude")
+            case .geminiCLI: Self.isCLIOnPath("gemini")
+            default: true
+            }
+        }
+        let filtered: [ModelInfo] = switch pingScope {
         case .all:
             models
         case .filtered, .provider:
@@ -125,6 +132,7 @@ public final class ModelHealthViewModel {
         case .benchCandidates:
             intelStore.benchCandidateModels(from: filteredModels(from: models))
         }
+        return filtered.filter(available)
     }
 
     public func startPingAll(
@@ -263,6 +271,17 @@ public final class ModelHealthViewModel {
         case .openCode:
             return await pingCLIModel(model, transport: .openCode)
         }
+    }
+
+    private static func isCLIOnPath(_ executable: String) -> Bool {
+        let path = ProcessInfo.processInfo.environment["PATH"] ?? "/usr/bin:/bin"
+        for dir in path.split(separator: ":") {
+            let fullPath = (String(dir) as NSString).appendingPathComponent(executable)
+            if FileManager.default.isExecutableFile(atPath: fullPath) {
+                return true
+            }
+        }
+        return false
     }
 
     private static let defaultPingPrompt = "Reply with just the word: pong"
@@ -511,3 +530,5 @@ public final class ModelHealthViewModel {
         ModelHealthStatusResolver.resolve(requestedModelId: requestedModelId, completion: completion)
     }
 }
+
+// swiftlint:enable file_length type_body_length

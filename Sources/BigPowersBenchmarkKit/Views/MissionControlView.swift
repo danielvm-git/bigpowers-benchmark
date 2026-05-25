@@ -565,18 +565,20 @@ public struct MetricCard: View {
     let title: String
     let value: String
     let color: Color
+    let tokens: ThemeTokens
 
-    public init(title: String, value: String, color: Color) {
+    public init(title: String, value: String, color: Color, tokens: ThemeTokens) {
         self.title = title
         self.value = value
         self.color = color
+        self.tokens = tokens
     }
 
     public var body: some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(tokens.fg3)
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
@@ -584,7 +586,7 @@ public struct MetricCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color.secondary.opacity(0.1))
+        .background(tokens.surface)
         .cornerRadius(8)
     }
 }

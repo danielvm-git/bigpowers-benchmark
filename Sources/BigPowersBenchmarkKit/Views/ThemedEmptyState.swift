@@ -94,7 +94,7 @@ struct ThemedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
-            .foregroundColor(tokens.bg)
+            .foregroundColor(tokens.fg)
             .padding(.horizontal, 20)
             .padding(.vertical, 9)
             .background(
