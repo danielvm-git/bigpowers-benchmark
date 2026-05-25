@@ -4,12 +4,9 @@ import SwiftUI
 public struct DashboardView: View {
     @Environment(BenchmarkStore.self) private var store
     @Environment(ThemeManager.self) private var themeManager
+    @Environment(DashboardViewModel.self) private var vm
 
-    @State private var vm: DashboardViewModel
-
-    public init() {
-        _vm = State(wrappedValue: DashboardViewModel(store: BenchmarkStore()))
-    }
+    public init() {}
 
     public var body: some View {
         let tokens = themeManager.resolvedTheme.tokens
@@ -22,12 +19,6 @@ public struct DashboardView: View {
                 recentRunsSection(tokens: tokens)
             }
             .padding(30)
-        }
-        .onAppear {
-            vm = DashboardViewModel(store: store)
-        }
-        .onChange(of: store.runs.count) { _, _ in
-            vm = DashboardViewModel(store: store)
         }
     }
 

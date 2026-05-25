@@ -28,10 +28,23 @@ struct BigPowersBenchmarkApp: App {
     private let modelHealthViewModel: ModelHealthViewModel
     private let modelRegistry = ModelRegistry()
     private let modelHealthColumnStore = ModelHealthColumnCustomizationStore()
+    private let missionControlViewModel: MissionControlViewModel
+    private let dashboardViewModel: DashboardViewModel
+    private let runExplorerViewModel: RunExplorerViewModel
 
     init() {
         try? modelIntelStore.loadFromDisk()
         modelHealthViewModel = ModelHealthViewModel(intelStore: modelIntelStore)
+        let daytonaClient = DaytonaClient(config: daytonaConfig)
+        missionControlViewModel = MissionControlViewModel(
+            daytonaClient: daytonaClient,
+            store: benchmarkStore,
+            daytonaConfig: daytonaConfig,
+            hostRunConfig: hostRunConfig,
+            intelStore: modelIntelStore
+        )
+        dashboardViewModel = DashboardViewModel(store: benchmarkStore)
+        runExplorerViewModel = RunExplorerViewModel(store: benchmarkStore)
     }
 
     var body: some Scene {
@@ -47,6 +60,9 @@ struct BigPowersBenchmarkApp: App {
                 .environment(modelHealthViewModel)
                 .environment(modelRegistry)
                 .environment(modelHealthColumnStore)
+                .environment(missionControlViewModel)
+                .environment(dashboardViewModel)
+                .environment(runExplorerViewModel)
         }
         .commands {
             CommandGroup(after: .help) {
@@ -73,6 +89,9 @@ struct BigPowersBenchmarkApp: App {
                 .environment(modelHealthViewModel)
                 .environment(modelRegistry)
                 .environment(modelHealthColumnStore)
+                .environment(missionControlViewModel)
+                .environment(dashboardViewModel)
+                .environment(runExplorerViewModel)
         }
 
         WindowGroup(id: "run-explorer") {
@@ -87,6 +106,9 @@ struct BigPowersBenchmarkApp: App {
                 .environment(modelHealthViewModel)
                 .environment(modelRegistry)
                 .environment(modelHealthColumnStore)
+                .environment(missionControlViewModel)
+                .environment(dashboardViewModel)
+                .environment(runExplorerViewModel)
         }
 
         Settings {
@@ -101,6 +123,9 @@ struct BigPowersBenchmarkApp: App {
                 .environment(modelHealthViewModel)
                 .environment(modelRegistry)
                 .environment(modelHealthColumnStore)
+                .environment(missionControlViewModel)
+                .environment(dashboardViewModel)
+                .environment(runExplorerViewModel)
         }
 
         MenuBarExtra("BigPowers", systemImage: "gauge.with.dots.needle.bottom.50percent") {
@@ -115,6 +140,9 @@ struct BigPowersBenchmarkApp: App {
                 .environment(modelHealthViewModel)
                 .environment(modelRegistry)
                 .environment(modelHealthColumnStore)
+                .environment(missionControlViewModel)
+                .environment(dashboardViewModel)
+                .environment(runExplorerViewModel)
         }
         .menuBarExtraStyle(.window)
     }

@@ -4,162 +4,152 @@ import SwiftUI
 public struct RunExplorerView: View {
     @Environment(BenchmarkStore.self) private var store
     @Environment(ThemeManager.self) private var themeManager
+    @Environment(RunExplorerViewModel.self) private var viewModel
 
-    @State private var viewModel: RunExplorerViewModel?
     @State private var showComparePanel = false
 
     public init() {}
 
     public var body: some View {
         let tokens = themeManager.resolvedTheme.tokens
-        Group {
-            if let vm = viewModel {
-                HSplitView {
-                    // Left Column: Table of runs and filters
-                    VStack(spacing: 0) {
-                        Table(
-                            vm.filteredRuns,
-                            selection: Bindable(vm).selectedRunIDs,
-                            sortOrder: Bindable(vm).sortOrder
-                        ) {
-                            TableColumn("Date", value: \.timestamp) { row in
-                                Text(row.timestamp, style: .date)
-                                    .foregroundColor(tokens.fg)
-                            }
-                            TableColumn("Model", value: \.modelId) { row in
-                                Text(row.modelId)
-                                    .foregroundColor(tokens.fg2)
-                            }
-                            TableColumn("Task", value: \.taskId) { row in
-                                Text(row.taskId)
-                                    .foregroundColor(tokens.fg2)
-                            }
-                            TableColumn("Ref", value: \.bigpowersRef) { row in
-                                Text(row.bigpowersRef)
-                                    .foregroundColor(tokens.fg3)
-                            }
-                            TableColumn("Code", value: \.codePass) { row in
-                                Text("\(row.codePass)")
-                                    .foregroundColor(tokens.fg2)
-                            }
-                            TableColumn("Artifact", value: \.artifactScore) { row in
-                                Text("\(row.artifactScore)")
-                                    .foregroundColor(tokens.fg2)
-                            }
-                            TableColumn("Conv", value: \.conventionScore) { row in
-                                Text("\(row.conventionScore)")
-                                    .foregroundColor(tokens.fg2)
-                            }
-                            TableColumn("Overall", value: \.overallScore) { row in
-                                Text(String(format: "%.1f", row.overallScore))
-                                    .foregroundColor(scoreColor(row.overallScore, tokens: tokens))
-                            }
-                            TableColumn("Duration", value: \.duration) { row in
-                                Text(String(format: "%.1fs", row.duration))
-                                    .foregroundColor(tokens.fg3)
-                            }
-                            TableColumn("Cost", value: \.cost) { row in
-                                Text(String(format: "$%.4f", row.cost))
-                                    .foregroundColor(tokens.fg3)
-                            }
-                        }
-                        .searchable(text: Bindable(vm).query)
-                        .toolbar {
-                            ToolbarItemGroup(placement: .navigation) {
-                                Picker("Model", selection: Bindable(vm).selectedModel) {
-                                    Text("All Models").tag(nil as String?)
-                                    ForEach(vm.availableModels, id: \.self) { model in
-                                        Text(model).tag(model as String?)
-                                    }
-                                }
-                                .frame(width: 150)
-                                .accessibilityLabel("Filter by Model")
-
-                                Picker("Ref", selection: Bindable(vm).selectedRef) {
-                                    Text("All Refs").tag(nil as String?)
-                                    ForEach(vm.availableRefs, id: \.self) { ref in
-                                        Text(ref).tag(ref as String?)
-                                    }
-                                }
-                                .frame(width: 120)
-                                .accessibilityLabel("Filter by BigPowers Ref")
-
-                                Picker("Task", selection: Bindable(vm).selectedTask) {
-                                    Text("All Tasks").tag(nil as String?)
-                                    ForEach(vm.availableTasks, id: \.self) { task in
-                                        Text(task).tag(task as String?)
-                                    }
-                                }
-                                .frame(width: 100)
-                                .accessibilityLabel("Filter by Task ID")
-                            }
-
-                            ToolbarItemGroup(placement: .primaryAction) {
-                                Button {
-                                    copyMarkdownSummary(vm.filteredRuns)
-                                } label: {
-                                    Label("Copy Markdown Summary", systemImage: "doc.richtext")
-                                }
-
-                                Button {
-                                    exportCSV(vm.filteredRuns)
-                                } label: {
-                                    Label("Export CSV", systemImage: "doc.text")
-                                }
-
-                                Button {
-                                    exportJSON(vm.filteredRuns)
-                                } label: {
-                                    Label("Export JSON", systemImage: "braces")
-                                }
-
-                                if vm.selectedRunIDs.count == 2 {
-                                    Button {
-                                        showComparePanel.toggle()
-                                    } label: {
-                                        Label("Compare Selected", systemImage: "arrow.left.and.right")
-                                    }
-                                }
-                            }
-                        }
+        let vm = viewModel
+        HSplitView {
+            // Left Column: Table of runs and filters
+            VStack(spacing: 0) {
+                Table(
+                    vm.filteredRuns,
+                    selection: Bindable(vm).selectedRunIDs,
+                    sortOrder: Bindable(vm).sortOrder
+                ) {
+                    TableColumn("Date", value: \.timestamp) { row in
+                        Text(row.timestamp, style: .date)
+                            .foregroundColor(tokens.fg)
                     }
-                    .frame(minWidth: 500)
-
-                    // Right Column: Drawer/Details/Compare Inspector
-                    VStack {
-                        if vm.selectedRunIDs.count == 1,
-                           let selectedId = vm.selectedRunIDs.first,
-                           let run = store.runs.first(where: { $0.id == selectedId }) {
-                            RunInspectorView(run: run, tokens: tokens)
-                        } else if vm.selectedRunIDs.count == 2, showComparePanel {
-                            let selected = store.runs.filter { vm.selectedRunIDs.contains($0.id) }
-                            if selected.count == 2 {
-                                CompareInspectorView(runA: selected[0], runB: selected[1], tokens: tokens)
-                            }
-                        } else {
-                            ThemedEmptyState(
-                                icon: "info.circle",
-                                title: "Nothing Selected",
-                                subtitle: "Select a single run to inspect details, or select two runs to compare them side by side.",
-                                tokens: tokens
-                            )
-                        }
+                    TableColumn("Model", value: \.modelId) { row in
+                        Text(row.modelId)
+                            .foregroundColor(tokens.fg2)
                     }
-                    .frame(width: 320)
-                    .background(tokens.bg1)
+                    TableColumn("Task", value: \.taskId) { row in
+                        Text(row.taskId)
+                            .foregroundColor(tokens.fg2)
+                    }
+                    TableColumn("Ref", value: \.bigpowersRef) { row in
+                        Text(row.bigpowersRef)
+                            .foregroundColor(tokens.fg3)
+                    }
+                    TableColumn("Code", value: \.codePass) { row in
+                        Text("\(row.codePass)")
+                            .foregroundColor(tokens.fg2)
+                    }
+                    TableColumn("Artifact", value: \.artifactScore) { row in
+                        Text("\(row.artifactScore)")
+                            .foregroundColor(tokens.fg2)
+                    }
+                    TableColumn("Conv", value: \.conventionScore) { row in
+                        Text("\(row.conventionScore)")
+                            .foregroundColor(tokens.fg2)
+                    }
+                    TableColumn("Overall", value: \.overallScore) { row in
+                        Text(String(format: "%.1f", row.overallScore))
+                            .foregroundColor(scoreColor(row.overallScore, tokens: tokens))
+                    }
+                    TableColumn("Duration", value: \.duration) { row in
+                        Text(String(format: "%.1fs", row.duration))
+                            .foregroundColor(tokens.fg3)
+                    }
+                    TableColumn("Cost", value: \.cost) { row in
+                        Text(String(format: "$%.4f", row.cost))
+                            .foregroundColor(tokens.fg3)
+                    }
                 }
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(tokens.bg)
+                .searchable(text: Bindable(vm).query)
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigation) {
+                        Picker("Model", selection: Bindable(vm).selectedModel) {
+                            Text("All Models").tag(nil as String?)
+                            ForEach(vm.availableModels, id: \.self) { model in
+                                Text(model).tag(model as String?)
+                            }
+                        }
+                        .frame(width: 150)
+                        .accessibilityLabel("Filter by Model")
+
+                        Picker("Ref", selection: Bindable(vm).selectedRef) {
+                            Text("All Refs").tag(nil as String?)
+                            ForEach(vm.availableRefs, id: \.self) { ref in
+                                Text(ref).tag(ref as String?)
+                            }
+                        }
+                        .frame(width: 120)
+                        .accessibilityLabel("Filter by BigPowers Ref")
+
+                        Picker("Task", selection: Bindable(vm).selectedTask) {
+                            Text("All Tasks").tag(nil as String?)
+                            ForEach(vm.availableTasks, id: \.self) { task in
+                                Text(task).tag(task as String?)
+                            }
+                        }
+                        .frame(width: 100)
+                        .accessibilityLabel("Filter by Task ID")
+                    }
+
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        Button {
+                            copyMarkdownSummary(vm.filteredRuns)
+                        } label: {
+                            Label("Copy Markdown Summary", systemImage: "doc.richtext")
+                        }
+
+                        Button {
+                            exportCSV(vm.filteredRuns)
+                        } label: {
+                            Label("Export CSV", systemImage: "doc.text")
+                        }
+
+                        Button {
+                            exportJSON(vm.filteredRuns)
+                        } label: {
+                            Label("Export JSON", systemImage: "braces")
+                        }
+
+                        if vm.selectedRunIDs.count == 2 {
+                            Button {
+                                showComparePanel.toggle()
+                            } label: {
+                                Label("Compare Selected", systemImage: "arrow.left.and.right")
+                            }
+                        }
+                    }
+                }
             }
+            .frame(minWidth: 500)
+
+            // Right Column: Drawer/Details/Compare Inspector
+            VStack {
+                let run: BenchRow? = {
+                    guard vm.selectedRunIDs.count == 1, let id = vm.selectedRunIDs.first else { return nil }
+                    return store.runs.first(where: { $0.id == id })
+                }()
+                if let run {
+                    RunInspectorView(run: run, tokens: tokens)
+                } else if vm.selectedRunIDs.count == 2, showComparePanel {
+                    let selected = store.runs.filter { vm.selectedRunIDs.contains($0.id) }
+                    if selected.count == 2 {
+                        CompareInspectorView(runA: selected[0], runB: selected[1], tokens: tokens)
+                    }
+                } else {
+                    ThemedEmptyState(
+                        icon: "info.circle",
+                        title: "Nothing Selected",
+                        subtitle: "Select a single run to inspect details, or select two runs to compare them side by side.",
+                        tokens: tokens
+                    )
+                }
+            }
+            .frame(width: 320)
+            .background(tokens.bg1)
         }
         .background(tokens.bg)
-        .onAppear {
-            if viewModel == nil {
-                viewModel = RunExplorerViewModel(store: store)
-            }
-        }
     }
 
     private func scoreColor(_ score: Double, tokens: ThemeTokens) -> Color {

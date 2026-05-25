@@ -17,7 +17,7 @@
 | **3.3** Terminal Panel | ✅ Done | TerminalView, LogLineRenderer + tests |
 | **3.4** Mission Control | ✅ Done | MissionControlView + ViewModel + tests |
 | **4.1** Run Explorer | ✅ Done | RunExplorerView + ViewModel + tests |
-| **5.1** Dashboard | ✅ Done | DashboardViewModel + 9 tests; view uses real computed data |
+| **5.1** Dashboard | ✅ Done | DashboardViewModel + 9 tests; view uses real computed data; VM lifted to App level via environment |
 | **6.1** Task Library | ⚠️ Partial | View exists; model is `BenchmarkTask.swift` (not Task.swift); **no TaskLoader, no tests** |
 | **7.1** Model Health | ✅ Done | ModelHealthView + ViewModel + ModelRegistry + ModelInfo + tests |
 | **8.1** Skill Insights | ⚠️ Partial | View exists; **no SkillExtractor, no SkillRadarView, no tests** |
