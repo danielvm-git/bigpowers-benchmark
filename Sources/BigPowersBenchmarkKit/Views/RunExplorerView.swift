@@ -158,10 +158,6 @@ public struct RunExplorerView: View {
         return tokens.bad
     }
 
-    private func runCost(_ row: BenchRow) -> Double {
-        row.cost
-    }
-
     /// Copies a markdown table of the runs to the clipboard
     private func copyMarkdownSummary(_ runs: [BenchRow]) {
         var markdown = "| Date | Model | Task | Score | Cost |\n| :--- | :--- | :--- | :--- | :--- |\n"

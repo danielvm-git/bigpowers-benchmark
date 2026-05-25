@@ -183,7 +183,7 @@ public struct DashboardView: View {
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(tokens.good.opacity(0.2), lineWidth: 1))
             } else {
                 VStack(spacing: 8) {
-                    ForEach(Array(vm.recentRegressions.enumerated()), id: \.offset) { _, reg in
+                    ForEach(vm.recentRegressions) { reg in
                         HStack {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundColor(tokens.bad)

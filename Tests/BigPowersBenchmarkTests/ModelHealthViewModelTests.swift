@@ -297,6 +297,38 @@ struct ModelHealthViewModelTests {
         #expect(targets[0].pingTransport == .openRouter)
     }
 
+    @Test("disabledCLITransports excludes models from ping targets")
+    func disabledCLITransportsExcludesCLIModels() {
+        let vm = ModelHealthViewModel(client: ModelHealthMockClient())
+        vm.pingScope = .all
+
+        let models = [
+            ModelInfo(
+                id: "openai/gpt-4o",
+                name: "GPT-4o",
+                provider: "openai",
+                contextWindow: 128_000,
+                tier: .deep,
+                capabilities: [.tools],
+                pricing: ModelPricing(inputPer1k: 5, outputPer1k: 15),
+                pingTransport: .openRouter
+            ),
+            StaticModelCatalogs.claudeCLIModel(modelArg: "haiku"),
+            StaticModelCatalogs.geminiCLIModel(modelArg: "gemini-2.5-flash"),
+        ]
+
+        #expect(vm.disabledCLITransports.isEmpty)
+        #expect(vm.pingTargets(from: models).count == 3)
+
+        vm.disabledCLITransports = [.claudeCLI]
+        #expect(vm.pingTargets(from: models).count == 2)
+        #expect(vm.pingTargets(from: models).allSatisfy { $0.pingTransport != .claudeCLI })
+
+        vm.disabledCLITransports = [.claudeCLI, .geminiCLI]
+        #expect(vm.pingTargets(from: models).count == 1)
+        #expect(vm.pingTargets(from: models)[0].pingTransport == .openRouter)
+    }
+
     @Test("rows update incrementally during batch")
     func incrementalRows() async {
         let mock = ModelHealthMockClient()
@@ -623,3 +655,5 @@ struct ModelInfoTests {
         #expect(ModelInfoFormatting.contextWindow(1_000_000) == "1M")
     }
 }
+
+// swiftlint:enable file_length type_body_length

@@ -561,36 +561,6 @@ struct MonoCell: View {
     }
 }
 
-public struct MetricCard: View {
-    let title: String
-    let value: String
-    let color: Color
-    let tokens: ThemeTokens
-
-    public init(title: String, value: String, color: Color, tokens: ThemeTokens) {
-        self.title = title
-        self.value = value
-        self.color = color
-        self.tokens = tokens
-    }
-
-    public var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(tokens.fg3)
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(color)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(tokens.surface)
-        .cornerRadius(8)
-    }
-}
-
 struct ThemedMetricCard: View {
     let title: String
     let value: String

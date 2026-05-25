@@ -21,10 +21,14 @@ public struct ModelImprovement: Equatable {
     public let delta: Double
 }
 
-public struct Regression: Equatable {
+public struct Regression: Equatable, Identifiable {
     public let model: String
     public let task: String
     public let delta: Double
+
+    public var id: String {
+        "\(model)\0\(task)"
+    }
 }
 
 @MainActor
@@ -79,7 +83,7 @@ public final class DashboardViewModel {
             let runs = store.runs.filter { $0.modelId == model && $0.taskId == task }
             let refs = Dictionary(grouping: runs, by: { $0.bigpowersRef })
             let refAverages = refs.mapValues { $0.map(\.overallScore).reduce(0, +) / Double($0.count) }
-            let sortedRefs = refAverages.keys.sorted()
+            let sortedRefs = refAverages.keys.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
             guard sortedRefs.count >= 2 else { return nil }
             let latest = refAverages[sortedRefs.last!] ?? 0
             let previous = refAverages[sortedRefs[sortedRefs.count - 2]] ?? 0
@@ -121,7 +125,7 @@ public final class DashboardViewModel {
     }
 
     private func deltaBetweenRefs(_ refAverages: [(ref: String, avgScore: Double)]) -> Double {
-        let sorted = refAverages.sorted { $0.ref < $1.ref }
+        let sorted = refAverages.sorted { $0.ref.localizedStandardCompare($1.ref) == .orderedAscending }
         guard let first = sorted.first, let last = sorted.last else { return 0 }
         return last.avgScore - first.avgScore
     }
