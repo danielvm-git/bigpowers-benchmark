@@ -3,20 +3,27 @@
 ## Current Phase
 **BUILD**
 
-## Status
-Story 0.1: Foundation — [x] Done
-Story 0.2: Design Token System — [x] Done
-Story 1.1: App Shell — [x] Done
-Story 2.1: Settings — [x] Done
-Story 3.1: DaytonaClient — [x] Done
-Story 3.2a: BenchmarkRunner — Phase 1+2 — [x] Done
-Story 3.2b: BenchmarkRunner — Phase 3+4+5 — [x] Done
-Story 3.3: Terminal Panel — [x] Done
-Story 3.4: Mission Control — [x] Done
-Observability: Solo-Dev Debug — [x] Done (see specs/OBSERVABILITY.md)
-Host runner (dual execution mode) — [x] Done (see specs/adr/host-runner.md)
-Story 4.1: Run Explorer — [x] Done
-Story 5.1: Dashboard — [ ] Next
+## Status — Actual (verified by codebase audit 2026-05-25)
+
+| Story | Status | Notes |
+|-------|--------|-------|
+| **0.1** Foundation | ✅ Done | Package.swift, BenchRow, BenchmarkStore, GitService + tests |
+| **0.2** Design Token System | ✅ Done | Theme.swift, ThemeManager.swift, 13 themes + tests |
+| **1.1** App Shell | ✅ Done | NavigationSplitView, sidebar, MenuBarExtra, OnboardingSheet + tests |
+| **2.1** Settings | ✅ Done | SettingsView, KeychainService, DaytonaConfig, Provider + tests |
+| **3.1** DaytonaClient | ✅ Done | ClientProtocol, Client, Mock, Sandbox, CommandStatus + tests |
+| **3.2a** Runner Phase 1+2 | ⚠️ Partial | Renamed to `DaytonaRunExecutor.swift`; RunEvent + tests exist |
+| **3.2b** Runner Phase 3+4+5 | ⚠️ Partial | Grading + timeout tests exist; `testFullRun` missing |
+| **3.3** Terminal Panel | ✅ Done | TerminalView, LogLineRenderer + tests |
+| **3.4** Mission Control | ✅ Done | MissionControlView + ViewModel + tests |
+| **4.1** Run Explorer | ✅ Done | RunExplorerView + ViewModel + tests |
+| **5.1** Dashboard | ✅ Done | DashboardViewModel + 9 tests; view uses real computed data |
+| **6.1** Task Library | ⚠️ Partial | View exists; model is `BenchmarkTask.swift` (not Task.swift); **no TaskLoader, no tests** |
+| **7.1** Model Health | ✅ Done | ModelHealthView + ViewModel + ModelRegistry + ModelInfo + tests |
+| **8.1** Skill Insights | ⚠️ Partial | View exists; **no SkillExtractor, no SkillRadarView, no tests** |
+| **9.1** MenuBar/Notifications | ❌ Missing | AnalyticsView exists; **NotificationService + all tests absent** |
+
+**Next priority:** Story 6.1 (Task Library) — needs `TaskLoader` service + tests.
 
 ## Artifacts
 - [x] PROJECT.md (Implied by CONTEXT.md)
