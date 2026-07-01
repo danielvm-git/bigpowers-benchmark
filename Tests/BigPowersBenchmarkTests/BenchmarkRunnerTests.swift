@@ -104,6 +104,43 @@ struct BenchmarkRunnerTests {
         #expect(completedRow?.cost == 0.05)
     }
 
+    @Test("DaytonaRunExecutor accumulates token counts from step_finish events")
+    func daytonaTokenCounts() async throws {
+        let mockClient = MockDaytonaClient()
+        let stepFinishLine = """
+        {"type":"step_finish","part":{"type":"step-finish","cost":0.033,\
+        "tokens":{"input":1500,"output":900,"reasoning":0,\
+        "cache":{"read":300,"write":60}}}}
+        """
+        mockClient.opcodeLogLines = [stepFinishLine]
+        mockClient.nextCommandOutput = """
+        {"code_pass":1,"artifact_score":1,"convention_score":1,"token_cost":0.0}
+        """
+
+        let store = BenchmarkStore(gitService: MockGitService())
+        let config = DaytonaConfig(keychainService: MockKeychainService())
+        let runner = DaytonaRunExecutor(
+            daytonaClient: mockClient,
+            store: store,
+            config: config,
+            sandbox: Sandbox(id: "sb-1", name: "s1", state: .started, labels: [:], toolboxProxyUrl: "")
+        )
+        let task = BenchmarkTask(id: "T01", name: "Task 1", description: "Desc")
+
+        var completed: BenchRow?
+        for await event in runner.run(task: task, model: "gpt-4o") {
+            if case let .completed(row) = event { completed = row }
+            if case .failed = event { break }
+        }
+
+        let row = try #require(completed)
+        #expect(row.inputTokens == 1500)
+        #expect(row.outputTokens == 900)
+        #expect(row.cacheReadTokens == 300)
+        #expect(row.cacheWriteTokens == 60)
+        #expect(abs(row.cost - 0.033) < 0.0001)
+    }
+
     @Test("Runner emits timeout error if phase hangs")
     func testTimeout() async {
         let mockClient = HangingMockDaytonaClient()
