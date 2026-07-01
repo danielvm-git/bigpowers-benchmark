@@ -1,3 +1,4 @@
+// swiftlint:disable function_body_length
 import Foundation
 
 public struct DaytonaRunExecutor: RunExecutorProtocol {
@@ -31,7 +32,6 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
         }
     }
 
-    // swiftlint:disable:next function_body_length cyclomatic_complexity
     public func run(task: BenchmarkTask, model: String, catalogModelId _: String?) -> AsyncStream<RunEvent> {
         let client = daytonaClient
         let localStore = store
@@ -50,7 +50,6 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
                 let runId = UUID()
                 let taskDir = "/home/daytona/\(taskId)"
                 let promptPath = "/tmp/bigpowers_prompt_\(runId.uuidString).txt"
-                let metricsBox = MetricsBox()
 
                 AppLogger.runner.info("Run started", metadata: [
                     "runId": .string(runId.uuidString),
@@ -130,9 +129,6 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
                                 commandId: cmdId
                             )
                             for await line in logStream {
-                                if let step = HostRunExecutor.extractStepMetrics(from: line) {
-                                    metricsBox.value.add(step)
-                                }
                                 if let data = line.data(using: .utf8) {
                                     do {
                                         let decoded = try JSONDecoder().decode(LogLine.self, from: data)
@@ -274,7 +270,7 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
 
                     let benchRow = BenchRow(
                         id: runId,
-                        schemaVersion: 2,
+                        schemaVersion: 1,
                         timestamp: Date(),
                         bigpowersRef: bigpowersRef,
                         modelId: model,
@@ -283,11 +279,7 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
                         artifactScore: gradingResult.artifactScore,
                         conventionScore: gradingResult.conventionScore,
                         duration: 0.0,
-                        cost: metricsBox.value.cost > 0 ? metricsBox.value.cost : gradingResult.cost,
-                        inputTokens: metricsBox.value.inputTokens,
-                        outputTokens: metricsBox.value.outputTokens,
-                        cacheReadTokens: metricsBox.value.cacheReadTokens,
-                        cacheWriteTokens: metricsBox.value.cacheWriteTokens,
+                        cost: gradingResult.cost,
                         workspace: taskDir
                     )
 

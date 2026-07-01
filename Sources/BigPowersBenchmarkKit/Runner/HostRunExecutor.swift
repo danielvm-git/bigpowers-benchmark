@@ -20,7 +20,7 @@ struct StepMetrics {
 }
 
 /// Thread-safe accumulator for StepMetrics across concurrent contexts.
-final class MetricsBox: @unchecked Sendable {
+private final class MetricsBox: @unchecked Sendable {
     var value = StepMetrics.zero
 }
 

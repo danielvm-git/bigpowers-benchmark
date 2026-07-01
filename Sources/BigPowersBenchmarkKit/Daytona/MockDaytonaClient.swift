@@ -2,10 +2,6 @@ import Foundation
 
 public final class MockDaytonaClient: DaytonaClientProtocol, @unchecked Sendable {
     public var nextCommandOutput: String = ""
-    /// Lines yielded by the first streamLogs call (e.g. opencode output).
-    /// Consumed on first use; subsequent calls fall back to nextCommandOutput.
-    public var opcodeLogLines: [String] = []
-    private var streamLogsCallCount = 0
     public init() {}
 
     public func listSandboxes() async throws -> [Sandbox] {
@@ -41,17 +37,9 @@ public final class MockDaytonaClient: DaytonaClientProtocol, @unchecked Sendable
     }
 
     public func streamLogs(sandboxId _: String, sessionId _: String, commandId _: String) -> AsyncStream<String> {
-        let isFirstCall = streamLogsCallCount == 0
-        streamLogsCallCount += 1
-        let lines = isFirstCall && !opcodeLogLines.isEmpty ? opcodeLogLines : nil
-        let fallback = nextCommandOutput
-        return AsyncStream { continuation in
-            if let lines {
-                for line in lines {
-                    continuation.yield(line)
-                }
-            } else if !fallback.isEmpty {
-                continuation.yield(fallback)
+        AsyncStream { continuation in
+            if !nextCommandOutput.isEmpty {
+                continuation.yield(nextCommandOutput)
             } else {
                 continuation.yield("log line 1")
                 continuation.yield("log line 2")
