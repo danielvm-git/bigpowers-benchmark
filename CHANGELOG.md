@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.2...v1.3.3) (2026-08-03)
+
+
+### Bug Fixes
+
+* **license:** add MIT license ([0b852a2](https://github.com/danielvm-git/bigpowers-benchmark/commit/0b852a2240b357b4014f386b2f2f75ccf49cdea6))
+
 ## [1.3.2](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.1...v1.3.2) (2026-08-03)
 
 
