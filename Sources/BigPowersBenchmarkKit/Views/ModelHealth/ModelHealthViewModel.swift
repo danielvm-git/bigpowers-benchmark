@@ -47,6 +47,7 @@ public final class ModelHealthViewModel {
     private let nousResearchClient: NousResearchClientProtocol
     private let cliPingClient: CLIPingClientProtocol
     private let intelStore: ModelIntelStore
+    private let cliOnPathCheck: (String) -> Bool
     private let logger = AppLogger.modelHealth
     @ObservationIgnored private var pingTask: Task<Void, Never>?
 
@@ -54,12 +55,14 @@ public final class ModelHealthViewModel {
         client: OpenRouterClientProtocol = OpenRouterClient(),
         nousResearchClient: NousResearchClientProtocol = NousResearchClient(),
         cliPingClient: CLIPingClientProtocol = CLIPingClient(),
-        intelStore: ModelIntelStore = ModelIntelStore()
+        intelStore: ModelIntelStore = ModelIntelStore(),
+        cliOnPathCheck: ((String) -> Bool)? = nil
     ) {
         self.client = client
         self.nousResearchClient = nousResearchClient
         self.cliPingClient = cliPingClient
         self.intelStore = intelStore
+        self.cliOnPathCheck = cliOnPathCheck ?? Self.isCLIOnPath
     }
 
     public var responsiveCount: Int {
@@ -130,8 +133,8 @@ public final class ModelHealthViewModel {
         return filtered.filter { model in
             if blocked.contains(model.pingTransport) { return false }
             switch model.pingTransport {
-            case .claudeCLI: return Self.isCLIOnPath("claude")
-            case .geminiCLI: return Self.isCLIOnPath("gemini")
+            case .claudeCLI: return cliOnPathCheck("claude")
+            case .geminiCLI: return cliOnPathCheck("gemini")
             default: return true
             }
         }
@@ -275,7 +278,7 @@ public final class ModelHealthViewModel {
         }
     }
 
-    private static func isCLIOnPath(_ executable: String) -> Bool {
+    nonisolated static func isCLIOnPath(_ executable: String) -> Bool {
         let path = ProcessInfo.processInfo.environment["PATH"] ?? "/usr/bin:/bin"
         for dir in path.split(separator: ":") {
             let fullPath = (String(dir) as NSString).appendingPathComponent(executable)

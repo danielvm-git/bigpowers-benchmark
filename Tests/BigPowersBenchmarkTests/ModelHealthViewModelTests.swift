@@ -299,7 +299,7 @@ struct ModelHealthViewModelTests {
 
     @Test("disabledCLITransports excludes models from ping targets")
     func disabledCLITransportsExcludesCLIModels() {
-        let vm = ModelHealthViewModel(client: ModelHealthMockClient())
+        let vm = ModelHealthViewModel(client: ModelHealthMockClient(), cliOnPathCheck: { _ in true })
         vm.pingScope = .all
 
         let models = [
@@ -446,7 +446,11 @@ struct ModelHealthViewModelTests {
         cliMock.claudeResponses["haiku"] = .success((reply: "pong", latencyMs: 150))
 
         let model = StaticModelCatalogs.claudeCLIModel(modelArg: "haiku", name: "Claude CLI (Haiku)")
-        let vm = ModelHealthViewModel(client: mock, cliPingClient: cliMock)
+        let vm = ModelHealthViewModel(
+            client: mock,
+            cliPingClient: cliMock,
+            cliOnPathCheck: { _ in true }
+        )
         vm.pingScope = .filtered
         vm.selectedProvider = "claudecli"
         await vm.pingAll(models: [model], apiKey: "unused")
