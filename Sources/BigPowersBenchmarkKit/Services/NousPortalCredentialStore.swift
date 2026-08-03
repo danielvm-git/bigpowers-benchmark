@@ -5,27 +5,28 @@ public enum NousPortalCredentialStore {
     public nonisolated(unsafe) static var authFileURL: URL = FileManager.default.homeDirectoryForCurrentUser
         .appendingPathComponent(".hermes/auth.json")
 
-    /// Returns true if the user has ever logged in via `hermes login` —
-    /// i.e. `~/.hermes/auth.json` exists with a nous provider entry.
-    /// Token expiry is not checked here; pings will surface 401 errors at runtime.
-    public static func isConfigured(from url: URL? = nil) -> Bool {
-        let fileURL = url ?? authFileURL
-        guard FileManager.default.fileExists(atPath: fileURL.path),
-              let data = try? Data(contentsOf: fileURL),
-              let auth = try? JSONDecoder().decode(HermesAuthFile.self, from: data),
-              let nous = auth.providers?.nous
-        else { return false }
-        return (nous.agentKey ?? "").isEmpty == false
-            || (nous.accessToken ?? "").isEmpty == false
+    /// Returns true if the user has valid Nous credentials (non-expired token).
+    public static func isConfigured(
+        from url: URL? = nil,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> Bool {
+        resolveAgentKey(from: url, environment: environment) != nil
     }
 
-    public static func resolveAgentKey(from url: URL? = nil) -> String? {
+    public static func resolveAgentKey(
+        from url: URL? = nil,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> String? {
         let fileURL = url ?? authFileURL
         guard FileManager.default.fileExists(atPath: fileURL.path),
               let data = try? Data(contentsOf: fileURL),
               let auth = try? JSONDecoder().decode(HermesAuthFile.self, from: data),
               let nous = auth.providers?.nous
         else {
+            // If auth file doesn't exist, check environment variable
+            if let envKey = environment["NOUSPORTAL_API_KEY"], !envKey.isEmpty {
+                return envKey
+            }
             return nil
         }
 
@@ -39,15 +40,19 @@ public enum NousPortalCredentialStore {
             if !expired { return agentKey }
         }
 
-        // Fall back to access_token regardless of expiry — the inference API will
-        // return 401 if truly invalid; hermes refreshes on next `hermes login`.
+        // Fall back to access_token if not expired
         if let accessToken = nous.accessToken, !accessToken.isEmpty {
-            return accessToken
+            let expired: Bool = if let expiresAt = nous.expiresAt {
+                parseExpiry(expiresAt).map { $0 <= Date() } ?? false
+            } else {
+                false
+            }
+            if !expired { return accessToken }
         }
 
-        // Last resort: return expired agent_key so the ping can attempt and fail visibly
-        if let agentKey = nous.agentKey, !agentKey.isEmpty {
-            return agentKey
+        // Fall back to environment variable if auth file tokens are expired
+        if let envKey = environment["NOUSPORTAL_API_KEY"], !envKey.isEmpty {
+            return envKey
         }
 
         return nil

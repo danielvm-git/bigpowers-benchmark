@@ -434,14 +434,30 @@ public final class ModelHealthViewModel {
                 completionTokens: result.completionTokens
             )
         } catch NousResearchClientError.timedOut {
+            logger.warning("Ping timeout", metadata: [
+                "action": .string("pingTimeout"),
+                "modelId": .string(model.id),
+                "timeoutMs": .stringConvertible(timeoutMs),
+            ])
             return pingFailureResult(for: model, transport: .nousResearch, status: .timeout)
         } catch let NousResearchClientError.httpError(statusCode: statusCode, message: message) {
+            logger.error("Ping error", metadata: [
+                "action": .string("pingError"),
+                "modelId": .string(model.id),
+                "statusCode": .stringConvertible(statusCode),
+                "error": .string(message),
+            ])
             return pingFailureResult(
                 for: model,
                 transport: .nousResearch,
                 status: ModelHealthErrorClassifier.pingStatus(statusCode: statusCode, message: message)
             )
         } catch {
+            logger.error("Ping error", metadata: [
+                "action": .string("pingError"),
+                "modelId": .string(model.id),
+                "error": .string(error.localizedDescription),
+            ])
             return pingFailureResult(
                 for: model,
                 transport: .nousResearch,
@@ -493,16 +509,36 @@ public final class ModelHealthViewModel {
                 completionTokens: max(result.reply.count / 4, 1)
             )
         } catch CLIPingError.timeout {
+            logger.warning("Ping timeout", metadata: [
+                "action": .string("pingTimeout"),
+                "modelId": .string(model.id),
+                "timeoutMs": .stringConvertible(timeoutMs),
+            ])
             return pingFailureResult(for: model, transport: transport, status: .timeout)
         } catch let CLIPingError.nonZeroExit(message) {
+            logger.error("Ping error", metadata: [
+                "action": .string("pingError"),
+                "modelId": .string(model.id),
+                "error": .string(message),
+            ])
             return pingFailureResult(
                 for: model,
                 transport: transport,
                 status: ModelHealthErrorClassifier.pingStatus(message: message)
             )
         } catch let CLIPingError.executableNotFound(message) {
+            logger.error("Ping error", metadata: [
+                "action": .string("pingError"),
+                "modelId": .string(model.id),
+                "error": .string(message),
+            ])
             return pingFailureResult(for: model, transport: transport, status: .error(message))
         } catch {
+            logger.error("Ping error", metadata: [
+                "action": .string("pingError"),
+                "modelId": .string(model.id),
+                "error": .string(error.localizedDescription),
+            ])
             return pingFailureResult(
                 for: model,
                 transport: transport,

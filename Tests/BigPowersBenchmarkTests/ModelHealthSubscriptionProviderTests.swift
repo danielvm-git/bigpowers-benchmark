@@ -62,8 +62,8 @@ struct ModelHealthSubscriptionProviderTests {
         #expect(available.contains(.opencode))
     }
 
-    @Test("Nous Portal available when hermes auth file has any token — even expired")
-    func nousWhenAgentKeyPresent() throws {
+    @Test("Nous Portal available when hermes auth file has valid agent_key")
+    func nousWhenAgentKeyValid() throws {
         let authURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathComponent("auth.json")
@@ -71,14 +71,13 @@ struct ModelHealthSubscriptionProviderTests {
             at: authURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        // Expired token — still shows in dropdown; ping will surface the error
-        let expired = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-60))
+        let valid = ISO8601DateFormatter().string(from: Date().addingTimeInterval(3600))
         let authJSON = """
         {
           "providers": {
             "nous": {
               "agent_key": "test-key",
-              "agent_key_expires_at": "\(expired)"
+              "agent_key_expires_at": "\(valid)"
             }
           }
         }
@@ -96,6 +95,43 @@ struct ModelHealthSubscriptionProviderTests {
         )
 
         #expect(available.contains(.nousresearchDirect))
+    }
+
+    @Test("Nous Portal unavailable when all tokens expired")
+    func nousUnavailableWhenAllTokensExpired() throws {
+        let authURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathComponent("auth.json")
+        try FileManager.default.createDirectory(
+            at: authURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        let expired = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-60))
+        let authJSON = """
+        {
+          "providers": {
+            "nous": {
+              "agent_key": "test-key",
+              "agent_key_expires_at": "\(expired)",
+              "access_token": "access-token",
+              "expires_at": "\(expired)"
+            }
+          }
+        }
+        """
+        try authJSON.write(to: authURL, atomically: true, encoding: .utf8)
+        let previousAuthURL = NousPortalCredentialStore.authFileURL
+        NousPortalCredentialStore.authFileURL = authURL
+        defer { NousPortalCredentialStore.authFileURL = previousAuthURL }
+
+        let available = ModelHealthSubscriptionProvider.available(
+            providerStore: store(providers: []),
+            dotEnvPaths: [],
+            keychain: MockKeychainService(),
+            environment: [:]
+        )
+
+        #expect(!available.contains(.nousresearchDirect))
     }
 
     @Test("Nous Portal unavailable without hermes agent key")
