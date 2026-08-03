@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.1...v1.3.2) (2026-08-03)
+
+
+### Bug Fixes
+
+* **nous-credential:** harden credential resolution and logging ([#5](https://github.com/danielvm-git/bigpowers-benchmark/issues/5)) ([2431068](https://github.com/danielvm-git/bigpowers-benchmark/commit/2431068651d4ff59e1a2339d8aad0b960680d845))
+
 ## [1.3.1](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.0...v1.3.1) (2026-05-25)
 
 
