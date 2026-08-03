@@ -23,7 +23,6 @@ public struct ModelInfo: Codable, Identifiable, Sendable, Hashable {
         pingTransport: PingTransport = .openRouter,
         resolvedModelId: String? = nil
     ) {
-        // swiftlint:disable:previous function_parameter_count
         self.id = id
         self.name = name
         self.provider = provider
@@ -247,6 +246,7 @@ public struct BenchRankScore: Sendable, Comparable, Equatable {
         }
     }
 
+    // swiftlint:disable function_parameter_count
     /// Sort key order: Bench? → Latency → Free → Ctx → Clear → Tools → Rsp → Match → cost → name.
     static func compareRankedRows(
         lhsLabel: String,
@@ -270,6 +270,7 @@ public struct BenchRankScore: Sendable, Comparable, Equatable {
         rhsHasTools: Bool,
         rhsSuitability: BenchmarkSuitability
     ) -> Bool {
+        // swiftlint:enable function_parameter_count
         let rankL = suitabilityRank(lhsSuitability)
         let rankR = suitabilityRank(rhsSuitability)
         if rankL != rankR { return rankL < rankR }

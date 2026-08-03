@@ -1,6 +1,6 @@
-// swiftlint:disable type_body_length
 import SwiftUI
 
+// swiftlint:disable:next type_body_length
 public struct SettingsView: View {
     @Environment(DaytonaConfig.self) private var daytonaConfig
     @Environment(HostRunConfig.self) private var hostRunConfig

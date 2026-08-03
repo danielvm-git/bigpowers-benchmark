@@ -7,4 +7,5 @@
 --wrapcollections before-first
 --semicolons never
 --importgrouping alphabetized
+--disable wrapMultilineStatementBraces
 --exclude .build,project

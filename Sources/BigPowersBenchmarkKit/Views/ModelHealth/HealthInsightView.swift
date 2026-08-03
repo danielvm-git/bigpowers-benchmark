@@ -1,4 +1,3 @@
-// swiftlint:disable type_body_length
 import Charts
 import SwiftUI
 
@@ -37,6 +36,7 @@ private struct ProviderSummary: Identifiable {
     }
 }
 
+// swiftlint:disable:next type_body_length
 public struct HealthInsightView: View {
     @Environment(ModelIntelStore.self) private var intelStore
     @Environment(ModelHealthHistoryStore.self) private var historyStore
