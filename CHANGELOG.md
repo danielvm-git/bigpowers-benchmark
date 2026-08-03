@@ -1,3 +1,10 @@
+## [1.3.5](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.4...v1.3.5) (2026-08-03)
+
+
+### Bug Fixes
+
+* **nous-portal:** dotenv visibility + runner improvements ([#6](https://github.com/danielvm-git/bigpowers-benchmark/issues/6)) ([b64eaa6](https://github.com/danielvm-git/bigpowers-benchmark/commit/b64eaa695248ffc6bfc200051cadfcadc054b0c3))
+
 ## [1.3.4](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.3...v1.3.4) (2026-08-03)
 
 
