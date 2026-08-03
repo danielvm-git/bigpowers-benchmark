@@ -1,4 +1,3 @@
-// swiftlint:disable function_body_length
 import Foundation
 
 public struct DaytonaRunExecutor: RunExecutorProtocol {
@@ -32,6 +31,7 @@ public struct DaytonaRunExecutor: RunExecutorProtocol {
         }
     }
 
+    // swiftlint:disable:next function_body_length
     public func run(task: BenchmarkTask, model: String, catalogModelId _: String?) -> AsyncStream<RunEvent> {
         let client = daytonaClient
         let localStore = store

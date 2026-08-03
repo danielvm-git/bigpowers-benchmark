@@ -1,4 +1,3 @@
-// swiftlint:disable type_body_length
 import Foundation
 
 public enum CatalogRefreshError: Error, Sendable, Equatable {
@@ -16,6 +15,7 @@ public protocol CatalogRefreshServiceProtocol: Sendable {
     func refreshGeminiCLI(timeoutMs: Int) async throws -> [ModelInfo]
 }
 
+// swiftlint:disable:next type_body_length
 public struct CatalogRefreshService: CatalogRefreshServiceProtocol {
     public static let defaultModelsURL = URL(string: "https://inference-api.nousresearch.com/v1/models")!
     public static let defaultNousManifestURL = NousCuratedCatalog.defaultManifestURL

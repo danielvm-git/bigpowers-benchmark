@@ -1,6 +1,6 @@
-// swiftlint:disable file_length cyclomatic_complexity type_body_length
 import SwiftUI
 
+// swiftlint:disable:next type_body_length
 public struct ModelHealthView: View {
     @Environment(BenchmarkStore.self) private var store
     @Environment(ThemeManager.self) private var themeManager
@@ -405,6 +405,7 @@ public struct ModelHealthView: View {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     private func refreshCatalog() async {
         guard let selected = viewModel.selectedProvider else { return }
         isRefreshingCatalog = true
@@ -629,3 +630,5 @@ private struct FinishReasonBadge: View {
         }
     }
 }
+
+// swiftlint:disable:this file_length

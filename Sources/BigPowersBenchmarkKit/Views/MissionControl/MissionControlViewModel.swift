@@ -1,8 +1,8 @@
-// swiftlint:disable file_length type_body_length
 import Foundation
 import Observation
 
 @Observable @MainActor
+// swiftlint:disable:next type_body_length
 public final class MissionControlViewModel {
     public var sandboxes: [Sandbox] = []
     public var selectedSandbox: Sandbox?
@@ -455,3 +455,5 @@ public enum RunState: String, Sendable {
     case running
     case stopping
 }
+
+// swiftlint:disable:this file_length
