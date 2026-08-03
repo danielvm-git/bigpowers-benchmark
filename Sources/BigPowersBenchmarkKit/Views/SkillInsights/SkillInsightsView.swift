@@ -164,15 +164,21 @@ private struct RadarChart: View {
         let maxRadius = min(size.width, size.height) / 2 - 48
         let count = skills.count
         guard count > 0 else { return }
-        let angles = (0 ..< count).map {
-            Double($0) * (2 * Double.pi / Double(count)) - Double.pi / 2
-        }
+        let angles = vertexAngles(count: count)
 
         drawGridRings(in: context, center: center, radius: maxRadius, angles: angles)
         drawSpokes(in: context, center: center, radius: maxRadius, angles: angles)
         drawShape(in: context, center: center, radius: maxRadius, angles: angles)
         drawVertexDots(in: context, center: center, radius: maxRadius, angles: angles)
         drawLabels(in: context, center: center, labelRadius: maxRadius + 26, angles: angles)
+    }
+
+    private func vertexAngles(count: Int) -> [Double] {
+        let step = 2 * Double.pi / Double(count)
+        let start = Double.pi / 2
+        return (0 ..< count).map { index in
+            Double(index) * step - start
+        }
     }
 
     private func drawGridRings(in context: GraphicsContext, center: CGPoint, radius: CGFloat, angles: [Double]) {
