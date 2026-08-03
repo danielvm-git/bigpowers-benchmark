@@ -1,3 +1,10 @@
+## [1.3.4](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.3...v1.3.4) (2026-08-03)
+
+
+### Bug Fixes
+
+* **lint:** resolve all swiftlint strict violations ([#7](https://github.com/danielvm-git/bigpowers-benchmark/issues/7)) ([be6185d](https://github.com/danielvm-git/bigpowers-benchmark/commit/be6185dccccad577579b5117c960a72a7cd47ef1))
+
 ## [1.3.3](https://github.com/danielvm-git/bigpowers-benchmark/compare/v1.3.2...v1.3.3) (2026-08-03)
 
 
