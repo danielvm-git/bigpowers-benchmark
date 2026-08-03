@@ -121,8 +121,11 @@ public struct ShellCommandRunner: ShellCommandRunning {
             process.standardError = pipe
 
             final class LineBuffer: @unchecked Sendable {
-                var remainder = ""
+                private let lock = NSLock()
+                private var remainder = ""
                 func append(_ chunk: String) -> [String] {
+                    lock.lock()
+                    defer { lock.unlock() }
                     remainder += chunk
                     var lines: [String] = []
                     while let range = remainder.range(of: "\n") {
@@ -134,6 +137,8 @@ public struct ShellCommandRunner: ShellCommandRunning {
                 }
 
                 func flush() -> String? {
+                    lock.lock()
+                    defer { lock.unlock() }
                     guard !remainder.isEmpty else { return nil }
                     defer { remainder = "" }
                     return remainder

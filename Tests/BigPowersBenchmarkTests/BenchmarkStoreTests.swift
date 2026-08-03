@@ -168,7 +168,10 @@ struct BenchmarkStoreTests {
         let store = BenchmarkStore(runsURL: tempDir, gitService: mockGit)
 
         store.checkGitRepoStatus()
-        try await Task.sleep(for: .milliseconds(200))
+        let deadline = Date().addingTimeInterval(2)
+        while store.isRunsDirectoryGitRepo != false, Date() < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
 
         #expect(store.isRunsDirectoryGitRepo == false)
     }

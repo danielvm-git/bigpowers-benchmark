@@ -32,8 +32,13 @@ public final class BenchmarkStore: @unchecked Sendable {
     public func checkGitRepoStatus() {
         Task.detached { [gitService, runsURL, weak self] in
             let isRepo = gitService.isGitRepo(at: runsURL)
-            await MainActor.run { self?.isRunsDirectoryGitRepo = isRepo }
+            await self?.setRunsDirectoryGitRepo(isRepo)
         }
+    }
+
+    @MainActor
+    private func setRunsDirectoryGitRepo(_ isRepo: Bool) {
+        isRunsDirectoryGitRepo = isRepo
     }
 
     public func saveBenchRow(_ row: BenchRow) throws {

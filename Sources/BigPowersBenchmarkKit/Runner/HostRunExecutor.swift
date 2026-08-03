@@ -1,5 +1,29 @@
 import Foundation
 
+/// Accumulated token and cost metrics extracted from opencode step_finish events.
+struct StepMetrics {
+    var cost: Double
+    var inputTokens: Int
+    var outputTokens: Int
+    var cacheReadTokens: Int
+    var cacheWriteTokens: Int
+
+    static let zero = StepMetrics(cost: 0, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0)
+
+    mutating func add(_ other: StepMetrics) {
+        cost += other.cost
+        inputTokens += other.inputTokens
+        outputTokens += other.outputTokens
+        cacheReadTokens += other.cacheReadTokens
+        cacheWriteTokens += other.cacheWriteTokens
+    }
+}
+
+/// Thread-safe accumulator for StepMetrics across concurrent contexts.
+private final class MetricsBox: @unchecked Sendable {
+    var value = StepMetrics.zero
+}
+
 public struct HostRunExecutor: RunExecutorProtocol {
     private let store: BenchmarkStore
     private let config: HostRunConfig
@@ -44,6 +68,7 @@ public struct HostRunExecutor: RunExecutorProtocol {
                 let runId = UUID()
                 let runFolderId = "\(task.id)_\(runId.uuidString.prefix(8))"
                 let startTime = Date()
+                let metricsBox = MetricsBox()
 
                 AppLogger.runner.info("Run started", metadata: [
                     "runId": .string(runId.uuidString),
@@ -103,6 +128,9 @@ public struct HostRunExecutor: RunExecutorProtocol {
                                     let line = Self.decodeLogLine(raw)
                                     if line.kind == .err {
                                         lastStderr = line.text
+                                    }
+                                    if let step = Self.extractStepMetrics(from: raw) {
+                                        metricsBox.value.add(step)
                                     }
                                     continuation.yield(.logLine(line))
                                 case let .completed(exitCode):
@@ -171,9 +199,10 @@ public struct HostRunExecutor: RunExecutorProtocol {
                     continuation.yield(.phase(.persisting))
 
                     let duration = Date().timeIntervalSince(startTime)
+                    let metrics = metricsBox.value
                     let benchRow = BenchRow(
                         id: runId,
-                        schemaVersion: 1,
+                        schemaVersion: 2,
                         timestamp: Date(),
                         bigpowersRef: bigpowersRef,
                         modelId: storedModelId,
@@ -182,7 +211,11 @@ public struct HostRunExecutor: RunExecutorProtocol {
                         artifactScore: gradingResult.artifactScore,
                         conventionScore: gradingResult.conventionScore,
                         duration: duration,
-                        cost: gradingResult.cost,
+                        cost: metrics.cost > 0 ? metrics.cost : gradingResult.cost,
+                        inputTokens: metrics.inputTokens,
+                        outputTokens: metrics.outputTokens,
+                        cacheReadTokens: metrics.cacheReadTokens,
+                        cacheWriteTokens: metrics.cacheWriteTokens,
                         workspace: worktreeURL.path
                     )
 
@@ -250,14 +283,35 @@ public struct HostRunExecutor: RunExecutorProtocol {
     }
 
     private static func decodeLogLine(_ raw: String) -> LogLine {
-        if let data = raw.data(using: .utf8),
-           let decoded = try? JSONDecoder().decode(LogLine.self, from: data) {
-            return decoded
+        guard let data = raw.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode(LogLine.self, from: data)
+        else {
+            return LogLine(t: ISO8601DateFormatter().string(from: Date()), kind: .info, text: raw)
         }
-        return LogLine(
-            t: ISO8601DateFormatter().string(from: Date()),
-            kind: .info,
-            text: raw
+        return decoded
+    }
+
+    /// Parse opencode `--format json` step_finish events for real-time cost and token counts.
+    /// opencode emits: {"type":"step_finish","part":{"type":"step-finish","cost":0.042,
+    ///   "tokens":{"input":3200,"output":1800,"reasoning":0,"cache":{"read":800,"write":120}}}}
+    static func extractStepMetrics(from raw: String) -> StepMetrics? {
+        guard let data = raw.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              json["type"] as? String == "step_finish",
+              let part = json["part"] as? [String: Any],
+              part["type"] as? String == "step-finish"
+        else {
+            return nil
+        }
+        let cost = part["cost"] as? Double ?? 0
+        let tokens = part["tokens"] as? [String: Any] ?? [:]
+        let cache = tokens["cache"] as? [String: Any] ?? [:]
+        return StepMetrics(
+            cost: cost,
+            inputTokens: tokens["input"] as? Int ?? 0,
+            outputTokens: tokens["output"] as? Int ?? 0,
+            cacheReadTokens: cache["read"] as? Int ?? 0,
+            cacheWriteTokens: cache["write"] as? Int ?? 0
         )
     }
 

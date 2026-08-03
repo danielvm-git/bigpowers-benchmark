@@ -155,82 +155,102 @@ private struct RadarChart: View {
 
     var body: some View {
         Canvas { context, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let maxRadius = min(size.width, size.height) / 2 - 48
-            let count = skills.count
-            guard count > 0 else { return }
-            let angles = (0 ..< count).map {
-                Double($0) * (2 * Double.pi / Double(count)) - Double.pi / 2
-            }
+            render(in: context, size: size)
+        }
+    }
 
-            // Concentric grid rings at 25/50/75/100%
-            for (levelIdx, level) in [0.25, 0.50, 0.75, 1.0].enumerated() {
-                var path = Path()
-                for (i, angle) in angles.enumerated() {
-                    let r = maxRadius * level
-                    let pt = CGPoint(
-                        x: center.x + CGFloat(cos(angle) * r),
-                        y: center.y + CGFloat(sin(angle) * r)
-                    )
-                    if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
-                }
-                path.closeSubpath()
-                let opacity = levelIdx == 3 ? 0.20 : 0.10
-                context.stroke(path, with: .color(tokens.fg4.opacity(opacity)), lineWidth: levelIdx == 3 ? 1.5 : 0.8)
-            }
+    private func render(in context: GraphicsContext, size: CGSize) {
+        let center = CGPoint(x: size.width / 2, y: size.height / 2)
+        let maxRadius = min(size.width, size.height) / 2 - 48
+        let count = skills.count
+        guard count > 0 else { return }
+        let angles = vertexAngles(count: count)
 
-            // Axis spokes
-            for angle in angles {
-                var path = Path()
-                path.move(to: center)
-                path.addLine(to: CGPoint(
-                    x: center.x + CGFloat(cos(angle) * maxRadius),
-                    y: center.y + CGFloat(sin(angle) * maxRadius)
-                ))
-                context.stroke(path, with: .color(tokens.fg4.opacity(0.15)), lineWidth: 0.8)
-            }
+        drawGridRings(in: context, center: center, radius: maxRadius, angles: angles)
+        drawSpokes(in: context, center: center, radius: maxRadius, angles: angles)
+        drawShape(in: context, center: center, radius: maxRadius, angles: angles)
+        drawVertexDots(in: context, center: center, radius: maxRadius, angles: angles)
+        drawLabels(in: context, center: center, labelRadius: maxRadius + 26, angles: angles)
+    }
 
-            // Filled model shape
-            guard !values.isEmpty else { return }
-            var shapePath = Path()
+    private func vertexAngles(count: Int) -> [Double] {
+        let step = 2 * Double.pi / Double(count)
+        let start = Double.pi / 2
+        return (0 ..< count).map { index in
+            Double(index) * step - start
+        }
+    }
+
+    private func drawGridRings(in context: GraphicsContext, center: CGPoint, radius: CGFloat, angles: [Double]) {
+        for (levelIdx, level) in [0.25, 0.50, 0.75, 1.0].enumerated() {
+            var path = Path()
             for (i, angle) in angles.enumerated() {
-                let val = i < values.count ? values[i] : 0.0
-                let r = maxRadius * val
+                let r = radius * level
                 let pt = CGPoint(
                     x: center.x + CGFloat(cos(angle) * r),
                     y: center.y + CGFloat(sin(angle) * r)
                 )
-                if i == 0 { shapePath.move(to: pt) } else { shapePath.addLine(to: pt) }
+                if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
             }
-            shapePath.closeSubpath()
-            context.fill(shapePath, with: .color(tokens.accentF))
-            context.stroke(shapePath, with: .color(tokens.accent), lineWidth: 2.5)
+            path.closeSubpath()
+            let opacity = levelIdx == 3 ? 0.20 : 0.10
+            context.stroke(path, with: .color(tokens.fg4.opacity(opacity)), lineWidth: levelIdx == 3 ? 1.5 : 0.8)
+        }
+    }
 
-            // Vertex dots
-            for (i, angle) in angles.enumerated() {
-                let val = i < values.count ? values[i] : 0.0
-                let r = maxRadius * val
-                let dotCenter = CGPoint(
-                    x: center.x + CGFloat(cos(angle) * r),
-                    y: center.y + CGFloat(sin(angle) * r)
-                )
-                let dotRect = CGRect(x: dotCenter.x - 4, y: dotCenter.y - 4, width: 8, height: 8)
-                context.fill(Path(ellipseIn: dotRect), with: .color(tokens.accent))
-                let innerRect = CGRect(x: dotCenter.x - 2, y: dotCenter.y - 2, width: 4, height: 4)
-                context.fill(Path(ellipseIn: innerRect), with: .color(tokens.bg))
-            }
+    private func drawSpokes(in context: GraphicsContext, center: CGPoint, radius: CGFloat, angles: [Double]) {
+        for angle in angles {
+            var path = Path()
+            path.move(to: center)
+            path.addLine(to: CGPoint(
+                x: center.x + CGFloat(cos(angle) * radius),
+                y: center.y + CGFloat(sin(angle) * radius)
+            ))
+            context.stroke(path, with: .color(tokens.fg4.opacity(0.15)), lineWidth: 0.8)
+        }
+    }
 
-            // Labels
-            let labelRadius = maxRadius + 26
-            for (i, angle) in angles.enumerated() {
-                let x = center.x + CGFloat(cos(angle) * labelRadius)
-                let y = center.y + CGFloat(sin(angle) * labelRadius)
-                context.draw(
-                    Text(skills[i]).font(.caption2).bold().foregroundColor(tokens.fg2),
-                    at: CGPoint(x: x, y: y),
-                    anchor: .center
-                )
-            }
+    private func drawShape(in context: GraphicsContext, center: CGPoint, radius: CGFloat, angles: [Double]) {
+        guard !values.isEmpty else { return }
+        var shapePath = Path()
+        for (i, angle) in angles.enumerated() {
+            let val = i < values.count ? values[i] : 0.0
+            let r = radius * val
+            let pt = CGPoint(
+                x: center.x + CGFloat(cos(angle) * r),
+                y: center.y + CGFloat(sin(angle) * r)
+            )
+            if i == 0 { shapePath.move(to: pt) } else { shapePath.addLine(to: pt) }
+        }
+        shapePath.closeSubpath()
+        context.fill(shapePath, with: .color(tokens.accentF))
+        context.stroke(shapePath, with: .color(tokens.accent), lineWidth: 2.5)
+    }
+
+    private func drawVertexDots(in context: GraphicsContext, center: CGPoint, radius: CGFloat, angles: [Double]) {
+        for (i, angle) in angles.enumerated() {
+            let val = i < values.count ? values[i] : 0.0
+            let r = radius * val
+            let dotCenter = CGPoint(
+                x: center.x + CGFloat(cos(angle) * r),
+                y: center.y + CGFloat(sin(angle) * r)
+            )
+            let dotRect = CGRect(x: dotCenter.x - 4, y: dotCenter.y - 4, width: 8, height: 8)
+            context.fill(Path(ellipseIn: dotRect), with: .color(tokens.accent))
+            let innerRect = CGRect(x: dotCenter.x - 2, y: dotCenter.y - 2, width: 4, height: 4)
+            context.fill(Path(ellipseIn: innerRect), with: .color(tokens.bg))
+        }
+    }
+
+    private func drawLabels(in context: GraphicsContext, center: CGPoint, labelRadius: CGFloat, angles: [Double]) {
+        for (i, angle) in angles.enumerated() {
+            let x = center.x + CGFloat(cos(angle) * labelRadius)
+            let y = center.y + CGFloat(sin(angle) * labelRadius)
+            context.draw(
+                Text(skills[i]).font(.caption2).bold().foregroundColor(tokens.fg2),
+                at: CGPoint(x: x, y: y),
+                anchor: .center
+            )
         }
     }
 }
