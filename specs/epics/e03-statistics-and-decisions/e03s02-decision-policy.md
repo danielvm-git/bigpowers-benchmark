@@ -24,7 +24,7 @@ decision_policy:
   max_tamper_rate: 0.00
   min_audit_clean_rate: 1.00
   min_quality_gain: 0.05
-  min_discriminating_tasks: 10
+  min_discriminating_tasks: 7  # re-scoped from 10 after batch 8
 ```
 
 Rules:

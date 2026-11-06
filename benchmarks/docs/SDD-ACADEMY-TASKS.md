@@ -91,7 +91,7 @@ not more CRUD endpoints.
 | ab-32 social feed | 5 | 0.60 | 0.756 | **discriminating** | 2 agent errors |
 
 Batch 2 moved three more tasks into the band. Together with ab-09 and ab-27, the benchmark now
-has **five discriminating tasks**; the e04s04 gate needs ten.
+has **five discriminating tasks**; the e04s04 gate then needed ten (re-scoped to seven after batch 8).
 
 ## Batch 3 calibration (2026-11-06, k=3)
 
