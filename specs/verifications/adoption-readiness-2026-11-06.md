@@ -11,7 +11,7 @@ Prior working branch: `e01-benchmark-port` @ `783e642`
 
 | Gate | Command | Result |
 |---|---|---|
-| Swift tests | `swift test` | 179 passed / 0 failed |
+| Swift tests | `swift test` | 188 passed / 0 failed |
 | Lint | `lefthook run pre-commit --all-files` | SwiftFormat 113/113, SwiftLint 0 violations |
 | Build | `swift build` | 0 failures |
 | Python eval | `python3 Tests/test_ab_eval.py` | 24 passed |
@@ -56,7 +56,7 @@ evidence used to promote `e05s01`–`e08s02` from `pending` to `completed`.
 | F.26 WSJF order | `execution-status.yaml` ordered by WSJF desc, matches `release-plan.yaml` | file |
 | F.27 branch + green baseline | `chore/adoption-readiness-remediation` cut from `e01-benchmark-port`; gates green before commit | this doc §1 |
 | F.28 first task is a test | No story remains unbuilt; all story task-1 verifies are tests. New work must open with a red test. | this doc §2; rule: `specs/verifications/story-authoring-red-test.md` |
-| CI1–CI5, CI9, CI12, CI13 | `.github/workflows/test-build-release.yml` is template v4.1.2: concurrency+cancel, `workflow_call` `release_tool`, staged test→verify→release, Conventional Commits check, SHA-pinned actions | file |
+| CI1–CI5, CI9, CI12, CI13 | `.github/workflows/test-build-release.yml`, base template 4.3.1 with documented deviations: concurrency+cancel, `workflow_call` `release_tool`, staged test→verify→release, Conventional Commits check, yamllint gate, SHA-pinned actions | file |
 | CI16 branch protection | Enforced | `gh api` |
 
 ## 4. CI remediation found while shipping this work
