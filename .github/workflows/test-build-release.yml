@@ -33,7 +33,10 @@ concurrency:
 jobs:
   test:
     runs-on: macos-15
-    timeout-minutes: 15
+    # 45, not the template's 15: queue time on macos-15 counts against this
+    # limit, and run 42275074915 was cancelled after 15 min queued with no
+    # runner ever assigned. A real test run is ~2 min.
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -52,7 +55,8 @@ jobs:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: [test]
     runs-on: macos-15
-    timeout-minutes: 15
+    # 45 for the same queue-time reason as the test job.
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:

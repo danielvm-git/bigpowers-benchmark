@@ -8,6 +8,18 @@ bugs:
     title: Preflight wrapper working directory mismatch
     status: resolved
     severity: medium
+  - id: BUG-2026-11-06-macos-queue-timeout-cancels-ci
+    title: macos runner queue time counts against the job timeout and cancels CI
+    status: fixed
+    severity: high
+    observed: '2026-11-06'
+    detail: >
+      Run 42275074915 on main was cancelled with test=cancelled and no runner
+      assigned, exactly 15 minutes after being queued (18:55:34 -> 19:10:35),
+      matching timeout-minutes: 15. Re-running the same commit succeeded, so the
+      code was never at fault. Queue congestion on macos-15 is the trigger.
+    fix: "Raise timeout-minutes to 45 on the test and verify jobs; a real run is ~2 min."
+    verify: "gh run view 42275074915 (rerun green: test=success verify=success release=success)"
   - id: BUG-2026-11-06-prepush-swift-test-flake
     title: Intermittent pre-push swift-test failure
     status: open
