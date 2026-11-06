@@ -17,6 +17,13 @@ commit-msg:
 
 pre-push:
   commands:
+    guard-git:
+      run: >
+        current_branch=$(git rev-parse --abbrev-ref HEAD);
+        if [ "$current_branch" = "main" ]; then
+          echo "[guard-git] Direct push to main is blocked! Use a feature branch.";
+          exit 1;
+        fi
     swift-test:
       run: >
         if [ -f Package.swift ]; then

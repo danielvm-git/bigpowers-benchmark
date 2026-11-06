@@ -2,7 +2,7 @@
 import Foundation
 import Testing
 
-@Suite("BenchmarkStore")
+@Suite("BenchmarkStore", .serialized)
 struct BenchmarkStoreTests {
     private func makeRow(taskId: String = "T01") -> BenchRow {
         BenchRow(

@@ -1,0 +1,52 @@
+id: e02
+slug: reproducible-runs
+title: Self-contained, reproducible runs
+status: planned
+release: v2.0.0
+bcps: 16
+wsjf:
+  business_value: 13
+  time_criticality: 8
+  risk_reduction: 13
+  job_size: 8
+  score: 4.25
+depends_on:
+- e01
+stories:
+- id: e02s01
+  file: e02s01-input-provenance.md
+  title: Pin clean checkout and content hashes in report metadata
+  bcps: 5
+  risk: P0
+  status: done
+- id: e02s02
+  file: e02s02-pristine-preflight.md
+  title: Pristine-fixture preflight before any agent run
+  bcps: 8
+  risk: P0
+  status: done
+- id: e02s03
+  file: e02s03-immutable-worktrees.md
+  title: Run subject and runner inputs from immutable detached worktrees
+  bcps: 5
+  risk: P1
+  status: done
+- id: e02s04
+  file: e02s04-flake-and-report-paths.md
+  title: Remove duplicate report path and fix the e58 test flake
+  bcps: 3
+  risk: P1
+  status: done
+exit_criteria:
+- Every report has an inputs block with subject SHA, dirty flag, task-tree hashes,
+  config hash and image digest.
+- A dirty subject aborts exit 2 unless --allow-dirty.
+- Preflight proves fixture fails and solution passes for every selected task before
+  round 1.
+- The runner reads from a detached worktree, not a mutable branch.
+- The eval suite passes 100 consecutive local runs with fixed seeds and UTC.
+risks:
+- Preflight doubles the setup cost; cache by input digest to keep it cheap.
+- Worktrees add cleanup failure modes; a trap must remove them even on SIGINT.
+- Hashing large fixture trees can be slow; hash sorted paths and contents, exclude
+  vendor dirs.

@@ -1,0 +1,49 @@
+# story: e04s03
+# Advanced slice: progressive tax, pension, leave proration, duplicate period.
+id: ab-29
+title: HR payroll with progressive tax and leave
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/hr-portal
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: tax-brackets
+    behaviour: "progressive tax at the bracket boundaries"
+    hidden: "progressive tax at the bracket boundaries"
+  - id: leave
+    behaviour: "unpaid leave prorates gross before tax and pension"
+    hidden: "unpaid leave prorates gross before tax and pension"
+  - id: rounding
+    behaviour: "rounding is applied to pension and prorated gross"
+    hidden: "rounding is applied to pension and prorated gross"
+  - id: inactive
+    behaviour: "inactive employees are excluded"
+    hidden: "inactive employees are excluded"
+  - id: duplicate
+    behaviour: "a period can be run only once"
+    hidden: "a period can be run only once"
+  - id: validation
+    behaviour: "invalid periods, leave and unknown reports fail"
+    hidden: "invalid periods, leave and unknown reports fail"
+  - id: totals
+    behaviour: "totals equal the sum of the lines"
+    hidden: "totals equal the sum of the lines"
+  - id: empty
+    behaviour: "an empty active roster produces a zero report"
+    hidden: "an empty active roster produces a zero report"
+  - id: employee
+    behaviour: "employee validation"
+    hidden: "employee validation"
+prompt: |
+  Implement the payroll run described in docs/SPEC-payroll.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/payroll.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

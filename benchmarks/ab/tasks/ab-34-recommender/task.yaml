@@ -1,0 +1,43 @@
+# story: e04s03
+# Intermediate slice: co-occurrence recommendations, cold start, deterministic buckets.
+id: ab-34
+title: Recommendation engine with co-occurrence and deterministic buckets
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/recommendation-engine
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: cooccurrence
+    behaviour: "co-occurrence recommends items seen by similar users"
+    hidden: "co-occurrence recommends items seen by similar users"
+  - id: exclude
+    behaviour: "already-touched items are never recommended"
+    hidden: "already-touched items are never recommended"
+  - id: weights
+    behaviour: "weights and interaction types change the ranking"
+    hidden: "weights and interaction types change the ranking"
+  - id: ties
+    behaviour: "ties break by item id"
+    hidden: "ties break by item id"
+  - id: cold
+    behaviour: "cold start falls back to popular items"
+    hidden: "cold start falls back to popular items"
+  - id: validation
+    behaviour: "limit and validation"
+    hidden: "limit and validation"
+  - id: buckets
+    behaviour: "buckets are deterministic and stay in range"
+    hidden: "buckets are deterministic and stay in range"
+prompt: |
+  Implement the recommendation engine described in docs/SPEC-recommender.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/recommender.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

@@ -1,0 +1,213 @@
+release: v2.0.0
+theme: Move the outcome benchmark into the app and make its numbers trustworthy
+status: planned
+baseline:
+  harness_source: bigpowers-main-0cbacae
+  vanilla_pass_rate: 0.35
+  discriminating_tasks_target: 10
+rollback_notes:
+  strategy: "Revert commit via git; data in ~/runs/data/ remains unmutated; reports in benchmarks/reports/ are append-only"
+  compatibility: "Zero breaking schema changes; all new fields are optional in BenchRow and ABRunRecord"
+active_epic: e04
+epics:
+- id: e08
+  slug: reliability
+  title: Reliability tracked separately
+  wsJF:
+    business_value: 13
+    time_criticality: 13
+    risk_reduction: 13
+    job_size: 5
+    score: 7.8
+  bcps: 8
+  depends_on: []
+  stories:
+  - id: e08s01
+    title: Track infrastructure errors separately from agent code failures
+    bcps: 5
+    risk: P0
+  - id: e08s02
+    title: Reconcile runner crashes with the bug registry
+    bcps: 3
+    risk: P1
+- id: e03
+  slug: statistics-and-decisions
+  title: Statistics and decision policy
+  wsJF:
+    business_value: 13
+    time_criticality: 8
+    risk_reduction: 13
+    job_size: 5
+    score: 6.8
+  bcps: 8
+  depends_on: []
+  stories:
+  - id: e03s01
+    title: Add medians and p90 to reporting
+    bcps: 5
+    risk: P0
+  - id: e03s02
+    title: Pre-registered decision thresholds for ship/reject/inconclusive
+    bcps: 3
+    risk: P0
+- id: e05
+  slug: quality-signals
+  title: Quality beyond green
+  wsJF:
+    business_value: 13
+    time_criticality: 8
+    risk_reduction: 8
+    job_size: 5
+    score: 5.8
+  bcps: 13
+  depends_on:
+  - e03
+  stories:
+  - id: e05s01
+    title: Score protected-test edits and penalize tampering
+    bcps: 5
+    risk: P0
+  - id: e05s02
+    title: Track and report audit defects alongside correctness
+    bcps: 5
+    risk: P0
+  - id: e05s03
+    title: Integrate quality signals into the composite score
+    bcps: 3
+    risk: P1
+- id: e01
+  slug: benchmark-port
+  title: Port the A/B harness and cut over
+  wsJF:
+    business_value: 13
+    time_criticality: 13
+    risk_reduction: 13
+    job_size: 8
+    score: 4.9
+  bcps: 20
+  depends_on: []
+  stories:
+  - id: e01s01
+    title: Move A/B harness, tasks and reports into benchmarks/
+    bcps: 8
+    risk: P0
+  - id: e01s02
+    title: Point the runner at an external bigpowers checkout
+    bcps: 5
+    risk: P0
+  - id: e01s03
+    title: 'Add the app bridge: launch a harness run and ingest JSON reports'
+    bcps: 8
+    risk: P0
+  - id: e01s04
+    title: Remove the A/B assets from bigpowers with a pointer and changelog
+    bcps: 3
+    risk: P1
+  - id: e01s05
+    title: 'Cutover parity test: same report keys, same task files, same verdict'
+    bcps: 3
+    risk: P0
+  exit_criteria:
+  - This repo runs a k=1 smoke against an external bigpowers checkout.
+  - The app renders the report; bigpowers has only a pointer.
+- id: e02
+  slug: reproducible-runs
+  title: Self-contained, reproducible runs
+  wsJF:
+    business_value: 13
+    time_criticality: 8
+    risk_reduction: 13
+    job_size: 8
+    score: 4.25
+  bcps: 16
+  depends_on:
+  - e01
+  stories:
+  - id: e02s01
+    title: Pin clean checkout and content hashes in report metadata
+    bcps: 5
+    risk: P0
+  - id: e02s02
+    title: Pristine-fixture preflight before any agent run
+    bcps: 8
+    risk: P0
+  - id: e02s03
+    title: Run benchmarks inside immutable worktrees
+    bcps: 3
+    risk: P0
+- id: e07
+  slug: clean-paired-benchmark
+  title: Clean paired benchmark
+  wsJF:
+    business_value: 13
+    time_criticality: 5
+    risk_reduction: 13
+    job_size: 8
+    score: 3.9
+  bcps: 13
+  depends_on:
+  - e03
+  - e05
+  stories:
+  - id: e07s01
+    title: Paired evaluation run protocol with identical seeds
+    bcps: 5
+    risk: P0
+  - id: e07s02
+    title: Generate paired comparison delta report with bootstrap CIs
+    bcps: 5
+    risk: P0
+  - id: e07s03
+    title: Ablation arm analysis
+    bcps: 3
+    risk: P1
+- id: e06
+  slug: test-rerun-reduction
+  title: Avoidable test reruns
+  wsJF:
+    business_value: 8
+    time_criticality: 5
+    risk_reduction: 5
+    job_size: 5
+    score: 3.6
+  bcps: 8
+  depends_on:
+  - e05
+  stories:
+  - id: e06s01
+    title: Measure repeated green test runs with input hashes
+    bcps: 5
+    risk: P1
+  - id: e06s02
+    title: Opt-in guard to reduce unnecessary test executions
+    bcps: 3
+    risk: P1
+- id: e04
+  slug: task-discrimination
+  title: Tasks that discriminate
+  wsJF:
+    business_value: 13
+    time_criticality: 8
+    risk_reduction: 8
+    job_size: 13
+    score: 2.2
+  bcps: 21
+  depends_on:
+  - e02
+  stories:
+  - id: e04s01
+    title: Calibration framework and difficulty bands
+    bcps: 5
+    risk: P0
+  - id: e04s02
+    title: Calibrate Batch 1 tasks against vanilla arm
+    bcps: 5
+    risk: P0
+  - id: e04s03
+    title: Calibrate Batch 2 & 3 tasks
+    bcps: 5
+    risk: P0
+  - id: e04s04
+    title: Complete suite of 7 discriminating tasks
+    bcps: 6
+    risk: P0

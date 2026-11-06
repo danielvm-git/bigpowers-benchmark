@@ -1,0 +1,37 @@
+# story: e04s03
+# Long-horizon: resume a partially completed migration without redoing completed steps.
+id: ab-23
+title: Resume the orders migration from its saved state
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: resume
+    behaviour: "a state with steps 1-2 done runs only step 3 and leaves completed outputs unchanged"
+    hidden: "resumes at step 3 and does not rewrite completed outputs"
+  - id: idempotent
+    behaviour: "a second run is a no-op"
+    hidden: "a second run is a no-op"
+  - id: missing-output
+    behaviour: "a completed step whose output is missing runs again"
+    hidden: "a missing output reopens its step"
+  - id: state-one
+    behaviour: "state [1] reruns 2 and 3 but not 1"
+    hidden: "state [1] reruns steps 2 and 3 but not step 1"
+  - id: clean
+    behaviour: "a clean directory runs all three steps"
+    hidden: "a clean directory runs all three steps"
+  - id: missing-input
+    behaviour: "a missing input fails without advancing state"
+    hidden: "a missing input fails without advancing the state"
+prompt: |
+  Read STATE.md and data/migration-state.json. Finish the migration without redoing completed
+  steps. A step is complete only when the state lists it and its output exists.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/migrate.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

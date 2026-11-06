@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: semver ranges, transitive resolution, conflicts, cycles.
+id: ab-43
+title: Package resolver with semver ranges and conflicts
+kind: feature
+spec_style: behavioural
+source:
+  url: https://github.com/WecoAI/SpecBench
+  license: inspiration-only
+  note: "Task shape inspired by SpecBench; resolver spec, fixture and tests are ours."
+requirements:
+  - id: ranges
+    behaviour: "selects the highest version for exact, caret, tilde and star"
+    hidden: "selects the highest version for exact, caret, tilde and star"
+  - id: transitive
+    behaviour: "resolves transitive dependencies and order is dependency-first"
+    hidden: "resolves transitive dependencies and order is dependency-first"
+  - id: conflict
+    behaviour: "conflicting constraints fail"
+    hidden: "conflicting constraints fail"
+  - id: missing
+    behaviour: "missing packages fail"
+    hidden: "missing packages fail"
+  - id: cycles
+    behaviour: "cycles terminate with one version per package"
+    hidden: "cycles terminate with one version per package"
+  - id: invalid
+    behaviour: "invalid versions fail"
+    hidden: "invalid versions fail"
+prompt: |
+  Implement the package resolver described in docs/SPEC-resolver.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/resolver.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

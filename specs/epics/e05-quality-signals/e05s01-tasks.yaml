@@ -1,0 +1,10 @@
+story_id: e05s01
+title: Score protected-test edits and penalize tampering
+status: pending
+bcps: 5
+tasks:
+- id: 1
+  description: Verify tampering tests fail when protected files are edited
+  verify: python3 Tests/test_ab_eval.py TestRunRecord.test_deleting_protected_test_is_tampering
+  risk: P0
+  status: pending

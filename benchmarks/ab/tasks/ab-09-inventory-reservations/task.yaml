@@ -1,0 +1,33 @@
+# story: e58s08
+# Hard temporal feature: inventory reservations with injected clock and hold expiration.
+id: ab-09
+title: Add reservation holds with clock injection to inventory API
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: positive-qty
+    behaviour: "zero or negative quantity is rejected"
+    hidden: "rejects zero and negative quantities"
+  - id: missing-reservation
+    behaviour: "unknown ids fail on confirm and cancel"
+    hidden: "unknown reservation ids fail on confirm and cancel"
+  - id: double-confirm
+    behaviour: "a confirmed reservation cannot be confirmed again"
+    hidden: "confirming an already confirmed reservation fails"
+  - id: expiry-boundary
+    behaviour: "at exactly 15 minutes the hold is expired"
+    hidden: "a hold expires exactly at 15 minutes"
+  - id: cancel-releases
+    behaviour: "cancelling releases the hold but not permanent stock"
+    hidden: "cancelling releases the hold but never changes permanent stock"
+  - id: reuse-after-expiry
+    behaviour: "stock from an expired hold can be reserved again"
+    hidden: "stock released by an expiry can be reserved again"
+prompt: |
+  Implement the reservations feature described in docs/SPEC-reservations.md.
+  Use the clock injected in src/clock.js for all time checks. Keep all existing tests in test/inventory.test.js passing.
+protected:
+  - test/inventory.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800

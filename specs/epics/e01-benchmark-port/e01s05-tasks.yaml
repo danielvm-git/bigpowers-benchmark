@@ -1,0 +1,64 @@
+story_id: e01s05
+title: 'Cutover parity test: same report keys, same task files, same verdict'
+status: passing
+bcps: 3
+tasks:
+- id: 1
+  description: Pin the task tree hash manifest from the source commit
+  verify: sha256sum -c benchmarks/ab/TASKS.sha256
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Parity
+    - Provenance
+- id: 2
+  description: Pin one old report and one old JSONL fixture
+  verify: test -f Tests/fixtures/ab-report-2026-11-03.yaml && test -f Tests/fixtures/ab-runs-2026-11-03.jsonl
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Parity
+    - Fixtures
+- id: 3
+  description: Add the recursive key-subset parity test
+  verify: python3 Tests/test_ab_parity.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Parity
+    - Tests
+- id: 4
+  description: Compare normalized dry-run matrices
+  verify: python3 Tests/test_ab_parity.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Parity
+    - Tests
+- id: 5
+  description: Prove YAML and JSON reports are equivalent
+  verify: python3 Tests/test_ab_parity.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Parity
+    - Reporting
+- id: 6
+  description: Run the parity test in the verification gates
+  verify: rg -n 'test_ab_parity' scripts/run-benchmark-tests.sh
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - CI

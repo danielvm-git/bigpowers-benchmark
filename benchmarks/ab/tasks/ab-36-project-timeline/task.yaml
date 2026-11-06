@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: finish-to-start schedule, delays, critical path.
+id: ab-36
+title: Project timeline with dependencies, delays and critical path
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/project-management-tool
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: schedule
+    behaviour: "parallel branches start after their dependency"
+    hidden: "parallel branches start after their dependency"
+  - id: delay
+    behaviour: "delays shift the task and its dependants"
+    hidden: "delays shift the task and its dependants"
+  - id: cycles
+    behaviour: "cycles are rejected without changing the schedule"
+    hidden: "cycles are rejected without changing the schedule"
+  - id: duplicate
+    behaviour: "duplicate dependencies are a no-op"
+    hidden: "duplicate dependencies are a no-op"
+  - id: critical
+    behaviour: "critical path picks the longest branch"
+    hidden: "critical path picks the longest branch"
+  - id: validation
+    behaviour: "unknown ids, cross-project edges and validation"
+    hidden: "unknown ids, cross-project edges and validation"
+  - id: empty
+    behaviour: "an empty project has no schedule and no critical path"
+    hidden: "an empty project has no schedule and no critical path"
+prompt: |
+  Implement the project timeline described in docs/SPEC-timeline.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/timeline.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

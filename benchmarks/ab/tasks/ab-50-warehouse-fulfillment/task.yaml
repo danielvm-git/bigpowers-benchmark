@@ -1,0 +1,52 @@
+# story: e04s03
+# Multi-module slice: warehouse priority, reservations, backorders and fulfillment.
+id: ab-50
+title: Multi-warehouse fulfillment with backorders
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/ecommerce
+  license: inspiration-only
+  note: "Project idea from SDD Academy; allocation rules, fixture and tests are ours."
+requirements:
+  - id: priority
+    behaviour: "allocates by priority then id"
+    hidden: "allocates by priority then id"
+  - id: reservations
+    behaviour: "reservations reduce availability"
+    hidden: "reservations reduce availability"
+  - id: backorder
+    behaviour: "insufficient stock backorders the shortfall"
+    hidden: "insufficient stock backorders the shortfall"
+  - id: atomic
+    behaviour: "placeOrder is atomic on invalid items"
+    hidden: "placeOrder is atomic on invalid items"
+  - id: fulfill
+    behaviour: "fulfill consumes physical stock and clears reservations"
+    hidden: "fulfill consumes physical stock and clears reservations"
+  - id: backorder-fulfill
+    behaviour: "backordered orders cannot be fulfilled"
+    hidden: "backordered orders cannot be fulfilled"
+  - id: cancel
+    behaviour: "cancel releases reservations"
+    hidden: "cancel releases reservations"
+  - id: cancel-fulfilled
+    behaviour: "fulfilled orders cannot be cancelled"
+    hidden: "fulfilled orders cannot be cancelled"
+  - id: stock-floor
+    behaviour: "stock cannot drop below reservations"
+    hidden: "stock cannot drop below reservations"
+  - id: validation
+    behaviour: "duplicates and unknown ids fail"
+    hidden: "duplicates and unknown ids fail"
+prompt: |
+  Implement the fulfillment module described in docs/SPEC-fulfillment.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/fulfillment.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

@@ -1,0 +1,130 @@
+name: Test Build Release
+# version: 4.1.2 — see workflow-templates/CHANGELOG.md
+# Reusable workflow: call with `uses: danielvm-git/.github/.github/workflows/test-build-release-swift.yml@main`
+# Or copy to .github/workflows/test-build-release.yml (Swift/macOS — no deploy template yet)
+
+on:
+  workflow_call:
+    inputs:
+      release_tool:
+        description: "Release tool to run: semantic-release | big-release"
+        required: false
+        type: string
+        default: "semantic-release"
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pipeline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-14
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build
+        run: swift build -v
+
+      - name: Test
+        run: swift test -v --parallel
+
+  verify:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: [test]
+    runs-on: macos-14
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm clean-install
+
+      - name: Preflight
+        run: |
+          if [ -f scripts/preflight.sh ]; then
+            bash scripts/preflight.sh
+          else
+            echo "WARN: No preflight script found"
+          fi
+
+      - name: Check Conventional Commits
+        run: |
+          git log origin/main..HEAD --format=%s | while read -r line; do
+            # Skip merge commits (GitHub auto-merge for PRs)
+            if echo "$line" | grep -qE "^Merge "; then
+              continue
+            fi
+            if ! echo "$line" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: "; then
+              echo "FAIL: Non-conventional commit: $line"
+              exit 1
+            fi
+          done
+          echo "PASS: All commits follow Conventional Commits"
+
+      - name: Check no AI agent attribution
+        run: |
+          if git log origin/main..HEAD --format="%B" | grep -qiE '^co[- ]authored[- ]by:'; then
+            echo "FAIL: Co-authored-by: footer found"
+            exit 1
+          fi
+          echo "PASS: No AI agent attribution"
+
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [verify]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Run big-release
+        if: inputs.release_tool == 'big-release'
+        run: |
+          curl -sL https://github.com/danielvm-git/big-release/releases/latest/download/big-release-linux-amd64 -o big-release
+          chmod +x big-release
+          sudo mv big-release /usr/local/bin/
+          big-release release --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
+        if: inputs.release_tool == 'semantic-release' || inputs.release_tool == ''
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        if: inputs.release_tool == 'semantic-release' || inputs.release_tool == ''
+        run: npm clean-install
+
+      - name: Run semantic-release
+        if: inputs.release_tool == 'semantic-release' || inputs.release_tool == ''
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: DAG ordering, cycle detection, longest path, progress.
+id: ab-30
+title: Project DAG with cycle detection and critical duration
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/project-management-tool
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: order
+    behaviour: "topological order is deterministic and dependencies come first"
+    hidden: "topological order is deterministic and dependencies come first"
+  - id: cycles
+    behaviour: "direct and indirect cycles are rejected without changing the graph"
+    hidden: "direct and indirect cycles are rejected without changing the graph"
+  - id: duplicate-dep
+    behaviour: "duplicate dependencies are a no-op"
+    hidden: "duplicate dependencies are a no-op"
+  - id: validation
+    behaviour: "unknown tasks and duplicate ids are rejected"
+    hidden: "unknown tasks and duplicate ids are rejected"
+  - id: duration
+    behaviour: "project duration is the longest path, not the sum"
+    hidden: "project duration is the longest path, not the sum"
+  - id: progress
+    behaviour: "completion and progress use estimated hours"
+    hidden: "completion and progress use estimated hours"
+  - id: empty
+    behaviour: "an empty project has no order, no duration and zero progress"
+    hidden: "an empty project has no order, no duration and zero progress"
+prompt: |
+  Implement the project DAG described in docs/SPEC-project.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/project.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

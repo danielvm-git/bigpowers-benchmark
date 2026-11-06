@@ -1,0 +1,83 @@
+# Scope — benchmark harness ownership
+core_value: >-
+  Make bigpowers-benchmark the single home of the outcome benchmark, so the answer to
+  "does bigpowers help an agent solve real tasks?" is measured by a reproducible runner,
+  not inferred from a skill catalog or a UI scorecard.
+summary: >-
+  The state-of-the-art A/B harness currently lives inside the bigpowers repository. It
+  compares vanilla agents against bigpowers and ablation arms on hidden-test tasks, with
+  container isolation, tamper detection, partial credit, bootstrap confidence intervals
+  and a Lean value-stream view. This initiative moves that harness, its task suite and its
+  reports into this app's repository, makes the app a cockpit over it, and removes the
+  A/B assets from bigpowers so the two repositories stop confusing each other's purpose.
+
+  While moving it, the runner is hardened so a run cannot start from a dirty checkout, a
+  broken fixture, a stale image or a mutated task tree. Statistical reporting gains medians,
+  p90 and pre-registered decision thresholds. Task calibration, audit scoring and rerun
+  measurement are added so the benchmark can discriminate between arms and expose hidden
+  defects instead of only green test suites.
+in_scope:
+  - id: e01
+    name: "Port harness and cut over"
+    outcome: "benchmarks/ + scripts/ab-* live here; the app launches and reads them; bigpowers carries a pointer only."
+  - id: e02
+    name: "Reproducible runs"
+    outcome: "Every report pins subject SHA, dirty status, task tree, config and image; preflight proves fixture fails and solution passes; runner inputs are immutable."
+  - id: e03
+    name: "Statistics and decision policy"
+    outcome: "Medians and p90 alongside means; thresholds are pre-registered; a report returns ship/reject/inconclusive."
+  - id: e04
+    name: "Tasks that discriminate"
+    outcome: "At least 7 tasks sit in the 20-80% vanilla-pass band, with behavioural specs and requirement-complete hidden tests."
+  - id: e05
+    name: "Quality beyond green"
+    outcome: "Audit defects and protected-test edits are scored, reported and gating."
+  - id: e06
+    name: "Avoidable test reruns"
+    outcome: "Repeated green test runs are measured with input hashes; an opt-in guard proves it reduces them without quality loss."
+  - id: e07
+    name: "Clean paired benchmark"
+    outcome: "A pre-registered paired run and ablation reports correctness, audit, tamper, tokens, cost, lead time, first build, redundant tests and diff size with CIs."
+  - id: e08
+    name: "Reliability tracked separately"
+    outcome: "Benchmark infrastructure failures and the e58 flake are tracked, measured and reconciled with the bug registry."
+out_of_scope:
+  - item: "Rewriting the harness in Swift"
+    reason: "Not valuable now; the Python runner is the proven artifact. Revisit only if distribution forbids Python."
+  - item: "Host-only grading without containers"
+    reason: "Would discard the isolation that makes current numbers comparable."
+  - item: "Changing task prompts or hidden tests during the move"
+    reason: "Move first with parity; calibrate after the move is green."
+  - item: "A public benchmark claim before e07"
+    reason: "The current suite is saturated; publishing now would overstate the result."
+constraints:
+  tech:
+    - "macOS 14+ / Swift 6 app; Python 3.11+, Docker, git, node 20+ for the harness"
+    - "Same report schema during the move; add fields, never rename existing ones"
+  time:
+    - "Move and cutover before task work; no parallel edits to the same files"
+  resource:
+    - "One container per run; no parallel matrix inside the app"
+success_criteria:
+  - "bash scripts/run-ab-eval.sh --dry-run works from this repo with --bigpowers-root pointing at a bigpowers checkout."
+  - "A single-task k=1 smoke produces AB-<date>.yaml and ab-runs-<date>.jsonl with identical keys to the old report."
+  - "The app launches a harness run and renders its logs and report without a YAML dependency."
+  - "bigpowers main has no specs/benchmarks/ab, run-ab-eval.sh or ab_*.py; its README points here."
+  - "A run on a dirty subject aborts exit 2 unless --allow-dirty is explicit."
+  - "A broken fixture aborts before any agent tokens are spent."
+backward_compatibility_and_rollback:
+  data_contracts:
+    - "BenchRow JSON shards in ~/runs/data/ are append-only; field additions are backward compatible with legacy deserializers."
+    - "Rollback: If a new shard schema causes deserialization failures, remove the faulty shard or revert to previous schema version without data loss."
+  cli_and_api:
+    - "scripts/run-ab-eval.sh maintains argument flags (--dry-run, --bigpowers-root, --allow-dirty)."
+    - "Rollback: Reverting commit restores previous bash script entry point directly."
+  configuration:
+    - "benchmarks/ab/config.yaml maintains arms and tasks keys; new tasks are additive."
+    - "Rollback: Git checkout of previous config.yaml restores original task suite immediately."
+references:
+  - "specs/planning-context.yaml"
+  - "bigpowers: specs/benchmarks/SCHEMA.md (A/B sections)"
+  - "bigpowers: specs/benchmarks/TASK-REVIEW_LATEST.md"
+  - "bigpowers: specs/benchmarks/LEAN-VSM_LATEST.md"
+  - "bigpowers: specs/bugs/BUG-2026-11-03-story-verify-e58-eval-flake.md"

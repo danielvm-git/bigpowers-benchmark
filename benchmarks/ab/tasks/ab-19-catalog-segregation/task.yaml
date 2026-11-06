@@ -1,0 +1,33 @@
+# story: e58s08
+# Hard security feature: role-based catalog visibility segregation with metadata oracle defense.
+id: ab-19
+title: Implement role-based catalog segregation with metadata oracle defense
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: staff-only
+    behaviour: "staff_only products are hidden from every non-internal role"
+    hidden: "staff_only products are hidden from every non-internal role"
+  - id: role-order
+    behaviour: "a role cannot see a higher tier and can see a lower tier"
+    hidden: "customer cannot see a vip product, vip can see a customer product"
+  - id: unknown-id
+    behaviour: "unknown ids are absent for every role"
+    hidden: "unknown ids are absent for every role"
+  - id: search-counts
+    behaviour: "search totals and facets count only visible products"
+    hidden: "search counts only visible products for each role"
+  - id: filters
+    behaviour: "query and category filters cannot reveal hidden products"
+    hidden: "query and category filters cannot reveal hidden products"
+  - id: negative-tag
+    behaviour: "discontinued products are hidden from customers and VIPs"
+    hidden: "negative tag override: discontinued items are hidden from customers and VIPs"
+prompt: |
+  Implement role-based product visibility in src/catalog.js as described in docs/SPEC-segregation.md.
+  Prevent unauthorized access and metadata oracles. Keep all tests in test/catalog.test.js passing.
+protected:
+  - test/catalog.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800

@@ -1,0 +1,46 @@
+# story: e04s03
+# Advanced slice: reservation holds, expiry boundary and failed-transition safety.
+id: ab-47
+title: Inventory reservations with expiry
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/ecommerce
+  license: inspiration-only
+  note: "Project idea from SDD Academy; reservation rules, fixture and tests are ours."
+requirements:
+  - id: holds
+    behaviour: "reservations hold stock"
+    hidden: "reservations hold stock"
+  - id: expiry
+    behaviour: "expiry is exact and frees the hold"
+    hidden: "expiry is exact and frees the hold"
+  - id: confirm
+    behaviour: "confirm reduces stock and releases the hold"
+    hidden: "confirm reduces stock and releases the hold"
+  - id: expired
+    behaviour: "expired reservations cannot be confirmed or cancelled"
+    hidden: "expired reservations cannot be confirmed or cancelled"
+  - id: cancel
+    behaviour: "cancel releases the hold"
+    hidden: "cancel releases the hold"
+  - id: sweep
+    behaviour: "sweep expires once and is idempotent"
+    hidden: "sweep expires once and is idempotent"
+  - id: double
+    behaviour: "double confirm fails without stock changes"
+    hidden: "double confirm fails without stock changes"
+  - id: validation
+    behaviour: "duplicate items and unknown ids fail"
+    hidden: "duplicate items and unknown ids fail"
+prompt: |
+  Implement the inventory module described in docs/SPEC-inventory.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/inventory.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

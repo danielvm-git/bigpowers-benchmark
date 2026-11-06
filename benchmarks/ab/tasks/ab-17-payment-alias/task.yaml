@@ -1,0 +1,34 @@
+# story: e58s08
+# Hard rule-dense feature: payment alias registry with key format validation, quotas, and duplicate collision.
+id: ab-17
+title: Implement payment alias registry with validation and account quotas
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: cnpj
+    behaviour: "CNPJ check digits and repeated digits are validated"
+    hidden: "accepts a valid CNPJ and rejects a bad check digit and repeated digits"
+  - id: malformed-keys
+    behaviour: "malformed phone, email and EVP keys are rejected"
+    hidden: "rejects malformed phone, email and EVP keys"
+  - id: unsupported-type
+    behaviour: "an unknown key type is rejected"
+    hidden: "rejects an unsupported key type"
+  - id: unknown-account
+    behaviour: "an unknown account is rejected before registration"
+    hidden: "rejects an unknown account before registering anything"
+  - id: business-quota
+    behaviour: "business accounts allow 20 aliases and reject the 21st"
+    hidden: "business accounts allow 20 aliases and reject the 21st"
+  - id: failed-registration
+    behaviour: "a rejected registration consumes no quota slot"
+    hidden: "a rejected registration does not consume a quota slot"
+prompt: |
+  Implement the payment alias registry as described in docs/SPEC-alias.md.
+  Validate CPF, CNPJ, phone, email, and EVP random keys, and enforce account type limits.
+  Keep all existing tests in test/accounts.test.js passing.
+protected:
+  - test/accounts.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800

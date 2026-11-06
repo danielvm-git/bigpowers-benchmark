@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: visibility, stable ordering and cursor pagination.
+id: ab-48
+title: Cursor-paginated activity feed
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/social-network
+  license: inspiration-only
+  note: "Project idea from SDD Academy; feed rules, fixture and tests are ours."
+requirements:
+  - id: visibility
+    behaviour: "visibility includes public, followed and own posts"
+    hidden: "visibility includes public, followed and own posts"
+  - id: private
+    behaviour: "private posts are hidden from other viewers"
+    hidden: "private posts are hidden from other viewers"
+  - id: ordering
+    behaviour: "ordering uses createdAt then descending seq"
+    hidden: "ordering uses createdAt then descending seq"
+  - id: pagination
+    behaviour: "pagination does not duplicate or skip"
+    hidden: "pagination does not duplicate or skip"
+  - id: tie
+    behaviour: "cursor on a tie boundary skips the rest of the tie"
+    hidden: "cursor on a tie boundary skips the rest of the tie"
+  - id: validation
+    behaviour: "invalid limits and cursors fail"
+    hidden: "invalid limits and cursors fail"
+  - id: empty
+    behaviour: "empty feeds return a null cursor"
+    hidden: "empty feeds return a null cursor"
+prompt: |
+  Implement the feed described in docs/SPEC-feed.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/feed.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

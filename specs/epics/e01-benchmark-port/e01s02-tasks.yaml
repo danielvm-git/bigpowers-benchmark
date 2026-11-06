@@ -1,0 +1,68 @@
+story_id: e01s02
+title: Point the runner at an external bigpowers checkout
+status: passing
+bcps: 5
+tasks:
+- id: 1
+  description: Add --bigpowers-root and --runner-root to ab-eval.py
+  verify: python3 scripts/lib/ab-eval.py --help | rg -- '--bigpowers-root|--runner-root'
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Runner
+    - Config
+- id: 2
+  description: Split runner root from subject root in ab_report.py and ab_lean.py;
+    hash the subject
+  verify: python3 Tests/test_ab_eval.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Runner
+    - Reporting
+- id: 3
+  description: Resolve and export AB_BP_ROOT in run-ab-eval.sh before exec
+  verify: bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /tmp/bp-subject |
+    rg '/tmp/bp-subject'
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Runner
+    - CLI
+- id: 4
+  description: Fail fast in ab-arm-bigpowers.sh when the subject has no skills directory
+  verify: AB_BP_ROOT=/tmp/empty bash scripts/lib/ab-arm-bigpowers.sh; test $? -eq
+    2
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Runner
+    - Guards
+- id: 5
+  description: Read vsm.yaml and the arm seed from AB_RUNNER_ROOT
+  verify: rg -n 'AB_RUNNER_ROOT' scripts/lib/ab-eval.py scripts/lib/ab_vsm.py scripts/lib/ab-arm-bigpowers.sh
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Runner
+    - Config
+- id: 6
+  description: Record bigpowers_sha and runner_sha in report metadata
+  verify: python3 Tests/test_ab_eval.py && rg -n 'runner_sha' scripts/lib/ab_report.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reporting
+    - Provenance

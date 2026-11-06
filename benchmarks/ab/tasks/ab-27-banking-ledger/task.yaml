@@ -1,0 +1,49 @@
+# story: e04s03
+# Advanced slice: double-entry ledger, idempotency, atomic transfers.
+id: ab-27
+title: Banking ledger with atomic transfers and double entry
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/banking-system
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: double-entry
+    behaviour: "a transfer writes two entries and the ledger sums to zero"
+    hidden: "a transfer writes two entries and the ledger sums to zero"
+  - id: insufficient
+    behaviour: "insufficient funds leaves balances and ledger untouched"
+    hidden: "insufficient funds leaves balances and ledger untouched"
+  - id: unknown-same
+    behaviour: "unknown accounts and same-account transfers fail"
+    hidden: "unknown accounts and same-account transfers fail"
+  - id: amount-currency
+    behaviour: "amount and currency are validated"
+    hidden: "amount and currency are validated"
+  - id: idempotency
+    behaviour: "an idempotency key applies the money exactly once"
+    hidden: "an idempotency key applies the money exactly once"
+  - id: distinct-keys
+    behaviour: "different idempotency keys are different transfers"
+    hidden: "different idempotency keys are different transfers"
+  - id: accounts
+    behaviour: "duplicate accounts and negative opening balances are rejected"
+    hidden: "duplicate accounts and negative opening balances are rejected"
+  - id: concurrency
+    behaviour: "concurrent transfers never overdraw and keep the total"
+    hidden: "concurrent transfers never overdraw and keep the total"
+  - id: ledger-errors
+    behaviour: "ledger and balance reject unknown accounts"
+    hidden: "ledger and balance reject unknown accounts"
+prompt: |
+  Implement the banking ledger described in docs/SPEC-bank.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/bank.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

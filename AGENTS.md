@@ -1,19 +1,29 @@
-# BigPowers-Benchmark — OpenCode
+# BigPowers-Benchmark — Agent Spine
 
 Read CONVENTIONS.md before any GitHub or git operation.
 
 ## Project
-BigPowers-Benchmark — a macOS app that benchmarks AI coding agents.
-Stack: Swift / SwiftUI / macOS 14+
+BigPowers-Benchmark — a native macOS app that benchmarks AI coding agents.
+Stack: Swift / SwiftUI / macOS 14+ (Profile: swift)
+
+## Session Start
+At the start of every session, read in order:
+1. `CLAUDE.md` / `AGENTS.md`
+2. `CONVENTIONS.md`
+3. `specs/state.yaml`
+4. `specs/release-plan.yaml`
 
 ## Commands
 | Action | Command |
 |--------|---------|
-| Build  | `swift build` |
-| Test   | `swift test` |
 | Run    | `swift run BigPowersBenchmark` |
-| Setup  | `bash scripts/setup.sh` |
+| Test   | `swift test` |
+| Build  | `swift build` |
 | Lint   | `lefthook run pre-commit` |
+| Preflight | `swift test && lefthook run pre-commit && swift build` |
+| A/B dry run | `bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /path/to/bigpowers` |
+| A/B tests | `python3 Tests/test_ab_eval.py && python3 Tests/test_ab_score.py` |
+| A/B sandbox | `bash scripts/ab-sandbox.sh status` |
 
 ## Observability
 
@@ -27,15 +37,16 @@ Stack: Swift / SwiftUI / macOS 14+
 | Check sandbox | `daytona workspace list` |
 
 ## Architecture
-HTML/CSS/JS prototypes in `project/` serve as pixel-perfect design references; the real app is a native SwiftUI macOS app built around a `NavigationSplitView` shell with `Table` for data grids, Swift Charts for score visualizations, a `Canvas+Path` skill radar, an `NSViewRepresentable(NSTextView)` ANSI terminal panel, and a `Process+Pipe+AsyncStream` benchmark runner that writes `BenchRow` JSON shards to `~/runs/data/`.
+HTML/CSS/JS prototypes in `specs/assets/prototypes/` serve as pixel-perfect design references; the real app is a native SwiftUI macOS app built around a `NavigationSplitView` shell with `Table` for data grids, Swift Charts for score visualizations, a `Canvas+Path` skill radar, an `NSViewRepresentable(NSTextView)` ANSI terminal panel, and a `Process+Pipe+AsyncStream` benchmark runner that writes `BenchRow` JSON shards to `~/runs/data/`.
 
 ## Conventions
 - Follow bigpowers principles in all phases.
-- All planning and specs live in `specs/`.
+- All planning and specs live in `specs/` — never inline in code or chat.
 - Use countable-story-format.md for any story or bug spec.
 - TDD: write the failing test first, make it pass, then refactor.
-- Match the HTML prototypes in `project/` pixel-for-pixel.
+- Match the HTML prototypes in `specs/assets/prototypes/` pixel-for-pixel.
 - API keys go to Keychain only — never to files or committed code.
+- Workflow mode: `solo-git`.
 
 ## Never
 - Never write code directly in response to a user prompt — run the appropriate bigpowers skill first.
@@ -43,8 +54,10 @@ HTML/CSS/JS prototypes in `project/` serve as pixel-perfect design references; t
 - Never skip tests or declare done without evidence.
 - Never write code outside the current task scope.
 - Never write API keys or secrets to any file.
+- Never modify generated code, vendored dependencies, or database migrations directly without an explicit migration plan.
 - Never use `--no-verify` to bypass git hooks.
-- Never touch `project/` HTML files — read-only design references.
+- Never touch `specs/assets/prototypes/` HTML files — read-only design references.
+- Never add `Co-authored-by:` or `Co-Authored-By:` trailers to commit messages.
 
 ## Agent Rules
 - **Workflow Mandate:** Use bigpowers skills to perform tasks. DO NOT write code directly.
@@ -54,3 +67,4 @@ HTML/CSS/JS prototypes in `project/` serve as pixel-perfect design references; t
 - Never refactor or reorganize code outside the task scope.
 - Run tests after every change. Show evidence before declaring done.
 - One clarifying question beats a wrong assumption baked into 200 lines.
+- Defensive code applies where the system boundary warrants it: Timeout on all Process/network calls; Retry with backoff on API calls; Graceful degradation when the benchmark runner is unavailable.

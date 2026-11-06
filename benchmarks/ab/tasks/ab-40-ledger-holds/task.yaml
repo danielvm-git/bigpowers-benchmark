@@ -1,0 +1,49 @@
+# story: e04s03
+# Advanced slice: authorization holds, capture, release, refund and ledger entries.
+id: ab-40
+title: Ledger holds with capture, release and refund
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/banking-system
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: hold
+    behaviour: "a hold reduces available but not the balance"
+    hidden: "a hold reduces available but not the balance"
+  - id: capture
+    behaviour: "capture debits once and writes one ledger entry"
+    hidden: "capture debits once and writes one ledger entry"
+  - id: release
+    behaviour: "release frees the hold without a ledger entry"
+    hidden: "release frees the hold without a ledger entry"
+  - id: funds
+    behaviour: "holds cannot exceed available funds"
+    hidden: "holds cannot exceed available funds"
+  - id: idempotent
+    behaviour: "authorize is idempotent and different keys make different holds"
+    hidden: "authorize is idempotent and different keys make different holds"
+  - id: refund
+    behaviour: "refund credits once and the capture/refund entries net to zero"
+    hidden: "refund credits once and the capture/refund entries net to zero"
+  - id: transitions
+    behaviour: "invalid state transitions fail"
+    hidden: "invalid state transitions fail"
+  - id: validation
+    behaviour: "unknown ids and validation"
+    hidden: "unknown ids and validation"
+  - id: concurrent
+    behaviour: "concurrent holds never exceed available"
+    hidden: "concurrent holds never exceed available"
+prompt: |
+  Implement the ledger holds described in docs/SPEC-ledger.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/ledger.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

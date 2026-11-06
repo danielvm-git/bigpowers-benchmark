@@ -1,0 +1,87 @@
+story_id: e01s03
+title: 'Add the app bridge: launch a harness run and ingest JSON reports'
+status: in_progress
+bcps: 8
+tasks:
+- id: 1
+  description: Add --json-out to ab-eval.py and write the full report as JSON atomically
+  verify: python3 Tests/test_ab_eval.py && rg -n 'json_out' scripts/lib/ab-eval.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Harness
+    - Reporting
+- id: 2
+  description: Add ABRunRecord with snake_case keys and tolerant decoding
+  verify: swift test --filter ABRunRecordCoding
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - App
+    - Models
+- id: 3
+  description: Add ABReport for the JSON sidecar
+  verify: swift test --filter ABReportCoding
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - App
+    - Models
+- id: 4
+  description: Add HarnessCommand builder with no shell interpolation
+  verify: swift test --filter HarnessCommand
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - App
+    - Security
+- id: 5
+  description: 'Add HarnessRunner actor: Process, pipes, timeout, cancel, streamed
+    log lines'
+  verify: swift test --filter HarnessRunner
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - App
+    - Runner
+- id: 6
+  description: Add HarnessReportStore that reads AB-*.json and ab-runs-*.jsonl
+  verify: swift test --filter HarnessReportStore
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - App
+    - Store
+- id: 7
+  description: Add HarnessRunView and ViewModel, wire into Mission Control
+  verify: swift build
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - App
+    - UI
+- id: 8
+  description: Add Settings fields for subject root, runner root, reports dir and
+    adapter
+  verify: swift build && rg -n 'bigpowersRoot|harnessRoot|reportsDir' Sources/BigPowersBenchmarkKit/Views/SettingsView.swift
+  risk: P1
+  status: failing
+  allure:
+    severity: high
+    categories:
+    - App
+    - Settings

@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: length-prefixed framing, partial frames, pipelining, concurrent clients.
+id: ab-42
+title: Binary length-prefixed protocol server
+kind: feature
+spec_style: behavioural
+source:
+  url: https://www.hackerrank.com/challenges/sortedset/problem
+  license: inspiration-only
+  note: "Task shape inspired by HackerRank Sorted Set and CodeCrafters Redis; spec/tests are ours."
+requirements:
+  - id: frames
+    behaviour: "set, get and delete over frames"
+    hidden: "set, get and delete over frames"
+  - id: partial
+    behaviour: "partial frames are buffered"
+    hidden: "partial frames are buffered"
+  - id: pipeline
+    behaviour: "pipelined frames answer in order"
+    hidden: "pipelined frames answer in order"
+  - id: shared
+    behaviour: "clients share the store"
+    hidden: "clients share the store"
+  - id: errors
+    behaviour: "malformed JSON, unknown commands and invalid requests are explicit"
+    hidden: "malformed JSON, unknown commands and invalid requests are explicit"
+  - id: oversized
+    behaviour: "oversized frames are rejected and the connection closes"
+    hidden: "oversized frames are rejected and the connection closes"
+  - id: quit
+    behaviour: "quit closes without a response"
+    hidden: "quit closes without a response"
+prompt: |
+  Implement the binary frame protocol described in docs/SPEC-protocol.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/server.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

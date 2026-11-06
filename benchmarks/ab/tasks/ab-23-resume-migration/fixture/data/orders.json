@@ -1,0 +1,5 @@
+[
+  { "id": "O-1001", "customerId": "C-1", "items": [{ "sku": "A", "qty": 2, "unitCents": 500 }] },
+  { "id": "O-1002", "customerId": "C-2", "items": [{ "sku": "B", "qty": 1, "unitCents": 1200 }] },
+  { "id": "O-1003", "customerId": "C-1", "items": [{ "sku": "A", "qty": 1, "unitCents": 500 }] }
+]

@@ -1,0 +1,52 @@
+# story: e04s03
+# Mid/hard task: line protocol, sorted sets, shared state across concurrent clients.
+id: ab-26
+title: Mini Redis with a sorted set and multiple clients
+kind: feature
+spec_style: behavioural
+source:
+  url: https://www.hackerrank.com/challenges/sortedset/problem
+  license: inspiration-only
+  note: "Also inspired by CodeCrafters Redis. Our own spec, fixture and tests."
+requirements:
+  - id: strings
+    behaviour: "string commands work and values may contain spaces"
+    hidden: "string commands work and values may contain spaces"
+  - id: zadd
+    behaviour: "ZADD updates scores and ZCARD/ZSCORE reflect them"
+    hidden: "ZADD updates scores and ZCARD/ZSCORE reflect them"
+  - id: zrange
+    behaviour: "ZRANGE orders by score then member and handles indices"
+    hidden: "ZRANGE orders by score then member and handles indices"
+  - id: zrem
+    behaviour: "ZREM removes only existing members"
+    hidden: "ZREM removes only existing members"
+  - id: wrong-type
+    behaviour: "wrong-type keys are rejected in both directions"
+    hidden: "wrong-type keys are rejected in both directions"
+  - id: errors
+    behaviour: "unknown commands, wrong arity and invalid scores are explicit"
+    hidden: "unknown commands, wrong arity and invalid scores are explicit"
+  - id: framing
+    behaviour: "partial frames are buffered and pipelined commands answer in order"
+    hidden: "partial frames are buffered and pipelined commands answer in order"
+  - id: shared
+    behaviour: "two clients share state"
+    hidden: "two clients share state"
+  - id: quit
+    behaviour: "QUIT closes the connection without a response"
+    hidden: "QUIT closes the connection without a response"
+  - id: empty-lines
+    behaviour: "empty lines are ignored"
+    hidden: "empty lines are ignored"
+prompt: |
+  Implement the TCP server described in docs/SPEC-mini-redis.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/server.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 600
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

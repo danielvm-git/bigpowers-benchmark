@@ -1,0 +1,37 @@
+# story: e04s03
+# Advanced slice: a real JSON parser with positions and surrogate handling.
+id: ab-41
+title: JSON parser with error positions and Unicode escapes
+kind: feature
+spec_style: behavioural
+source:
+  url: https://github.com/WecoAI/SpecBench
+  license: inspiration-only
+  note: "Task shape inspired by SpecBench; parser spec, fixture and tests are ours."
+requirements:
+  - id: valid
+    behaviour: "parses valid JSON values"
+    hidden: "parses valid JSON values"
+  - id: invalid
+    behaviour: "rejects invalid syntax with a position"
+    hidden: "rejects invalid syntax with a position"
+  - id: agree
+    behaviour: "valid JSON agrees with JSON.parse"
+    hidden: "valid JSON agrees with JSON.parse"
+  - id: unicode
+    behaviour: "unicode escapes and surrogate pairs decode correctly"
+    hidden: "parses valid JSON values"
+  - id: position
+    behaviour: "errors carry the first unexpected position"
+    hidden: "rejects invalid syntax with a position"
+prompt: |
+  Implement the JSON parser described in docs/SPEC-parser.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/parser.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

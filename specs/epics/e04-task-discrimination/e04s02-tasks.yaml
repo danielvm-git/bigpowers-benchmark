@@ -1,0 +1,53 @@
+story_id: e04s02
+title: De-prescribe specs and complete hidden-test coverage
+status: done
+bcps: 8
+tasks:
+- id: 1
+  description: 'Declare spec_style: behavioural on the four hard tasks'
+  verify: python3 Tests/test_task_quality.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Task quality
+- id: 2
+  description: Rewrite ab-09/17/19/20 specs to observable behaviour
+  verify: python3 Tests/test_task_quality.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Task quality
+- id: 3
+  description: Add requirements -> hidden-test mapping to each hard task
+  verify: python3 Tests/test_task_quality.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Task quality
+- id: 4
+  description: Add boundary, null/missing and regression hidden tests
+  verify: bash scripts/run-ab-eval.sh --preflight-only --tasks ab-09,ab-17,ab-19,ab-20
+    --bigpowers-root "$BIGPOWERS_ROOT"
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Task quality
+    - Hidden tests
+- id: 5
+  description: Re-calibrate the edited tasks at k=10
+  verify: bash scripts/ab-calibrate.sh --tasks ab-09,ab-17,ab-19,ab-20 --k 10 --bigpowers-root
+    "$BIGPOWERS_ROOT"
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration

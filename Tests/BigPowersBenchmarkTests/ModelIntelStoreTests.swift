@@ -169,7 +169,7 @@ struct ModelInfoQuotaTests {
     @Test("isQuotaModel flags CLI subscription models")
     func quotaModel() throws {
         #expect(StaticModelCatalogs.claudeCLI[0].isQuotaModel)
-        #expect(try !(#require(StaticModelCatalogs.openCode.first { $0.id.contains("free") }?.isQuotaModel)))
+        #expect(try !#require(StaticModelCatalogs.openCode.first { $0.id.contains("free") }?.isQuotaModel))
     }
 }
 

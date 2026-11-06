@@ -1,0 +1,57 @@
+id: e01
+slug: benchmark-port
+title: Port the A/B harness and cut over
+status: planned
+release: v2.0.0
+bcps: 20
+wsjf:
+  business_value: 13
+  time_criticality: 13
+  risk_reduction: 13
+  job_size: 8
+  score: 4.9
+depends_on: []
+stories:
+- id: e01s01
+  file: e01s01-move-ab-harness.md
+  title: Move A/B harness, tasks and reports into benchmarks/
+  bcps: 8
+  risk: P0
+  status: done
+- id: e01s02
+  file: e01s02-external-subject-root.md
+  title: Point the runner at an external bigpowers checkout
+  bcps: 5
+  risk: P0
+  status: done
+- id: e01s03
+  file: e01s03-app-bridge.md
+  title: 'Add the app bridge: launch a harness run and ingest JSON reports'
+  bcps: 8
+  risk: P0
+  status: in_progress
+- id: e01s04
+  file: e01s04-remove-from-bigpowers.md
+  title: Remove the A/B assets from bigpowers with a pointer and changelog
+  bcps: 3
+  risk: P1
+  status: planned
+- id: e01s05
+  file: e01s05-cutover-parity.md
+  title: 'Cutover parity test: same report keys, same task files, same verdict'
+  bcps: 3
+  risk: P0
+  status: done
+exit_criteria:
+- bash scripts/run-ab-eval.sh --dry-run --bigpowers-root <checkout> runs from this
+  repo.
+- A k=1 smoke writes AB-<date>.json and ab-runs-<date>.jsonl with the old key set
+  plus new keys.
+- The app launches one harness run and renders its logs and report.
+- bigpowers main has no A/B harness and points here.
+risks:
+- 'Path assumptions hidden in ab-*.py (REPO_ROOT, AB_DIR, AB_BP_ROOT) break silently:
+  cover with the parity test.'
+- 'The app''s BenchRow contract is frozen: add ABRunRecord instead of widening BenchRow.'
+- 'Removing files from bigpowers breaks direct CLI users: ship a one-release redirect
+  stub.'

@@ -1,6 +1,7 @@
 public enum Screen: String, CaseIterable {
     case dashboard
     case missionControl
+    case harness
     case runExplorer
     case skillInsights
     case modelHealth
@@ -15,6 +16,7 @@ public enum Screen: String, CaseIterable {
         switch self {
         case .dashboard: "Dashboard"
         case .missionControl: "Mission Control"
+        case .harness: "A/B Harness"
         case .runExplorer: "Run Explorer"
         case .skillInsights: "Skill Insights"
         case .modelHealth: "Model Health"
@@ -31,6 +33,7 @@ public enum Screen: String, CaseIterable {
         switch self {
         case .dashboard: "chart.bar.xaxis"
         case .missionControl: "scope"
+        case .harness: "testtube.2"
         case .runExplorer: "list.bullet.rectangle"
         case .skillInsights: "hexagon"
         case .modelHealth: "network"

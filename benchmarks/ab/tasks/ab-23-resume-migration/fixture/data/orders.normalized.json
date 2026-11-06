@@ -1,0 +1,5 @@
+[
+  { "id": "O-1001", "customerId": "C-1", "totalCents": 1000, "itemCount": 2 },
+  { "id": "O-1002", "customerId": "C-2", "totalCents": 1200, "itemCount": 1 },
+  { "id": "O-1003", "customerId": "C-1", "totalCents": 500, "itemCount": 1 }
+]

@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: baseline schedule, replanning, slippage, critical path change.
+id: ab-38
+title: Timeline re-planning with baseline slippage
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/project-management-tool
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: slippage
+    behaviour: "replanning reports slippage against an immutable baseline"
+    hidden: "replanning reports slippage against an immutable baseline"
+  - id: critical
+    behaviour: "replanning changes the critical path when a branch slips"
+    hidden: "replanning changes the critical path when a branch slips"
+  - id: baseline-required
+    behaviour: "baseline is required before replanning"
+    hidden: "baseline is required before replanning"
+  - id: validation
+    behaviour: "replan validation"
+    hidden: "replan validation"
+  - id: unique
+    behaviour: "the schedule has every task exactly once"
+    hidden: "the schedule has every task exactly once"
+  - id: empty
+    behaviour: "an empty project replans to zero"
+    hidden: "an empty project replans to zero"
+prompt: |
+  Implement the timeline re-planning described in docs/SPEC-replan.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/timeline.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

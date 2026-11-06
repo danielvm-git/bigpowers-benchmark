@@ -1,0 +1,35 @@
+id: e03
+slug: statistics-and-decisions
+title: Tail-aware statistics and pre-registered decisions
+status: planned
+release: v2.0.0
+bcps: 8
+wsjf:
+  business_value: 8
+  time_criticality: 5
+  risk_reduction: 8
+  job_size: 3
+  score: 7.0
+depends_on:
+- e02
+stories:
+- id: e03s01
+  file: e03s01-tail-statistics.md
+  title: Report median and p90 for duration, cost, tokens and diff lines
+  bcps: 3
+  risk: P1
+  status: done
+- id: e03s02
+  file: e03s02-decision-policy.md
+  title: Pre-register acceptance thresholds and emit a decision verdict
+  bcps: 5
+  risk: P1
+  status: done
+exit_criteria:
+- Every arm summary carries mean, median and p90 for the four tail-sensitive metrics.
+- The report says ship, reject or inconclusive, with reasons and the threshold values
+  used.
+- The decision policy hash is recorded before the first run.
+risks:
+- Means stay for compatibility; new keys are additive.
+- 'Thresholds chosen after seeing data are fraud: hash the policy before the run.'

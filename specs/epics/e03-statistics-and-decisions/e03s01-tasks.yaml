@@ -1,0 +1,53 @@
+story_id: e03s01
+title: Report median and p90 for duration, cost, tokens and diff lines
+status: done
+bcps: 3
+tasks:
+- id: 1
+  description: Add percentile and median helpers
+  verify: python3 Tests/test_ab_report.py
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Statistics
+- id: 2
+  description: Add median and p90 keys to arm_summary
+  verify: python3 Tests/test_ab_report.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Statistics
+    - Reporting
+- id: 3
+  description: Print median/p90 without breaking the table
+  verify: python3 -c "import sys; sys.path.insert(0,'scripts/lib'); import ab_report;
+    print(ab_report.percentile([1,2,3,4,10], 90))"
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Reporting
+- id: 4
+  description: Document the new keys and the nearest-rank rule
+  verify: rg -n 'median_duration_s|p90_duration_s' benchmarks/docs/SCHEMA-AB.md
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Docs
+- id: 5
+  description: Keep cost_per_pass as total/passes and add median_cost_usd
+  verify: rg -n 'median_cost_usd' benchmarks/docs/SCHEMA-AB.md
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Statistics
+    - Docs

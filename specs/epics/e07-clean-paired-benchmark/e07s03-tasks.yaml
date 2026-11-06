@@ -1,0 +1,10 @@
+story_id: e07s03
+title: Ablation arm analysis
+status: pending
+bcps: 3
+tasks:
+- id: 1
+  description: Verify ablation runner
+  verify: python3 Tests/test_ab_ablation.py
+  risk: P1
+  status: pending

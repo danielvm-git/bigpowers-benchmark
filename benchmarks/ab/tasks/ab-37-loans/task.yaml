@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: simple interest, balance, repayment and paid state.
+id: ab-37
+title: Loans with simple interest and repayment state
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/banking-system
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: interest
+    behaviour: "simple interest uses days and the 365-day year"
+    hidden: "simple interest uses days and the 365-day year"
+  - id: zero
+    behaviour: "zero days and zero rate accrue nothing"
+    hidden: "zero days and zero rate accrue nothing"
+  - id: repay
+    behaviour: "repayment reduces the balance and exact repayment marks paid"
+    hidden: "repayment reduces the balance and exact repayment marks paid"
+  - id: overpay
+    behaviour: "overpayment and post-paid operations fail without mutation"
+    hidden: "overpayment and post-paid operations fail without mutation"
+  - id: reduced-balance
+    behaviour: "interest after a repayment uses the reduced balance"
+    hidden: "interest after a repayment uses the reduced balance"
+  - id: validation
+    behaviour: "unknown loans and validation"
+    hidden: "unknown loans and validation"
+prompt: |
+  Implement the loans module described in docs/SPEC-loans.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/loans.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

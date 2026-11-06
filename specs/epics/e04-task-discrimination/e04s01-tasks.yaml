@@ -1,0 +1,35 @@
+story_id: e04s01
+title: "Vanilla-only calibration and band classification"
+status: passing
+bcps: 5
+tasks:
+  - id: 1
+    description: "Add --calibrate: vanilla only, k=10 by default, no bigpowers arm"
+    verify: "python3 Tests/test_ab_calibration.py"
+    risk: P0
+    status: passing
+    allure: {severity: critical, categories: ["Calibration"]}
+  - id: 2
+    description: "Classify too_easy >0.8, discriminating 0.2-0.8, too_hard <0.2"
+    verify: "python3 Tests/test_ab_calibration.py"
+    risk: P0
+    status: passing
+    allure: {severity: critical, categories: ["Calibration"]}
+  - id: 3
+    description: "Write CALIBRATION-<date>.yaml with per-task rate, score, timeouts and band counts"
+    verify: "python3 Tests/test_ab_calibration.py"
+    risk: P1
+    status: passing
+    allure: {severity: high, categories: ["Calibration", "Reporting"]}
+  - id: 4
+    description: "Cache calibration by task, adapter, model, k and arm setup"
+    verify: "python3 Tests/test_ab_calibration.py"
+    risk: P1
+    status: passing
+    allure: {severity: high, categories: ["Calibration", "Cache"]}
+  - id: 5
+    description: "Add scripts/ab-calibrate.sh wrapper"
+    verify: "bash -n scripts/ab-calibrate.sh"
+    risk: P2
+    status: passing
+    allure: {severity: normal, categories: ["CLI"]}

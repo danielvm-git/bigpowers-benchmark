@@ -26,6 +26,8 @@ public struct ContentView: View {
                     DashboardView()
                 case .missionControl:
                     MissionControlView()
+                case .harness:
+                    HarnessRunView()
                 case .runExplorer:
                     RunExplorerView()
                 case .skillInsights:

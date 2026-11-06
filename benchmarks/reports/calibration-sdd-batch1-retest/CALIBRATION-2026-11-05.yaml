@@ -1,0 +1,82 @@
+kind: calibration
+generated_at: '2026-11-06T01:49:21+00:00'
+bigpowers_sha: 52842a2f
+runner_sha: 1d4978f
+adapter: pi-docker
+model: opencode-go/deepseek-v4.1-flash
+k: 5
+tasks:
+- ab-28
+- ab-29
+inputs:
+  schema: 1
+  subject:
+    path: /Users/danielvm/Developer/bigpowers
+    sha: 52842a2f854ff64de46ebf180accaffbc2e95c58
+    ref: HEAD
+    dirty: false
+    dirty_diff_sha: null
+    worktree_path: /private/var/folders/f_/v19lb8b12356n1xqc9ngp97r0000gn/T/bp-worktree-AMNvn4/subject
+  runner:
+    root: /Users/danielvm/Developer/bigpowers-benchmark
+    sha: 1d4978fd4d115f43a002bb75ff63c8907c75c4f6
+    ref: HEAD
+    dirty: true
+    dirty_diff_sha: e9d0fc4fa055fb84db1d9e8288db85c9d06d87a71f0e1eee7c3c93ace56da880
+  config:
+    path: /Users/danielvm/Developer/bigpowers-benchmark/benchmarks/ab/config.yaml
+    sha256: f8ff31730264289a945c8c1c8eb102b704232eba53e2f7c09d969257d137824e
+  image:
+    name: bp-ab-agent:pi-1.5.0
+    id: sha256:a3b3272044872032048417aab84f20c559d6e220c864409310310fc744d00bf2
+  tasks:
+    ab-28:
+      task_yaml: 6aa4debc2eb42b4b918857f4d0b30bcad181d2e5d4d94ef9f4d0e7f59823e749
+      fixture: 42c012aa5683e31942b9e5447a7ec96ece3b0623a976192432acb7fb5c3aa412
+      hidden: fe31ada9bd0332303fb79c026e6a5f3ffc9df72d8b8f88abd3270e4525928afe
+      audit: null
+      solution: f3da2dd4894051eaddfa586880f588bfa136d4f474e3a0130c735d9520568b6b
+    ab-29:
+      task_yaml: f5adbc2734001a21fd647d68e42c8cb28e8a4b720be1dac41981a0ff967d739f
+      fixture: c71e2a4007a65e64c738602c7c6f5c2e188a5c884de27d05f4aa7c88aae1978d
+      hidden: b8ede92fe35524738292ecdf63f28d241f4105c5b1786654d033d718ba159ec9
+      audit: null
+      solution: d42f545f05fe5e16e8facf42d96f72fdbfee3ad498f8c2699bc306d7e6ec8af2
+  decision:
+    policy:
+      confidence: 0.95
+      min_pass_gain: 0.05
+      min_score_gain: 0.02
+      max_cost_multiplier: 1.5
+      max_lead_time_multiplier: 1.5
+      max_tamper_rate: 0.0
+      min_audit_clean_rate: 1.0
+      min_quality_gain: 0.05
+      max_agent_error_rate: 0.05
+      min_discriminating_tasks: 0
+    preregistration_sha: 4d4bb980cbbfcb8c1fa8b2daa16c97a6781e7521597bb4bcc374cdbb7fffcd9d
+input_digest: ed7a5ffe9f8fce6e11fb6cb6c73df8bac6dd465ed36f6352f237933f89cf3b08
+results:
+- id: ab-28
+  runs: 5
+  passes: 0
+  pass_rate: 0.0
+  mean_score: 0.875
+  timed_out: 0
+  agent_error: 1
+  band: too_hard
+  cached: false
+- id: ab-29
+  runs: 5
+  passes: 5
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+summary:
+  too_easy: 1
+  discriminating: 0
+  too_hard: 1
+  unknown: 0

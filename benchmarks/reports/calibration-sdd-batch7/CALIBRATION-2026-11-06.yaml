@@ -1,0 +1,98 @@
+kind: calibration
+generated_at: '2026-11-06T15:49:15+00:00'
+bigpowers_sha: 52842a2f
+runner_sha: 1d4978f
+adapter: pi-docker
+model: opencode-go/deepseek-v4.1-flash
+k: 3
+tasks:
+- ab-47
+- ab-48
+- ab-49
+inputs:
+  schema: 1
+  subject:
+    path: /Users/danielvm/Developer/bigpowers
+    sha: 52842a2f854ff64de46ebf180accaffbc2e95c58
+    ref: HEAD
+    dirty: false
+    dirty_diff_sha: null
+    worktree_path: /private/var/folders/f_/v19lb8b12356n1xqc9ngp97r0000gn/T/bp-worktree-mS3hoX/subject
+  runner:
+    root: /Users/danielvm/Developer/bigpowers-benchmark
+    sha: 1d4978fd4d115f43a002bb75ff63c8907c75c4f6
+    ref: HEAD
+    dirty: true
+    dirty_diff_sha: 6c466b0ef4825fc27d79187609e01eb1d0b69a174eaa46d7d21b4045b8d2d8ca
+  config:
+    path: /Users/danielvm/Developer/bigpowers-benchmark/benchmarks/ab/config.yaml
+    sha256: f8ff31730264289a945c8c1c8eb102b704232eba53e2f7c09d969257d137824e
+  image:
+    name: bp-ab-agent:pi-1.5.0
+    id: sha256:a3b3272044872032048417aab84f20c559d6e220c864409310310fc744d00bf2
+  tasks:
+    ab-47:
+      task_yaml: f4c6b3c5f358f2dcede430ed1ca09247711fa45cfc931225274ed8e47327c418
+      fixture: 6fe7faa81352f2607cd767df3f1afc5a6b276ac9aebba1ff4f243d1aab99686e
+      hidden: c170dcfe1a43be5ce1c25620dec6b2cfb4f3d53bdc270276cc2a9afec509dfef
+      audit: null
+      solution: 1483448ed6c0e41b48f84da6885a65b927f901724c22abd901ba35114ea36fd1
+    ab-48:
+      task_yaml: e79e5ac171d11b77ebddc7623d9eb5dca432e11c84a949a697f1d391c6276c58
+      fixture: 335910e4add308e4abda9a809a92dc5a65d7e5a0dd4da1f3c78c990e91653d64
+      hidden: c67af82ce7227b7108571601e06710c81797397dd7b4479bc82e37c6a3ffc6b5
+      audit: null
+      solution: 551bf88df284eed66e79da90bdfc0c253485a082f0737b58043fc4e32f36ffd6
+    ab-49:
+      task_yaml: 0993c49c478df95107c3fa4ad2e8b10a07356b855828eb298c67f44a774f4bca
+      fixture: 9219c390c8327c73d7b4fba418bf2ae7e642e9935acb0bfecb4cb606f24e2cc7
+      hidden: 6a78fd96f9573514d450b7d85e355f0ad255a7c4f46a69be6deb56eaa32b3c2d
+      audit: null
+      solution: 2fb684c95d549ac7de9beba809f0136f411e417e55979bf9ac49b620f5f77d8f
+  decision:
+    policy:
+      confidence: 0.95
+      min_pass_gain: 0.05
+      min_score_gain: 0.02
+      max_cost_multiplier: 1.5
+      max_lead_time_multiplier: 1.5
+      max_tamper_rate: 0.0
+      min_audit_clean_rate: 1.0
+      min_quality_gain: 0.05
+      max_agent_error_rate: 0.05
+      min_discriminating_tasks: 0
+    preregistration_sha: c564e9c3b03f552dbbf92fb205bd013d7207f887c0aa4f35ac8d89ec1e272d8f
+input_digest: 0eafdc4b47fbc145976bce2b0f5d32336ce92b537620574ceb78180ec59fd657
+results:
+- id: ab-47
+  runs: 3
+  passes: 3
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+- id: ab-48
+  runs: 3
+  passes: 3
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+- id: ab-49
+  runs: 3
+  passes: 0
+  pass_rate: 0.0
+  mean_score: 0.8571
+  timed_out: 0
+  agent_error: 0
+  band: too_hard
+  cached: false
+summary:
+  too_easy: 2
+  discriminating: 0
+  too_hard: 1
+  unknown: 0

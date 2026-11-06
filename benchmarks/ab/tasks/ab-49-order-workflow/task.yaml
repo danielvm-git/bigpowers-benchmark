@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: order state machine, idempotency and compensation.
+id: ab-49
+title: Order workflow with idempotent commands
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/ecommerce
+  license: inspiration-only
+  note: "Project idea from SDD Academy; workflow rules, fixture and tests are ours."
+requirements:
+  - id: pay-idempotent
+    behaviour: "pay is idempotent with the same payment id"
+    hidden: "pay is idempotent with the same payment id"
+  - id: conflict
+    behaviour: "a different payment id conflicts"
+    hidden: "a different payment id conflicts"
+  - id: ship
+    behaviour: "ship requires payment and is idempotent"
+    hidden: "ship requires payment and is idempotent"
+  - id: refund
+    behaviour: "cancelling a paid order records a refund"
+    hidden: "cancelling a paid order records a refund"
+  - id: shipped
+    behaviour: "shipped orders cannot be cancelled"
+    hidden: "shipped orders cannot be cancelled"
+  - id: no-mutate
+    behaviour: "failed transitions do not mutate history"
+    hidden: "failed transitions do not mutate history"
+  - id: validation
+    behaviour: "duplicate and invalid orders fail"
+    hidden: "duplicate and invalid orders fail"
+prompt: |
+  Implement the order workflow described in docs/SPEC-orders.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/orders.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

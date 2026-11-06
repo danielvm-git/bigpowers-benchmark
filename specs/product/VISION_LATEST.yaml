@@ -1,0 +1,20 @@
+# Vision — BigPowers Benchmark Cockpit & Runner
+
+vision: >-
+  Provide the definitive outcome benchmark and native cockpit for AI coding agents,
+  proving objectively whether agent skills and methods deliver verifiable, higher-quality software.
+
+target_users:
+  - persona: "AI Agent Orchestrator / Researcher"
+    need: "Empirical proof of agent performance with A/B comparative distributions, confidence intervals, and lean waste metrics."
+  - persona: "Software Engineer / System Architect"
+    need: "A fast, native macOS desktop cockpit to monitor benchmark runs, inspect logs, and debug agent regressions."
+
+core_capabilities:
+  - "Native macOS SwiftUI interface with Table grids, Swift Charts, Canvas radar, and ANSI terminal view."
+  - "Isolated containerized evaluation harness with tamper detection, partial credit, and bootstrap statistics."
+  - "Unified JSON reporting contract (`BenchRow` and `ABRunRecord`) for cross-runner parity."
+
+success_criteria:
+  - "Harness runs execute with hermetic isolation, clean preflight, and verifiable outcomes."
+  - "Reports yield actionable ship/reject/inconclusive decision policies with confidence intervals."

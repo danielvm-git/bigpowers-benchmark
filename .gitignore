@@ -20,6 +20,18 @@ DerivedData/
 build/
 .build/
 
+# Python (benchmark harness)
+__pycache__/
+*.pyc
+.venv/
+
+# A/B benchmark run artifacts (curated AB-*.yaml reports stay tracked)
+benchmarks/reports/ab-live.jsonl
+benchmarks/reports/traces/
+benchmarks/reports/ab-runs-*.jsonl
+benchmarks/ab/preflight-cache.json
+benchmarks/ab/calibration-cache.json
+
 # Misc
 *.swp
 *.swo

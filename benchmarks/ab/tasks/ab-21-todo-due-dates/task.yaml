@@ -1,0 +1,39 @@
+# story: e04s03
+# Long-horizon: requirements arrive in three issue comments; old data must keep loading.
+id: ab-21
+title: Due dates for the todo CLI, as settled in issue #42
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: due-date
+    behaviour: "an optional ISO due date is stored; absent means null"
+    hidden: "stores an optional due date and keeps null when absent"
+  - id: invalid-due
+    behaviour: "invalid due dates are rejected"
+    hidden: "rejects invalid due dates"
+  - id: overdue
+    behaviour: "overdue is incomplete, dated and strictly before today"
+    hidden: "overdue means incomplete, dated and strictly before today"
+  - id: today-required
+    behaviour: "overdue requires a valid today"
+    hidden: "overdue requires a valid today"
+  - id: old-data
+    behaviour: "files without due dates keep loading and gain null"
+    hidden: "old files without due dates keep loading and gain a null due"
+  - id: json
+    behaviour: "JSON carries null or an ISO due date"
+    hidden: "JSON output carries null or an ISO due date"
+  - id: regression
+    behaviour: "add, list and complete keep working"
+    hidden: "regression: add, list and complete keep working"
+prompt: |
+  Implement the changes requested in ISSUE.md. The issue has three comments; all of them matter.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/todo.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

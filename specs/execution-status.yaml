@@ -1,0 +1,29 @@
+status: active
+active_epic: e04
+active_story: e04s04
+stories:
+  e01s01: completed
+  e01s02: completed
+  e01s03: completed
+  e01s04: completed
+  e01s05: completed
+  e02s01: completed
+  e02s02: completed
+  e02s03: completed
+  e02s04: completed
+  e03s01: completed
+  e03s02: completed
+  e04s01: completed
+  e04s02: completed
+  e04s03: completed
+  e04s04: in_progress
+  e05s01: pending
+  e05s02: pending
+  e05s03: pending
+  e06s01: pending
+  e06s02: pending
+  e07s01: pending
+  e07s02: pending
+  e07s03: pending
+  e08s01: pending
+  e08s02: pending

@@ -1,0 +1,66 @@
+kind: calibration
+generated_at: '2026-11-06T12:44:24+00:00'
+bigpowers_sha: 52842a2f
+runner_sha: 1d4978f
+adapter: pi-docker
+model: opencode-go/deepseek-v4.1-flash
+k: 3
+tasks:
+- ab-40
+inputs:
+  schema: 1
+  subject:
+    path: /Users/danielvm/Developer/bigpowers
+    sha: 52842a2f854ff64de46ebf180accaffbc2e95c58
+    ref: HEAD
+    dirty: false
+    dirty_diff_sha: null
+    worktree_path: /private/var/folders/f_/v19lb8b12356n1xqc9ngp97r0000gn/T/bp-worktree-s7uCXZ/subject
+  runner:
+    root: /Users/danielvm/Developer/bigpowers-benchmark
+    sha: 1d4978fd4d115f43a002bb75ff63c8907c75c4f6
+    ref: HEAD
+    dirty: true
+    dirty_diff_sha: e9d0fc4fa055fb84db1d9e8288db85c9d06d87a71f0e1eee7c3c93ace56da880
+  config:
+    path: /Users/danielvm/Developer/bigpowers-benchmark/benchmarks/ab/config.yaml
+    sha256: f8ff31730264289a945c8c1c8eb102b704232eba53e2f7c09d969257d137824e
+  image:
+    name: bp-ab-agent:pi-1.5.0
+    id: sha256:a3b3272044872032048417aab84f20c559d6e220c864409310310fc744d00bf2
+  tasks:
+    ab-40:
+      task_yaml: d2181c9729e63f1eb74cf22fa05469bbfc733aad4ebfc760d7e26b223c337dc8
+      fixture: 7ac970ccb72e507befd19976b278af6ee72d39de2bc95bbc3d215073e4d1a825
+      hidden: cd24a2cdc34de2394eadec1b42cefa22b0c5dd1071e3bf462c9d8815350b7e73
+      audit: null
+      solution: 96963370c437a4f23a2e29e5bdc90176d02a6f85dd351ee20261e9c6181805b6
+  decision:
+    policy:
+      confidence: 0.95
+      min_pass_gain: 0.05
+      min_score_gain: 0.02
+      max_cost_multiplier: 1.5
+      max_lead_time_multiplier: 1.5
+      max_tamper_rate: 0.0
+      min_audit_clean_rate: 1.0
+      min_quality_gain: 0.05
+      max_agent_error_rate: 0.05
+      min_discriminating_tasks: 0
+    preregistration_sha: 784bfd6aa2a4b6417985f3673b3db403f0be68cf931f0c0c9fc933e380924159
+input_digest: 11e9f6ec144cf0ec268048e91f6a19598b7c19f654bbc2acc5b8b9175d8bf0b9
+results:
+- id: ab-40
+  runs: 3
+  passes: 3
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+summary:
+  too_easy: 1
+  discriminating: 0
+  too_hard: 0
+  unknown: 0

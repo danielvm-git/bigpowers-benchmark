@@ -1,0 +1,53 @@
+story_id: e01s04
+title: "Remove the A/B assets from bigpowers with a pointer and changelog"
+status: failing
+bcps: 3
+tasks:
+  - id: 1
+    description: "Replace run-ab-eval.sh with a redirect shim that exits 2"
+    verify: "bash scripts/run-ab-eval.sh; test $? -eq 2"
+    risk: P1
+    status: failing
+    allure: {severity: high, categories: ["Cutover", "CLI"]}
+  - id: 2
+    description: "Delete the A/B libs, sandbox and eval tests from bigpowers"
+    verify: "test ! -e scripts/lib/ab-eval.py && test ! -e tests/test_ab_eval.py && test ! -e scripts/ab-sandbox.sh"
+    risk: P0
+    status: failing
+    allure: {severity: critical, categories: ["Cutover", "Removal"]}
+  - id: 3
+    description: "Delete the A/B task suite, reports and benchmark docs"
+    verify: "test ! -d specs/benchmarks/ab && test -z \"$(find specs/benchmarks/reports -name 'AB-*' -o -name 'ab-runs-*')\""
+    risk: P0
+    status: failing
+    allure: {severity: critical, categories: ["Cutover", "Removal"]}
+  - id: 4
+    description: "Split SCHEMA.md and add the pointer in benchmarks/README.md"
+    verify: "rg -n 'bigpowers-benchmark' specs/benchmarks/SCHEMA.md specs/benchmarks/README.md"
+    risk: P1
+    status: failing
+    allure: {severity: high, categories: ["Docs"]}
+  - id: 5
+    description: "Point run-benchmark and evolve-skill at this repo for outcome numbers"
+    verify: "rg -n 'bigpowers-benchmark' skills/run-benchmark/SKILL.md skills/evolve-skill/SKILL.md"
+    risk: P1
+    status: failing
+    allure: {severity: high, categories: ["Docs", "Skills"]}
+  - id: 6
+    description: "Rewrite e58 story verify directives that call the removed runner"
+    verify: "! rg -n 'tests/test_ab_eval.py|run-ab-eval.sh --dry-run' specs/epics specs/execution-status.yaml"
+    risk: P0
+    status: failing
+    allure: {severity: critical, categories: ["Cutover", "Traceability"]}
+  - id: 7
+    description: "Record the breaking change in the changelog and commit footer"
+    verify: "git log -1 --format=%B | rg 'BREAKING CHANGE'"
+    risk: P2
+    status: failing
+    allure: {severity: normal, categories: ["Release"]}
+  - id: 8
+    description: "Run bigpowers compliance and verification gates"
+    verify: "npm run compliance && bash scripts/run-benchmark-tests.sh"
+    risk: P0
+    status: failing
+    allure: {severity: critical, categories: ["Gates"]}

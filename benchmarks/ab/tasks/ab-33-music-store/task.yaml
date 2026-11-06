@@ -1,0 +1,40 @@
+# story: e04s03
+# Intermediate slice: playlist ownership, purchase idempotency, entitlements and refunds.
+id: ab-33
+title: Music store purchases with entitlements and playlists
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/digital-music-store
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: playlist-owner
+    behaviour: "only the owner can change or read a playlist"
+    hidden: "only the owner can change or read a playlist"
+  - id: playlist-tracks
+    behaviour: "duplicate and missing playlist tracks fail"
+    hidden: "duplicate and missing playlist tracks fail"
+  - id: purchase
+    behaviour: "purchase is idempotent and grants an entitlement"
+    hidden: "purchase is idempotent and grants an entitlement"
+  - id: owned
+    behaviour: "buying owned with a new key fails"
+    hidden: "buying owned with a new key fails"
+  - id: refund
+    behaviour: "refund is single, removes entitlement and requires the purchaser"
+    hidden: "refund is single, removes entitlement and requires the purchaser"
+  - id: unknown
+    behaviour: "unknown entities and validation"
+    hidden: "unknown entities and validation"
+prompt: |
+  Implement the digital music store described in docs/SPEC-store.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/store.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js
