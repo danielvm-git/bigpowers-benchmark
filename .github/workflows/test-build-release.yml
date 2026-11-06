@@ -1,7 +1,17 @@
 name: Test Build Release
-# version: 4.1.2 — see workflow-templates/CHANGELOG.md
+# Base: danielvm-git/.github workflow-templates/test-build-release-swift.yml
+# Template CHANGELOG: 4.3.1 — see workflow-templates/CHANGELOG.md
 # Reusable workflow: call with `uses: danielvm-git/.github/.github/workflows/test-build-release-swift.yml@main`
-# Or copy to .github/workflows/test-build-release.yml (Swift/macOS — no deploy template yet)
+#
+# Local deviations from the 4.3.1 template, each required for CI to pass here:
+#   1. `test` runs on macos-15. The template's macos-14 jobs are cancelled in
+#      0s with no runner assigned on this repository.
+#   2. `verify` runs on macos-15 with Node installed. The template puts verify on
+#      ubuntu-22.04, where scripts/preflight.sh cannot run `swift test`, and
+#      preflight resolves lefthook from node_modules/.bin.
+#   3. `release` uses `npm clean-install` so semantic-release resolves from the
+#      committed lockfile instead of a bare `npm install --no-save` subset.
+# Keep this list in sync with specs/verifications/adoption-readiness-2026-11-06.md.
 
 on:
   workflow_call:
@@ -49,6 +59,16 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
           fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Lint workflow YAML
+        run: |
+          pip install --quiet yamllint
+          yamllint -f parsable .github/workflows/
 
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0

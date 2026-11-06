@@ -26,7 +26,20 @@ specs:
   active_capsule: null
 handoff:
   next_skill: verify-work
-  reason: 'All 25 planned stories verify green as of 2026-11-06; e05-e08 promoted from pending after running every story verify command. See specs/verifications/adoption-readiness-2026-11-06.md. Next: verify-work gate, then release-branch.'
+  reason: 'Autonomous SCOPE close-out in progress. Batch 1 = PR #8 (audit remediation). Batch 2 = ticket #4 template conformance. Tracker: issue #4.'
+decisions:
+  - gate: intake
+    date: '2026-11-06'
+    decision: 'SCOPE resolved to adoption-readiness audit FAILs plus tracker issue #4; no new GitHub issues created.'
+    reason: 'Only one open issue exists (#4). The audit findings were previously local-only, so they are mirrored into specs/bugs/registry.yaml under scope_tracking.'
+  - gate: baseline
+    date: '2026-11-06'
+    decision: 'Proceed on a green baseline.'
+    reason: 'bash scripts/preflight.sh PASS on chore/adoption-readiness-remediation (188 tests, 54 suites, lint 0 violations, build clean). No red baseline bug to fix first.'
+  - gate: ticket-4-ambiguity
+    date: '2026-11-06'
+    decision: 'Follow the upstream template repo, not the literal issue text.'
+    reason: 'Issue #4 describes ci-cd-*.yml templates with a 4-stage pipeline; no such templates exist in danielvm-git/.github. The current source of truth is workflow-templates/test-build-release-swift.yml at CHANGELOG 4.3.1. Recorded as a finding and reported on the issue rather than inventing a template.'
 completed:
 - e01s01
 - e01s02
