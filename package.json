@@ -22,6 +22,7 @@
     "@semantic-release/release-notes-generator": "^14.1.1",
     "commitizen": "^4.3.1",
     "commitlint": "^21.0.1",
+    "lefthook": "^2.2.2",
     "semantic-release": "^25.0.3"
   }
 }
