@@ -55,7 +55,7 @@ evidence used to promote `e05s01`–`e08s02` from `pending` to `completed`.
 | E.24 rollback notes | `specs/release-plan.yaml` `rollback_notes` (data/config/api/recovery) + `SCOPE_LATEST.yaml` | files |
 | F.26 WSJF order | `execution-status.yaml` ordered by WSJF desc, matches `release-plan.yaml` | file |
 | F.27 branch + green baseline | `chore/adoption-readiness-remediation` cut from `e01-benchmark-port`; gates green before commit | this doc §1 |
-| F.28 first task is a test | No story remains unbuilt; all story task-1 verifies are tests. New work must open with a red test. | this doc §2 |
+| F.28 first task is a test | No story remains unbuilt; all story task-1 verifies are tests. New work must open with a red test. | this doc §2; rule: `specs/verifications/story-authoring-red-test.md` |
 | CI1–CI5, CI9, CI12, CI13 | `.github/workflows/test-build-release.yml` is template v4.1.2: concurrency+cancel, `workflow_call` `release_tool`, staged test→verify→release, Conventional Commits check, SHA-pinned actions | file |
 | CI16 branch protection | Enforced | `gh api` |
 
