@@ -59,7 +59,28 @@ evidence used to promote `e05s01`–`e08s02` from `pending` to `completed`.
 | CI1–CI5, CI9, CI12, CI13 | `.github/workflows/test-build-release.yml` is template v4.1.2: concurrency+cancel, `workflow_call` `release_tool`, staged test→verify→release, Conventional Commits check, SHA-pinned actions | file |
 | CI16 branch protection | Enforced | `gh api` |
 
-## 4. Residual risk
+## 4. CI remediation found while shipping this work
+
+The audit's CI verdicts were checked against `main` and against a live PR. Two
+additional defects surfaced that the static audit could not see:
+
+| Defect | Symptom | Fix |
+|---|---|---|
+| `macos-14` runners unavailable | every `test` job was cancelled in 0s with no runner assigned, on all attempts | move the canonical pipeline to `macos-15`, which is what `main`'s previous working CI used |
+| `lefthook` absent in CI | `verify` failed: `preflight.sh` fell through to `npx --no-install lefthook`, which refuses to fetch and exits 1 | declare `lefthook` as a devDependency and resolve it from `node_modules/.bin`; skip hooks with a warning when absent |
+
+Also merged `origin/main` (the branch was cut from a stale base and the PR was
+`CONFLICTING`). Resolution kept `main`'s newer work — `NSLock` in
+`ShellCommandRunner.LineBuffer`, the polling `BenchmarkStoreTests`, the
+`node node_modules/@commitlint/cli/cli.js` hook, and the `CLAUDE.md`/
+`GEMINI.md` → `AGENTS.md` symlinks — while keeping this branch's `AGENTS.md`
+content as a union. `release.yml` and the duplicate `ci.yml` were deleted;
+`test-build-release.yml` is the single canonical workflow.
+
+`CLAUDE.md` and `GEMINI.md` are symlinks to `AGENTS.md`, so there is one agent
+instruction file, not three.
+
+## 5. Residual risk
 
 - `scripts/bp-churn-rank.sh` reads a single-day history (43 commits, all
   2026-11-06), so churn counts saturate at 1. The historical top-10 table in
