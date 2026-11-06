@@ -1,0 +1,15 @@
+---
+# yamllint config for GitHub Actions workflows.
+# Workflow files are generated from danielvm-git/.github templates and use
+# long expressions inline, so line length is not enforced here.
+extends: default
+
+rules:
+  line-length: disable
+  document-start: disable
+  comments-indentation: disable
+  truthy:
+    # `on:` is a workflow key, not a truthy value.
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
