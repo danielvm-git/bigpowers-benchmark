@@ -19,6 +19,7 @@ At the start of every session, read in order:
 | Run    | `swift run BigPowersBenchmark` |
 | Test   | `swift test` |
 | Build  | `swift build` |
+| Setup  | `bash scripts/setup.sh` |
 | Lint   | `lefthook run pre-commit` |
 | Preflight | `swift test && lefthook run pre-commit && swift build` |
 | A/B dry run | `bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /path/to/bigpowers` |
@@ -42,29 +43,31 @@ HTML/CSS/JS prototypes in `specs/assets/prototypes/` serve as pixel-perfect desi
 ## Conventions
 - Follow bigpowers principles in all phases.
 - All planning and specs live in `specs/` — never inline in code or chat.
-- Use countable-story-format.md for any story or bug spec.
+- Use the Countable Story Format (`countable-story-format.md`) for any story or bug spec.
 - TDD: write the failing test first, make it pass, then refactor.
-- Match the HTML prototypes in `specs/assets/prototypes/` pixel-for-pixel.
-- API keys go to Keychain only — never to files or committed code.
+- Match the HTML prototypes in `specs/assets/prototypes/` pixel-for-pixel — treat them as the source of truth for visual output.
+- The canonical theme is **Dark**; 11 additional themes are supported (Light, Mono, Ocean, Forest, Ember, Violet, Midnight, Crimson, Slate, Amber, Rose) — all via the same design token system.
+- `BenchRow` JSON must round-trip identically between the SwiftUI app and any Tauri version.
+- API keys go to Keychain only — never to files or environment variables in committed code.
 - Workflow mode: `solo-git`.
 
 ## Never
-- Never write code directly in response to a user prompt — run the appropriate bigpowers skill first.
-- Never commit to `main` directly.
+- Never write code directly in response to a user prompt — always run the appropriate bigpowers skill first.
+- Never commit to `main` directly — all work goes through a feature branch.
 - Never skip tests or declare done without evidence.
 - Never write code outside the current task scope.
-- Never write API keys or secrets to any file.
+- Never write API keys, secrets, or tokens to any file.
 - Never modify generated code, vendored dependencies, or database migrations directly without an explicit migration plan.
 - Never use `--no-verify` to bypass git hooks.
-- Never touch `specs/assets/prototypes/` HTML files — read-only design references.
+- Never touch `specs/assets/prototypes/` HTML files — they are read-only design references (chmod 444).
 - Never add `Co-authored-by:` or `Co-Authored-By:` trailers to commit messages.
 
 ## Agent Rules
-- **Workflow Mandate:** Use bigpowers skills to perform tasks. DO NOT write code directly.
+- **Workflow Mandate:** Use bigpowers skills (`plan-work`, `develop-tdd`, `orchestrate-project`, etc.) to perform tasks. DO NOT write code directly in response to a user prompt.
 - Read `specs/` before writing any code.
-- All planning MUST be written to `specs/` before any code is generated.
+- All planning and specifications MUST be written to `specs/` before any code is generated.
 - Write the minimum code that solves the stated problem. Nothing extra.
-- Never refactor or reorganize code outside the task scope.
+- Never refactor, rename, or reorganize code outside the task scope.
 - Run tests after every change. Show evidence before declaring done.
 - One clarifying question beats a wrong assumption baked into 200 lines.
 - Defensive code applies where the system boundary warrants it: Timeout on all Process/network calls; Retry with backoff on API calls; Graceful degradation when the benchmark runner is unavailable.

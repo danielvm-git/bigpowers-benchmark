@@ -247,8 +247,8 @@ struct ModelHealthSubscriptionFilterTests {
         ]
         vm.selectProvider(ModelHealthSubscriptionProvider.geminicli.rawValue)
 
-        let targets = vm.pingTargets(from: models)
-        #expect(targets.count == 1)
-        #expect(targets[0].pingTransport == PingTransport.geminiCLI)
+        let filtered = vm.filteredModels(from: models)
+        #expect(filtered.count == 1)
+        #expect(filtered[0].pingTransport == PingTransport.geminiCLI)
     }
 }
