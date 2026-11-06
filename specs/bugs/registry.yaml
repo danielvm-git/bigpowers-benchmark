@@ -8,3 +8,65 @@ bugs:
     title: Preflight wrapper working directory mismatch
     status: resolved
     severity: medium
+
+# SCOPE tracking for the autonomous close-out run (2026-11-06).
+# Tracker issue: #4 (CI/CD Template Consolidation). No new GitHub issues created.
+scope_tracking:
+  batch_1:
+    - id: SCOPE-01-audit-remediation
+      type: gap
+      tracker: local   # all 30 adoption-readiness audit FAILs
+      branch: chore/adoption-readiness-remediation
+      pr: 8
+      status: in_review
+      files:
+        - specs/
+        - .github/workflows/
+        - CONVENTIONS.md
+        - AGENTS.md
+        - scripts/preflight.sh
+      depends_on: []
+      acceptance: "Every adoption-readiness audit FAIL lands on main with gates green."
+      verify: "bash scripts/preflight.sh && bash scripts/validate-specs-yaml.sh && bash scripts/trace-stories.sh --strict"
+      severity: high
+  batch_2:
+    - id: SCOPE-02-ticket-4-template-consolidation
+      type: gap
+      tracker: 4
+      status: pending
+      files:
+        - .github/workflows/test-build-release.yml
+      depends_on: [SCOPE-01-audit-remediation]
+      acceptance: "One canonical workflow file, no legacy ci.yml/release.yml, template base documented, yamllint clean, CI green."
+      verify: "yamllint .github/workflows/test-build-release.yml && gh workflow view 'Test Build Release'"
+      severity: high
+      finding: >
+        Issue #4 describes a 16->9 redesign to ci-cd-*.yml templates with a
+        4-stage ci -> verify -> semantic-release -> deploy pipeline. Those
+        templates do not exist in danielvm-git/.github. The current source of
+        truth there is workflow-templates/test-build-release-*.yml (CHANGELOG
+        4.3.1). The issue text is stale relative to the template repo.
+  batch_3:
+    - id: SCOPE-03-churn-regeneration
+      type: docs
+      tracker: local
+      status: pending
+      files:
+        - specs/tech-architecture/tech-debt-hotspots.md
+      depends_on: [SCOPE-01-audit-remediation]
+      acceptance: "Hotspot table states its data window and is regenerable from bp-churn-rank.sh."
+      verify: "bash scripts/bp-churn-rank.sh --limit 10"
+      severity: low
+      finding: >
+        Repo history spans one calendar day, so bp-churn-rank.sh reports a flat
+        count of 1 for every file and cannot rank hotspots yet.
+    - id: SCOPE-04-tdd-opener
+      type: docs
+      tracker: local
+      status: pending
+      files:
+        - specs/verifications/adoption-readiness-2026-11-06.md
+      depends_on: [SCOPE-01-audit-remediation]
+      acceptance: "First-task red-test rule recorded where the next story author will read it."
+      verify: "rg -n 'failing test' specs/verifications/adoption-readiness-2026-11-06.md"
+      severity: low
