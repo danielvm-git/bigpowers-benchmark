@@ -8,6 +8,19 @@ bugs:
     title: Preflight wrapper working directory mismatch
     status: resolved
     severity: medium
+  - id: BUG-2026-11-06-prepush-swift-test-flake
+    title: Intermittent pre-push swift-test failure
+    status: open
+    severity: low
+    observed: '2026-11-06'
+    detail: >
+      The pre-push hook reported swift-test failed while the same suite passed
+      immediately before (preflight) and immediately after (manual run and the
+      next push). The failing test name was not captured because lefthook
+      truncated the output; 188 tests in 54 suites pass on repeat runs. Treat as
+      a flake until a failing test name is captured on a red run.
+    workaround: "Re-run the push; capture lefthook output verbatim on the next red run."
+    next_step: "Run `lefthook run pre-push` in a loop to reproduce and name the test." 
 
 # SCOPE tracking for the autonomous close-out run (2026-11-06).
 # Tracker issue: #4 (CI/CD Template Consolidation). No new GitHub issues created.
