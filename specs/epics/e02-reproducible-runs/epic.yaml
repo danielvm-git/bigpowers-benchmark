@@ -1,7 +1,7 @@
 id: e02
 slug: reproducible-runs
 title: Self-contained, reproducible runs
-status: planned
+status: completed
 release: v2.0.0
 bcps: 16
 wsjf:
@@ -18,25 +18,25 @@ stories:
   title: Pin clean checkout and content hashes in report metadata
   bcps: 5
   risk: P0
-  status: done
+  status: completed
 - id: e02s02
   file: e02s02-pristine-preflight.md
   title: Pristine-fixture preflight before any agent run
   bcps: 8
   risk: P0
-  status: done
+  status: completed
 - id: e02s03
   file: e02s03-immutable-worktrees.md
   title: Run subject and runner inputs from immutable detached worktrees
   bcps: 5
   risk: P1
-  status: done
+  status: completed
 - id: e02s04
   file: e02s04-flake-and-report-paths.md
   title: Remove duplicate report path and fix the e58 test flake
   bcps: 3
   risk: P1
-  status: done
+  status: completed
 exit_criteria:
 - Every report has an inputs block with subject SHA, dirty flag, task-tree hashes,
   config hash and image digest.

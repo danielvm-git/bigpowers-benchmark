@@ -1,7 +1,7 @@
 id: e07
 slug: clean-paired-benchmark
 title: "Clean paired benchmark and publication"
-status: planned
+status: completed
 release: "v2.1.0"
 bcps: 13
 wsjf:
@@ -16,17 +16,17 @@ stories:
     title: "Pre-register the matrix, sample size and thresholds"
     bcps: 3
     risk: P0
-    status: planned
+    status: completed
   - id: e07s02
     title: "Run the paired benchmark and ablation on the discriminating suite"
     bcps: 8
     risk: P0
-    status: planned
+    status: completed
   - id: e07s03
     title: "Publish the report, human summary and receipts"
     bcps: 3
     risk: P1
-    status: planned
+    status: completed
 exit_criteria:
   - "The matrix, k, tasks, arms and policy are committed before the first run."
   - "The run is clean, preflighted and image-pinned."

@@ -1,7 +1,7 @@
 id: e03
 slug: statistics-and-decisions
 title: Tail-aware statistics and pre-registered decisions
-status: planned
+status: completed
 release: v2.0.0
 bcps: 8
 wsjf:
@@ -18,13 +18,13 @@ stories:
   title: Report median and p90 for duration, cost, tokens and diff lines
   bcps: 3
   risk: P1
-  status: done
+  status: completed
 - id: e03s02
   file: e03s02-decision-policy.md
   title: Pre-register acceptance thresholds and emit a decision verdict
   bcps: 5
   risk: P1
-  status: done
+  status: completed
 exit_criteria:
 - Every arm summary carries mean, median and p90 for the four tail-sensitive metrics.
 - The report says ship, reject or inconclusive, with reasons and the threshold values

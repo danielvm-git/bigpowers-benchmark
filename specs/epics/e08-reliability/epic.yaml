@@ -1,7 +1,7 @@
 id: e08
 slug: reliability
 title: "Benchmark reliability tracked separately"
-status: planned
+status: completed
 release: "v2.0.1"
 bcps: 8
 wsjf:
@@ -16,12 +16,12 @@ stories:
     title: "Reconcile the e58 flake and the #183/#185/#167 bug-record drift"
     bcps: 5
     risk: P1
-    status: planned
+    status: completed
   - id: e08s02
     title: "Add a reliability block to every report"
     bcps: 3
     risk: P1
-    status: planned
+    status: completed
 exit_criteria:
   - "Every open benchmark bug has one registry entry and one file."
   - "Reports separate infrastructure failure rate from quality."

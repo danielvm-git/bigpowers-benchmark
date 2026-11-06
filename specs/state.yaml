@@ -12,21 +12,21 @@ session:
   started_at: '2026-11-04T00:00:00Z'
   phase: build
   active_flow: build_epic
-  active_epic: e04
+  active_epic: null
   active_story: null
-  branch: e01-benchmark-port
+  branch: chore/adoption-readiness-remediation
 vcs:
   kind: git
-  branch: e01-benchmark-port
+  branch: chore/adoption-readiness-remediation
   base: origin/main
 specs:
   release_plan: specs/release-plan.yaml
   scope: specs/product/SCOPE_LATEST.yaml
   planning_context: specs/planning-context.yaml
-  active_capsule: specs/epics/e04-task-discrimination/epic.yaml
+  active_capsule: null
 handoff:
-  next_skill: develop-tdd
-  reason: 'Calibration in progress for e04s04 tasks. Baseline and environment verified.'
+  next_skill: verify-work
+  reason: 'All 25 planned stories verify green as of 2026-11-06; e05-e08 promoted from pending after running every story verify command. See specs/verifications/adoption-readiness-2026-11-06.md. Next: verify-work gate, then release-branch.'
 completed:
 - e01s01
 - e01s02
@@ -43,6 +43,16 @@ completed:
 - e04s02
 - e04s03
 - e04s04
+- e05s01
+- e05s02
+- e05s03
+- e06s01
+- e06s02
+- e07s01
+- e07s02
+- e07s03
+- e08s01
+- e08s02
 notes:
 - The app is Swift; the harness stays Python/bash/Docker by decision.
 - BenchRow and ~/runs/data are frozen; A/B records use ABRunRecord and benchmarks/reports.

@@ -1,6 +1,6 @@
 story_id: e04s02
 title: De-prescribe specs and complete hidden-test coverage
-status: done
+status: completed
 bcps: 8
 tasks:
 - id: 1

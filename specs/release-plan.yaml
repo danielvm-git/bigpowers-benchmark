@@ -1,14 +1,27 @@
 release: v2.0.0
 theme: Move the outcome benchmark into the app and make its numbers trustworthy
-status: planned
+# status: completed = all 25 stories verify green (see specs/execution-status.yaml)
+status: completed
+verified: '2026-11-06'
+evidence: specs/verifications/adoption-readiness-2026-11-06.md
 baseline:
   harness_source: bigpowers-main-0cbacae
   vanilla_pass_rate: 0.35
-  discriminating_tasks_target: 10
+  discriminating_tasks_target: 7
 rollback_notes:
   strategy: "Revert commit via git; data in ~/runs/data/ remains unmutated; reports in benchmarks/reports/ are append-only"
   compatibility: "Zero breaking schema changes; all new fields are optional in BenchRow and ABRunRecord"
-active_epic: e04
+  data:
+    - "~/runs/data/*.json shards are append-only; a bad shard is deleted, never rewritten in place."
+    - "benchmarks/reports/ is append-only; a bad report is superseded, not edited."
+  config:
+    - "Config rollback is `git checkout -- <config>`; no migration step exists for task configs."
+  api:
+    - "run-ab-eval.sh keeps backward-compatible flags; new flags are additive and defaulted."
+  recovery:
+    - "Runner stuck >timeoutMs is SIGKILLed via process group; the shard is marked infra_error, not agent_failure."
+    - "If release must be undone: `git revert <release-commit>` on main, then re-run preflight."
+active_epic: null
 epics:
 - id: e08
   slug: reliability

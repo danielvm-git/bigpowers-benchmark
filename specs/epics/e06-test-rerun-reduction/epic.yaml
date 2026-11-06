@@ -1,7 +1,7 @@
 id: e06
 slug: test-rerun-reduction
 title: "Measure and reduce avoidable test reruns"
-status: planned
+status: completed
 release: "v2.1.0"
 bcps: 8
 wsjf:
@@ -16,12 +16,12 @@ stories:
     title: "Hash test inputs and label repeated green runs"
     bcps: 3
     risk: P1
-    status: planned
+    status: completed
   - id: e06s02
     title: "Add an opt-in test guard and an ablation arm that proves no quality loss"
     bcps: 5
     risk: P1
-    status: planned
+    status: completed
 exit_criteria:
   - "Redundant green runs are reported per arm with a CI."
   - "The guard arm reduces redundant runs by at least 50% with a CI excluding zero."

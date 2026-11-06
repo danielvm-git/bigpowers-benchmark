@@ -1,10 +1,10 @@
 story_id: e07s01
 title: Paired evaluation run protocol with identical seeds
-status: pending
+status: completed
 bcps: 5
 tasks:
 - id: 1
   description: Verify paired run configuration
   verify: python3 Tests/test_ab_parity.py
   risk: P0
-  status: pending
+  status: completed

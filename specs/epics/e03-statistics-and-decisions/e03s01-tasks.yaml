@@ -1,6 +1,6 @@
 story_id: e03s01
 title: Report median and p90 for duration, cost, tokens and diff lines
-status: done
+status: completed
 bcps: 3
 tasks:
 - id: 1

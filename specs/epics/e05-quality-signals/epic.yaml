@@ -1,7 +1,7 @@
 id: e05
 slug: quality-signals
 title: "Quality signals a green suite cannot hide"
-status: planned
+status: completed
 release: "v2.1.0"
 bcps: 13
 wsjf:
@@ -16,17 +16,17 @@ stories:
     title: "Promote audit defects into a scored quality signal"
     bcps: 5
     risk: P0
-    status: planned
+    status: completed
   - id: e05s02
     title: "Treat protected-test edits as a separate failure signal"
     bcps: 5
     risk: P0
-    status: planned
+    status: completed
   - id: e05s03
     title: "Report pass, score, audit and tamper together with a quality gate"
     bcps: 3
     risk: P1
-    status: planned
+    status: completed
 exit_criteria:
   - "A run that passes grade but fails audit is not a quality pass."
   - "Every protected-line removal is reported and gates the decision."

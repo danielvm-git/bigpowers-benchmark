@@ -1,7 +1,7 @@
 id: e01
 slug: benchmark-port
 title: Port the A/B harness and cut over
-status: planned
+status: completed
 release: v2.0.0
 bcps: 20
 wsjf:
@@ -17,31 +17,31 @@ stories:
   title: Move A/B harness, tasks and reports into benchmarks/
   bcps: 8
   risk: P0
-  status: done
+  status: completed
 - id: e01s02
   file: e01s02-external-subject-root.md
   title: Point the runner at an external bigpowers checkout
   bcps: 5
   risk: P0
-  status: done
+  status: completed
 - id: e01s03
   file: e01s03-app-bridge.md
   title: 'Add the app bridge: launch a harness run and ingest JSON reports'
   bcps: 8
   risk: P0
-  status: in_progress
+  status: completed
 - id: e01s04
   file: e01s04-remove-from-bigpowers.md
   title: Remove the A/B assets from bigpowers with a pointer and changelog
   bcps: 3
   risk: P1
-  status: planned
+  status: completed
 - id: e01s05
   file: e01s05-cutover-parity.md
   title: 'Cutover parity test: same report keys, same task files, same verdict'
   bcps: 3
   risk: P0
-  status: done
+  status: completed
 exit_criteria:
 - bash scripts/run-ab-eval.sh --dry-run --bigpowers-root <checkout> runs from this
   repo.

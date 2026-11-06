@@ -1,7 +1,7 @@
 id: e04
 slug: task-discrimination
 title: Tasks that can tell arms apart
-status: planned
+status: completed
 release: v2.1.0
 bcps: 21
 wsjf:
@@ -19,28 +19,28 @@ stories:
   title: Vanilla-only calibration and band classification
   bcps: 5
   risk: P0
-  status: done
+  status: completed
   intent: Run vanilla only, k=10, and classify each task as too_easy, discriminating
     or too_hard using the 20-80% band.
 - id: e04s02
   title: De-prescribe specs and complete hidden-test coverage
   bcps: 8
   risk: P1
-  status: done
+  status: completed
   intent: Remove formulas, helper calls and object shapes from prompts; state behaviour
     only; add one hidden test per requirement, boundary, null/missing input and regression.
 - id: e04s03
   title: Add long-horizon and multi-step tasks
   bcps: 8
   risk: P1
-  status: done
+  status: completed
   intent: Add three tasks where requirements arrive across an issue thread or a spec
     document and state must survive stages.
 - id: e04s04
   title: 'Calibration gate: at least 7 tasks in the 20-80% band'
   bcps: 3
   risk: P0
-  status: planned
+  status: completed
   intent: Make the calibration result a release gate; saturated tasks are revised
     or retired.
 exit_criteria:
