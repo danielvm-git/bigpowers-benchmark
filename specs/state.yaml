@@ -25,8 +25,8 @@ specs:
   planning_context: specs/planning-context.yaml
   active_capsule: null
 handoff:
-  next_skill: release-branch
-  reason: 'SCOPE close-out complete: PR #8 (audit remediation) and PR #9 (ticket #4 template conformance) merged, plus the churn register and red-test-rule docs. All e01-e08 stories verify green; the only open follow-up is tracker #4 if ci-cd-*.yml templates ever land upstream.'
+  next_skill: blocked
+  reason: 'SCOPE close-out complete and merged (#8, #9, #10, #11, #12). One blocker needs a human decision: BUG-2026-11-06-semantic-release-vs-branch-protection. semantic-release cannot push its [skip ci] version commit to a protected main, and neither the Actions token nor a user-repo ruleset bypass can be made to work. Choices: PAT secret with bypass, drop @semantic-release/git, or unprotect main.'
 decisions:
   - gate: intake
     date: '2026-11-06'
@@ -52,6 +52,14 @@ decisions:
     date: '2026-11-06'
     decision: 'Squash-merged PR #9 into main.'
     reason: 'Checks green, including the new yamllint step. Conformed to test-build-release-swift.yml 4.3.1 with documented deviations instead of inventing the ci-cd-*.yml template the issue describes.'
+  - gate: release-conflict
+    date: '2026-11-06'
+    decision: 'Restored full branch protection (PR required, checks test+verify strict, admins enforced, no force-push/deletion) and stopped on the release conflict instead of weakening protection.'
+    reason: 'Enabling protection surfaced a real structural conflict: @semantic-release/git pushes a [skip ci] commit to main that can never satisfy its own required check. Reproduced with enforce_admins on and off; a ruleset bypass for the GitHub Actions integration is rejected on a user-owned repository. Every remaining fix either needs a credential I may not create or changes release behaviour, so it is reported rather than decided.'
+  - gate: protection-final
+    date: '2026-11-06'
+    decision: 'Keep required status checks test+verify, approvals 0, admins enforced.'
+    reason: 'verify now exists on main, so it is a meaningful gate. Approvals stay at 0 because CONVENTIONS.md section 7 sets solo-git; every CI gate is still required.'
 completed:
 - e01s01
 - e01s02

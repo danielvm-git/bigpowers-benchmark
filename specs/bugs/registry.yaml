@@ -8,6 +8,28 @@ bugs:
     title: Preflight wrapper working directory mismatch
     status: resolved
     severity: medium
+  - id: BUG-2026-11-06-semantic-release-vs-branch-protection
+    title: semantic-release cannot push its version commit to a protected main
+    status: blocked
+    severity: high
+    observed: '2026-11-06'
+    detail: >
+      With main protected (PR required + required status check), the release job
+      fails at @semantic-release/git with GH006: "Changes must be made through a
+      pull request" and "Required status check test is expected". The version
+      commit carries [skip ci], so it can never satisfy its own required check.
+      Reproduced with enforce_admins both on and off, so the Actions GITHUB_TOKEN
+      does not bypass classic protection. A ruleset bypass for the GitHub Actions
+      integration is rejected on a user-owned repository ("must be part of the
+      ruleset source or owner organization"). No tag or release was published by
+      the failed attempts; latest tag remains v1.3.5.
+    blocker: >
+      Resolving it needs a decision I am not authorised to make: (a) add a
+      fine-grained PAT with branch-protection bypass as a repository secret,
+      (b) drop @semantic-release/git so releases stop committing CHANGELOG.md to
+      main, or (c) stop protecting main (loses audit gate D.16). Each is a scope
+      or credentials change.
+    affected_runs: '42279882331 (release=failure); main required checks test and verify are green'
   - id: BUG-2026-11-06-macos-queue-timeout-cancels-ci
     title: macos runner queue time counts against the job timeout and cancels CI
     status: fixed
