@@ -1,19 +1,30 @@
-# BigPowers-Benchmark — AI Agents
+# BigPowers-Benchmark — Agent Spine
 
 Read CONVENTIONS.md before any GitHub or git operation.
 
 ## Project
-BigPowers-Benchmark — a macOS app that benchmarks AI coding agents.
-Stack: Swift / SwiftUI / macOS 14+
+BigPowers-Benchmark — a native macOS app that benchmarks AI coding agents.
+Stack: Swift / SwiftUI / macOS 14+ (Profile: swift)
+
+## Session Start
+At the start of every session, read in order:
+1. `CLAUDE.md` / `AGENTS.md`
+2. `CONVENTIONS.md`
+3. `specs/state.yaml`
+4. `specs/release-plan.yaml`
 
 ## Commands
 | Action | Command |
 |--------|---------|
-| Build  | `swift build` |
-| Test   | `swift test` |
 | Run    | `swift run BigPowersBenchmark` |
+| Test   | `swift test` |
+| Build  | `swift build` |
 | Setup  | `bash scripts/setup.sh` |
 | Lint   | `lefthook run pre-commit` |
+| Preflight | `swift test && lefthook run pre-commit && swift build` |
+| A/B dry run | `bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /path/to/bigpowers` |
+| A/B tests | `python3 Tests/test_ab_eval.py && python3 Tests/test_ab_score.py` |
+| A/B sandbox | `bash scripts/ab-sandbox.sh status` |
 
 ## Observability
 
@@ -38,6 +49,7 @@ HTML/CSS/JS prototypes in `specs/assets/prototypes/` serve as pixel-perfect desi
 - The canonical theme is **Dark**; 11 additional themes are supported (Light, Mono, Ocean, Forest, Ember, Violet, Midnight, Crimson, Slate, Amber, Rose) — all via the same design token system.
 - `BenchRow` JSON must round-trip identically between the SwiftUI app and any Tauri version.
 - API keys go to Keychain only — never to files or environment variables in committed code.
+- Workflow mode: `solo-git`.
 
 ## Never
 - Never write code directly in response to a user prompt — always run the appropriate bigpowers skill first.
@@ -45,9 +57,10 @@ HTML/CSS/JS prototypes in `specs/assets/prototypes/` serve as pixel-perfect desi
 - Never skip tests or declare done without evidence.
 - Never write code outside the current task scope.
 - Never write API keys, secrets, or tokens to any file.
+- Never modify generated code, vendored dependencies, or database migrations directly without an explicit migration plan.
 - Never use `--no-verify` to bypass git hooks.
 - Never touch `specs/assets/prototypes/` HTML files — they are read-only design references (chmod 444).
-- Never add `Co-Authored-By:` trailers to commit messages.
+- Never add `Co-authored-by:` or `Co-Authored-By:` trailers to commit messages.
 
 ## Agent Rules
 - **Workflow Mandate:** Use bigpowers skills (`plan-work`, `develop-tdd`, `orchestrate-project`, etc.) to perform tasks. DO NOT write code directly in response to a user prompt.

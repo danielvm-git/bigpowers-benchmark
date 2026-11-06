@@ -1,0 +1,46 @@
+# story: e04s03
+# Multi-module slice: proxy bids, reserve, tie order and close.
+id: ab-51
+title: Proxy auction with reserve and ties
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/auctions
+  license: inspiration-only
+  note: "Project idea from SDD Academy; proxy rules, fixture and tests are ours."
+requirements:
+  - id: single
+    behaviour: "a single bid at reserve sets the reserve price"
+    hidden: "a single bid at reserve sets the reserve price"
+  - id: second
+    behaviour: "two bidders pay second max plus one"
+    hidden: "two bidders pay second max plus one"
+  - id: proxy
+    behaviour: "outbidding raises the proxy price"
+    hidden: "outbidding raises the proxy price"
+  - id: ties
+    behaviour: "ties go to the earlier first bid"
+    hidden: "ties go to the earlier first bid"
+  - id: reserve
+    behaviour: "bids below reserve leave the auction unsold"
+    hidden: "bids below reserve leave the auction unsold"
+  - id: close
+    behaviour: "bids close at endsAt and close is idempotent"
+    hidden: "bids close at endsAt and close is idempotent"
+  - id: low
+    behaviour: "too-low bids and invalid values fail"
+    hidden: "too-low bids and invalid values fail"
+  - id: raise
+    behaviour: "a bidder can raise their own max without losing the lead"
+    hidden: "a bidder can raise their own max without losing the lead"
+prompt: |
+  Implement the auction engine described in docs/SPEC-auction.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/auction.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

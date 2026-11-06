@@ -1,0 +1,10 @@
+story_id: e06s02
+title: Opt-in guard to reduce unnecessary test executions
+status: completed
+bcps: 3
+tasks:
+- id: 1
+  description: Verify waste reduction guard
+  verify: python3 Tests/test_ab_lean.py
+  risk: P1
+  status: completed

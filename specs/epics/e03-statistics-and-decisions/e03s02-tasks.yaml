@@ -1,0 +1,73 @@
+story_id: e03s02
+title: Pre-register acceptance thresholds and emit a decision verdict
+status: completed
+bcps: 5
+tasks:
+- id: 1
+  description: Add decision_policy to config.yaml with rationale comments
+  verify: python3 -c "import yaml; c=yaml.safe_load(open('benchmarks/ab/config.yaml'));
+    print(c['decision_policy']['min_pass_gain'])"
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Policy
+    - Config
+- id: 2
+  description: Add the pure decide function
+  verify: python3 Tests/test_ab_decision.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Policy
+- id: 3
+  description: Hash the policy and matrix before round 1
+  verify: python3 Tests/test_ab_decision.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Policy
+    - Provenance
+- id: 4
+  description: Write the decision block in the report
+  verify: rg -n 'verdict|preregistration_sha' benchmarks/docs/SCHEMA-AB.md
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reporting
+- id: 5
+  description: Add --fail-on-decision
+  verify: python3 Tests/test_ab_decision.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Policy
+    - CLI
+- id: 6
+  description: Print a one-line verdict
+  verify: python3 Tests/test_ab_decision.py
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Reporting
+- id: 7
+  description: Test ship, reject-safety, reject-cost and inconclusive
+  verify: python3 Tests/test_ab_decision.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Policy
+    - Tests

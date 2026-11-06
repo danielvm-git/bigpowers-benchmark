@@ -1,0 +1,49 @@
+# story: e04s03
+# Advanced slice: follow graph, private accounts, post visibility, cursor feed.
+id: ab-32
+title: Social feed with follow approval and visibility
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/social-network
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: public
+    behaviour: "public posts are visible to everyone"
+    hidden: "public posts are visible to everyone"
+  - id: followers
+    behaviour: "followers-only posts need an accepted follow"
+    hidden: "followers-only posts need an accepted follow"
+  - id: pending
+    behaviour: "a pending follow never grants visibility"
+    hidden: "a pending follow never grants visibility"
+  - id: reject
+    behaviour: "rejecting a follow leaves no visibility"
+    hidden: "rejecting a follow leaves no visibility"
+  - id: private
+    behaviour: "a private account hides even public posts from non-followers"
+    hidden: "a private account hides even public posts from non-followers"
+  - id: feed
+    behaviour: "the feed is newest-first and cursor pagination never repeats"
+    hidden: "the feed is newest-first and cursor pagination never repeats"
+  - id: follow-validation
+    behaviour: "follow validation and duplicates"
+    hidden: "follow validation and duplicates"
+  - id: post-validation
+    behaviour: "post validation and unknown lookups"
+    hidden: "post validation and unknown lookups"
+  - id: limit
+    behaviour: "feed limit validation"
+    hidden: "feed limit validation"
+prompt: |
+  Implement the social feed described in docs/SPEC-social.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/social.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

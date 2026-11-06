@@ -1,0 +1,46 @@
+# story: e04s03
+# Advanced slice: seat inventory, idempotent booking, single refund, last-seat race.
+id: ab-28
+title: Flight booking with seat inventory and refunds
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/flight-booking-system
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: seats
+    behaviour: "books the lowest free seat and tracks availability"
+    hidden: "books the lowest free seat and tracks availability"
+  - id: sold-out
+    behaviour: "sold out after all seats are taken"
+    hidden: "sold out after all seats are taken"
+  - id: idempotent-book
+    behaviour: "the same idempotency key never consumes a second seat"
+    hidden: "the same idempotency key never consumes a second seat"
+  - id: refund-once
+    behaviour: "cancelling releases the seat and refunds once"
+    hidden: "cancelling releases the seat and refunds once"
+  - id: rebook
+    behaviour: "a cancelled seat can be booked again"
+    hidden: "a cancelled seat can be booked again"
+  - id: unknown
+    behaviour: "unknown flights and bookings fail"
+    hidden: "unknown flights and bookings fail"
+  - id: validation
+    behaviour: "flight and booking validation"
+    hidden: "flight and booking validation"
+  - id: last-seat-race
+    behaviour: "two bookings racing for the last seat produce one winner"
+    hidden: "two bookings racing for the last seat produce one winner"
+prompt: |
+  Implement the flight booking system described in docs/SPEC-booking.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/booking.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

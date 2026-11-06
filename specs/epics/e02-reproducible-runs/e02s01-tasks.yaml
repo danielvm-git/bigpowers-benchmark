@@ -1,0 +1,64 @@
+story_id: e02s01
+title: Pin clean checkout and content hashes in report metadata
+status: passing
+bcps: 5
+tasks:
+- id: 1
+  description: Add ab_provenance.py with file, tree, git and docker hashes
+  verify: python3 -m py_compile scripts/lib/ab_provenance.py && python3 Tests/test_ab_provenance.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reproducibility
+    - Provenance
+- id: 2
+  description: Exclude vendor dirs and sort paths in sha256_tree
+  verify: python3 Tests/test_ab_provenance.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reproducibility
+    - Hashing
+- id: 3
+  description: Abort on a dirty subject unless --allow-dirty
+  verify: python3 Tests/test_ab_provenance.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reproducibility
+    - Guards
+- id: 4
+  description: Write inputs to the report and input_digest to every record
+  verify: python3 Tests/test_ab_eval.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reporting
+    - Provenance
+- id: 5
+  description: Add --verify-inputs to recompute and diff
+  verify: python3 Tests/test_ab_provenance.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reproducibility
+    - CLI
+- id: 6
+  description: Document the inputs block
+  verify: rg -n 'inputs:|dirty_diff_sha|image:' benchmarks/docs/SCHEMA-AB.md
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Docs

@@ -1,0 +1,40 @@
+# story: e04s03
+# Intermediate slice: sharing, membership permissions, idempotent completion, ownership transfer.
+id: ab-35
+title: Collaborative todo lists with sharing and ownership transfer
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/todo-api
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: share
+    behaviour: "sharing grants a member access to the list"
+    hidden: "sharing grants a member access to the list"
+  - id: non-member
+    behaviour: "non-members cannot create, list or complete tasks"
+    hidden: "non-members cannot create, list or complete tasks"
+  - id: owner-share
+    behaviour: "only the owner can share and duplicate shares are no-ops"
+    hidden: "only the owner can share and duplicate shares are no-ops"
+  - id: complete
+    behaviour: "completion is idempotent and preserves task order"
+    hidden: "completion is idempotent and preserves task order"
+  - id: transfer
+    behaviour: "ownership transfer changes permissions and keeps the old owner as a member"
+    hidden: "ownership transfer changes permissions and keeps the old owner as a member"
+  - id: validation
+    behaviour: "unknown ids and validation"
+    hidden: "unknown ids and validation"
+prompt: |
+  Implement the collaborative todo lists described in docs/SPEC-todo.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/todo.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

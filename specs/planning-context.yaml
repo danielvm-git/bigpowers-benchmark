@@ -1,0 +1,36 @@
+# Planning context for the benchmark port.
+# Captures the decisions taken before scope-work so later skills do not re-litigate them.
+feature_name: "Benchmark harness ownership and reproducibility"
+generated_by: "scope-work interview 2026-11-04"
+decisions:
+  port_strategy:
+    value: "move-harness-as-is"
+    rationale: >-
+      The A/B runner already encodes years of edge cases (tamper detection, TAP partial
+      credit, round-robin, VSM, waste, bootstrap CIs). A Swift rewrite would lose behavior
+      and delay the actual question. The app becomes the cockpit; the harness stays the engine.
+  removal_boundary:
+    value: "a-b-assets-only"
+    rationale: >-
+      Move the A/B outcome harness, task suite, sandbox, reports and benchmark docs here.
+      Keep run-benchmark/evolve-skill in bigpowers: they are skill-maintenance mechanics,
+      not outcome benchmarks, and they already point at this repo.
+  runtime_contract:
+    value: "docker-python-allowed"
+    rationale: >-
+      Docker, python3, git and node are documented prerequisites. They are what makes the
+      current numbers isolated and reproducible; removing them is a separate product decision.
+constraints:
+  - "No behavior change during the move: same CLI, same report schema, same task files."
+  - "The subject under test is an external bigpowers checkout; AB_BP_ROOT must stop meaning 'this repo'."
+  - "BenchRow JSON in ~/runs/data/ is frozen. A/B records get a new model, not a BenchRow mutation."
+  - "Reports are git-native but raw run shards are ignored; curated reports are pinned."
+  - "Bigpowers keeps its own skill micro-benchmark and golden suite."
+out_of_scope:
+  - "A Swift reimplementation of ab-eval.py, ab_report.py, ab_vsm.py or ab_waste.py."
+  - "Removing Docker or the no-network grade container."
+  - "Changing the task prompts while moving the harness (that is e04, after the move is green)."
+  - "Publishing a benchmark claim before e07 re-runs the clean paired matrix."
+open_questions:
+  - "One-release redirect shim in bigpowers vs hard removal: default to a shim that exits 2 with the new command, removed next major."
+  - "Whether the app stores A/B records itself or reads benchmarks/reports/ab-runs-*.jsonl as the source of truth: default read-only ingestion."

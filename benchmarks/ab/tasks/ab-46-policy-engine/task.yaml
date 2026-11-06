@@ -1,0 +1,43 @@
+# story: e04s03
+# Advanced slice: deny-overrides precedence, wildcards and validation.
+id: ab-46
+title: Access policy engine with deny-overrides
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/access-control
+  license: inspiration-only
+  note: "Project idea from SDD Academy; precedence rules, fixture and tests are ours."
+requirements:
+  - id: deny-wins
+    behaviour: "deny wins at equal priority"
+    hidden: "deny wins at equal priority"
+  - id: priority
+    behaviour: "higher priority allow beats deny"
+    hidden: "higher priority allow beats deny"
+  - id: wildcards
+    behaviour: "prefix and star wildcards match"
+    hidden: "prefix and star wildcards match"
+  - id: principal
+    behaviour: "principal defaults to any"
+    hidden: "principal defaults to any"
+  - id: default-deny
+    behaviour: "no match defaults to deny"
+    hidden: "no match defaults to deny"
+  - id: id-tie
+    behaviour: "same effect ties use the smaller id"
+    hidden: "same effect ties use the smaller id"
+  - id: validation
+    behaviour: "invalid rules and duplicate ids fail"
+    hidden: "invalid rules and duplicate ids fail"
+prompt: |
+  Implement the policy engine described in docs/SPEC-policy.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/policy.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

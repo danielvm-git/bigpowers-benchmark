@@ -1,0 +1,81 @@
+story_id: e01s01
+title: Move A/B harness, tasks and reports into benchmarks/
+status: passing
+bcps: 8
+tasks:
+- id: 1
+  description: Copy specs/benchmarks/ab/{config.yaml,vsm.yaml,tasks,arms} into benchmarks/ab/
+  verify: diff -rq "${BIGPOWERS_ROOT:?set BIGPOWERS_ROOT}/specs/benchmarks/ab" benchmarks/ab
+    --exclude reports
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Port
+    - Parity
+- id: 2
+  description: Move the A/B docs into benchmarks/docs and split SCHEMA A/B sections
+    from the skill schema
+  verify: test -f benchmarks/docs/SCHEMA-AB.md && test -f benchmarks/docs/TASK-REVIEW.md
+    && test -f benchmarks/docs/HARDER-TASKS.md && test -f benchmarks/docs/LEAN-VSM.md
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Port
+    - Docs
+- id: 3
+  description: Copy the runner scripts and libs, including ab-sandbox/
+  verify: bash -n scripts/run-ab-eval.sh && bash -n scripts/ab-sandbox.sh && python3
+    -m py_compile scripts/lib/ab-eval.py scripts/lib/ab_report.py scripts/lib/ab_metrics.py
+    scripts/lib/ab_vsm.py scripts/lib/ab_waste.py scripts/lib/ab_lean.py scripts/lib/ab_progress.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Port
+    - Runner
+- id: 4
+  description: Copy and pass the A/B eval and score tests
+  verify: python3 Tests/test_ab_eval.py && python3 Tests/test_ab_score.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Port
+    - Tests
+- id: 5
+  description: Repoint ab-eval.py constants to benchmarks/ and the new reports dir
+  verify: rg -n 'BENCH_DIR = REPO_ROOT / "benchmarks"|REPORTS_DIR = BENCH_DIR / "reports"'
+    scripts/lib/ab-eval.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Port
+    - Config
+- id: 6
+  description: Update README/AGENTS/CONVENTIONS with the new command and prerequisites
+  verify: rg -n 'run-ab-eval|benchmarks/reports|python3|docker' README.md AGENTS.md
+    CONVENTIONS.md
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Docs
+- id: 7
+  description: Ignore raw run artifacts but keep curated reports
+  verify: printf 'ab-live.jsonl\ntraces/\n' > /tmp/ab-ignore-probe && git check-ignore
+    -q --no-index benchmarks/reports/ab-live.jsonl
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Repo hygiene

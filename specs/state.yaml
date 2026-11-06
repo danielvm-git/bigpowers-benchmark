@@ -1,0 +1,59 @@
+bigpowers_version: '2.0.0'
+workflow_mode: solo-git
+profile: swift
+project_cycle:
+  current_phase: 4
+  active_phase: build
+  completed_phases:
+  - 1
+  - 2
+  - 3
+session:
+  started_at: '2026-11-04T00:00:00Z'
+  phase: build
+  active_flow: build_epic
+  active_epic: null
+  active_story: null
+  branch: chore/adoption-readiness-remediation
+vcs:
+  kind: git
+  branch: chore/adoption-readiness-remediation
+  base: origin/main
+specs:
+  release_plan: specs/release-plan.yaml
+  scope: specs/product/SCOPE_LATEST.yaml
+  planning_context: specs/planning-context.yaml
+  active_capsule: null
+handoff:
+  next_skill: verify-work
+  reason: 'All 25 planned stories verify green as of 2026-11-06; e05-e08 promoted from pending after running every story verify command. See specs/verifications/adoption-readiness-2026-11-06.md. Next: verify-work gate, then release-branch.'
+completed:
+- e01s01
+- e01s02
+- e01s03
+- e01s04
+- e01s05
+- e02s01
+- e02s02
+- e02s03
+- e02s04
+- e03s01
+- e03s02
+- e04s01
+- e04s02
+- e04s03
+- e04s04
+- e05s01
+- e05s02
+- e05s03
+- e06s01
+- e06s02
+- e07s01
+- e07s02
+- e07s03
+- e08s01
+- e08s02
+notes:
+- The app is Swift; the harness stays Python/bash/Docker by decision.
+- BenchRow and ~/runs/data are frozen; A/B records use ABRunRecord and benchmarks/reports.
+- swift test is fully green across all 179 tests in 54 suites.

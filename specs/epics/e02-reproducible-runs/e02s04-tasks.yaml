@@ -1,0 +1,74 @@
+story_id: e02s04
+title: Remove duplicate report path and fix the e58 test flake
+status: passing
+bcps: 3
+tasks:
+- id: 1
+  description: Delete the duplicate reports path and add a guard test
+  verify: test ! -d benchmarks/ab/reports && python3 Tests/test_ab_report_paths.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reporting
+    - Hygiene
+- id: 2
+  description: Add run_with_timeout with process-group kill
+  verify: python3 Tests/test_ab_process_group.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reliability
+    - Process
+- id: 3
+  description: Prove no grandchild survives a timeout
+  verify: python3 Tests/test_ab_process_group.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reliability
+    - Process
+- id: 4
+  description: Pin seeds, timezone and locale; isolate tmpdirs
+  verify: python3 Tests/test_ab_eval.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Reliability
+    - Tests
+- id: 5
+  description: Run the 100x stress loop under CPU contention
+  verify: for i in $(seq 1 100); do python3 Tests/test_ab_eval.py >/dev/null || exit
+    1; done
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Reliability
+    - Stress
+- id: 6
+  description: Update the e58 flake bug with evidence
+  verify: 'rg -n ''status: fixed'' specs/bugs/BUG-2026-11-03-story-verify-e58-eval-flake.md'
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Bugs
+- id: 7
+  description: Add the reliability tests to the verification gate
+  verify: rg -n 'test_ab_eval|test_ab_process_group|test_ab_report_paths' scripts/run-benchmark-tests.sh
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - CI

@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: priority aging, quantum slicing and deterministic ties.
+id: ab-44
+title: Fair job scheduler with priority aging
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/task-scheduler
+  license: inspiration-only
+  note: "Project idea from SDD Academy; scheduling rules, fixture and tests are ours."
+requirements:
+  - id: priority
+    behaviour: "higher priority wins when no one ages"
+    hidden: "higher priority wins when no one ages"
+  - id: aging
+    behaviour: "aging promotes a long waiter above a higher base priority"
+    hidden: "aging promotes a long waiter above a higher base priority"
+  - id: quantum
+    behaviour: "quantum round-robins equal priorities"
+    hidden: "quantum round-robins equal priorities"
+  - id: ties
+    behaviour: "ties use arrival then id"
+    hidden: "ties use arrival then id"
+  - id: idle
+    behaviour: "idle time advances to the next arrival"
+    hidden: "idle time advances to the next arrival"
+  - id: validation
+    behaviour: "invalid jobs and duplicate ids fail"
+    hidden: "invalid jobs and duplicate ids fail"
+prompt: |
+  Implement the scheduler described in docs/SPEC-scheduler.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/scheduler.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

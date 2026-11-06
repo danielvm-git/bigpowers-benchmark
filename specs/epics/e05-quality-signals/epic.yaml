@@ -1,0 +1,38 @@
+id: e05
+slug: quality-signals
+title: "Quality signals a green suite cannot hide"
+status: completed
+release: "v2.1.0"
+bcps: 13
+wsjf:
+  business_value: 13
+  time_criticality: 5
+  risk_reduction: 8
+  job_size: 5
+  score: 5.2
+depends_on: [e01, e02]
+stories:
+  - id: e05s01
+    title: "Promote audit defects into a scored quality signal"
+    bcps: 5
+    risk: P0
+    status: completed
+  - id: e05s02
+    title: "Treat protected-test edits as a separate failure signal"
+    bcps: 5
+    risk: P0
+    status: completed
+  - id: e05s03
+    title: "Report pass, score, audit and tamper together with a quality gate"
+    bcps: 3
+    risk: P1
+    status: completed
+exit_criteria:
+  - "A run that passes grade but fails audit is not a quality pass."
+  - "Every protected-line removal is reported and gates the decision."
+  - "The report shows pass, score, audit_clean, tamper and quality_pass side by side."
+evidence:
+  - "bigpowers AB-2026-11-03 report: ab-20 passed the normal grade on both arms but the audit found the same brand defect in every run."
+risks:
+  - "Audit tests can be flaky; run them through grade_wrapper with no network and a fixed timeout."
+  - "A weighted quality score is easy to game; keep quality_pass conjunctive and report components."

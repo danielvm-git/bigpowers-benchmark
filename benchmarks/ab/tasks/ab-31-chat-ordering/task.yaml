@@ -1,0 +1,46 @@
+# story: e04s03
+# Advanced slice: ordering, idempotent sends, delivery/read, unread, presence timeout.
+id: ab-31
+title: Chat ordering with delivery state and presence
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/chat-application
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: ordering
+    behaviour: "messages get increasing sequence numbers and afterSeq paginates"
+    hidden: "messages get increasing sequence numbers and afterSeq paginates"
+  - id: idempotent-send
+    behaviour: "clientId is idempotent and a failed send consumes no sequence"
+    hidden: "clientId is idempotent and a failed send consumes no sequence"
+  - id: delivery
+    behaviour: "delivery and read are idempotent and read implies delivered"
+    hidden: "delivery and read are idempotent and read implies delivered"
+  - id: unread
+    behaviour: "unread excludes own and read messages"
+    hidden: "unread excludes own and read messages"
+  - id: presence
+    behaviour: "presence is online only inside the 60 second window"
+    hidden: "presence is online only inside the 60 second window"
+  - id: unknown
+    behaviour: "unknown conversations, messages and users fail"
+    hidden: "unknown conversations, messages and users fail"
+  - id: validation
+    behaviour: "conversation validation"
+    hidden: "conversation validation"
+  - id: copies
+    behaviour: "listMessages returns copies"
+    hidden: "listMessages returns copies"
+prompt: |
+  Implement the chat ordering and delivery system described in docs/SPEC-chat.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/chat.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

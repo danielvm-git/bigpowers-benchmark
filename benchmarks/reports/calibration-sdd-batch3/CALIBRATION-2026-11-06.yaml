@@ -1,0 +1,130 @@
+kind: calibration
+generated_at: '2026-11-06T03:39:55+00:00'
+bigpowers_sha: 52842a2f
+runner_sha: 1d4978f
+adapter: pi-docker
+model: opencode-go/deepseek-v4.1-flash
+k: 3
+tasks:
+- ab-33
+- ab-34
+- ab-35
+- ab-36
+- ab-37
+inputs:
+  schema: 1
+  subject:
+    path: /Users/danielvm/Developer/bigpowers
+    sha: 52842a2f854ff64de46ebf180accaffbc2e95c58
+    ref: HEAD
+    dirty: false
+    dirty_diff_sha: null
+    worktree_path: /private/var/folders/f_/v19lb8b12356n1xqc9ngp97r0000gn/T/bp-worktree-3Wu1NB/subject
+  runner:
+    root: /Users/danielvm/Developer/bigpowers-benchmark
+    sha: 1d4978fd4d115f43a002bb75ff63c8907c75c4f6
+    ref: HEAD
+    dirty: true
+    dirty_diff_sha: e9d0fc4fa055fb84db1d9e8288db85c9d06d87a71f0e1eee7c3c93ace56da880
+  config:
+    path: /Users/danielvm/Developer/bigpowers-benchmark/benchmarks/ab/config.yaml
+    sha256: f8ff31730264289a945c8c1c8eb102b704232eba53e2f7c09d969257d137824e
+  image:
+    name: bp-ab-agent:pi-1.5.0
+    id: sha256:a3b3272044872032048417aab84f20c559d6e220c864409310310fc744d00bf2
+  tasks:
+    ab-33:
+      task_yaml: c9bc3ff55b987205e99de51ac735f04bc3923a94906dd895bc559bb97ac4921a
+      fixture: 6d57e4cdaecfda164d73693efa2984572dbfaf5a411ad19b1d12f4a40849e72e
+      hidden: c0b66d2713790e0b943e6187b3bd040d453cf9db8c85cd06f30900b19ba23e53
+      audit: null
+      solution: 729ed91b48c24f8ce654eff0eae0a2f71c8981bd1a008ecf2b27c16dacc1f640
+    ab-34:
+      task_yaml: a936fcac9ea40cf8fcb20880df130ba09cf9894a61e695bcd41b4ffc57bcf154
+      fixture: f73cb5bc62cbfab845a3127bfcef5d887d5899fee74bc44b7650532ea3df96d6
+      hidden: 1b9d6c801e14e8ab6dc72d434cca0087b48330bb44ff373ddbcf31b8b437c70f
+      audit: null
+      solution: 92e54dbd448f50d31cd8696eebe1aafa288d17ea3967c7ac8baf43360ca511b1
+    ab-35:
+      task_yaml: 455640f1d31f8d8321ecb9ead733a9e9b3a66e107654dd8534aebe82c8516716
+      fixture: 8e9a843d94a31d7946181957985cc29e4b0c1c574f21fa4d08980e88e6b054f1
+      hidden: c23caa5a1a85ecbd25208f811a00de5e65c38a014d2606ac26c66cd66219f46a
+      audit: null
+      solution: 6c313e280168a01af965b45fb8b3b400fabf9812f9c6c2a4a8cd98f226d311d6
+    ab-36:
+      task_yaml: 8963539a5e5551e4d117fba02445de221f842f56d5d5e0fcdffc2b672374d385
+      fixture: c7d67094d932aa0756038efbe3d6c591f2773afff6970f8e14cca742f1cd4ac8
+      hidden: 5a05d0ea3488328c180f45430d46bb3745f25737e5b7dc14a8d94bbc6948a804
+      audit: null
+      solution: ba908dfba098ce3e8643bb69143f5d493dd0424b681b26b61de5c791e8ef7832
+    ab-37:
+      task_yaml: 60390c625a2ea17a24c35761e0647d46faa8dc9027fcf860465f6655be3c21ca
+      fixture: 5a96961011eb4ea23ff3379e32de86613baa4910b803eeb490d645f7a8937d28
+      hidden: 8e8cdf56ec72c9846a473e7bceb7837b99a18e60ff36bc886bca9e5465a0ef50
+      audit: null
+      solution: 84a90d511a0e9e615849981b3f0acbf22c5773276ffc09e9687af6b7c4cb4ffe
+  decision:
+    policy:
+      confidence: 0.95
+      min_pass_gain: 0.05
+      min_score_gain: 0.02
+      max_cost_multiplier: 1.5
+      max_lead_time_multiplier: 1.5
+      max_tamper_rate: 0.0
+      min_audit_clean_rate: 1.0
+      min_quality_gain: 0.05
+      max_agent_error_rate: 0.05
+      min_discriminating_tasks: 0
+    preregistration_sha: c455722b6a120de89e81b59845a2c93d7e9c168d339c6b9985941111208e1970
+input_digest: f34b0ceb42407a67704f7cb2fae671e2530a5950b3fe86e480df7afb5c143714
+results:
+- id: ab-33
+  runs: 3
+  passes: 0
+  pass_rate: 0.0
+  mean_score: 0.8333
+  timed_out: 0
+  agent_error: 1
+  band: too_hard
+  cached: false
+- id: ab-34
+  runs: 3
+  passes: 3
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+- id: ab-35
+  runs: 3
+  passes: 3
+  pass_rate: 1.0
+  mean_score: 1.0
+  timed_out: 0
+  agent_error: 0
+  band: too_easy
+  cached: false
+- id: ab-36
+  runs: 3
+  passes: 0
+  pass_rate: 0.0
+  mean_score: 0.7143
+  timed_out: 0
+  agent_error: 0
+  band: too_hard
+  cached: false
+- id: ab-37
+  runs: 3
+  passes: 0
+  pass_rate: 0.0
+  mean_score: 0.5555
+  timed_out: 0
+  agent_error: 1
+  band: too_hard
+  cached: false
+summary:
+  too_easy: 2
+  discriminating: 0
+  too_hard: 3
+  unknown: 0

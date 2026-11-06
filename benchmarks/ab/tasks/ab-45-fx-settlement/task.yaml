@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: FX conversion, half-away rounding and per-account netting.
+id: ab-45
+title: FX settlement with symmetric rounding
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/finance
+  license: inspiration-only
+  note: "Project idea from SDD Academy; settlement rules, fixture and tests are ours."
+requirements:
+  - id: positive-half
+    behaviour: "positive halves round away from zero"
+    hidden: "positive halves round away from zero"
+  - id: negative-half
+    behaviour: "negative halves round away from zero"
+    hidden: "negative halves round away from zero"
+  - id: netting
+    behaviour: "accounts net converted entries and sort"
+    hidden: "accounts net converted entries and sort"
+  - id: unknown
+    behaviour: "unknown currencies fail"
+    hidden: "unknown currencies fail"
+  - id: validation
+    behaviour: "invalid amounts and rates fail"
+    hidden: "invalid amounts and rates fail"
+  - id: empty
+    behaviour: "empty entries return zero totals"
+    hidden: "empty entries return zero totals"
+prompt: |
+  Implement the settlement module described in docs/SPEC-settlement.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/settlement.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

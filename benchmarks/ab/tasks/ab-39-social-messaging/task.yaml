@@ -1,0 +1,40 @@
+# story: e04s03
+# Advanced slice: social contact rules + chat ordering/delivery.
+id: ab-39
+title: Social messaging with private-contact and delivery rules
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/social-network
+  license: inspiration-only
+  note: "Project idea from SDD Academy; spec, fixture and tests are ours."
+requirements:
+  - id: public
+    behaviour: "public users can be messaged directly"
+    hidden: "public users can be messaged directly"
+  - id: private
+    behaviour: "private users need an accepted follow"
+    hidden: "private users need an accepted follow"
+  - id: participant
+    behaviour: "non-participants cannot send, list or mark"
+    hidden: "non-participants cannot send, list or mark"
+  - id: idempotent
+    behaviour: "clientId is idempotent and sequences increase"
+    hidden: "clientId is idempotent and sequences increase"
+  - id: unread
+    behaviour: "unread excludes own and read messages"
+    hidden: "unread excludes own and read messages"
+  - id: validation
+    behaviour: "unknowns and validation"
+    hidden: "unknowns and validation"
+prompt: |
+  Implement the social messaging described in docs/SPEC-messaging.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/messaging.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

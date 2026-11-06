@@ -1,0 +1,42 @@
+status: active
+# Ordered by WSJF descending, matching specs/release-plan.yaml.
+# e08 7.8 > e03 6.8 > e05 5.8 > e01 4.9 > e02 4.25 > e07 3.9 > e06 3.6 > e04 2.2
+ordered_by: wsjf_desc
+active_epic: null
+active_story: null
+last_verified: '2026-11-06'
+evidence: specs/verifications/adoption-readiness-2026-11-06.md
+stories:
+  # e08 — WSJF 7.8
+  e08s01: completed
+  e08s02: completed
+  # e03 — WSJF 6.8
+  e03s01: completed
+  e03s02: completed
+  # e05 — WSJF 5.8
+  e05s01: completed
+  e05s02: completed
+  e05s03: completed
+  # e01 — WSJF 4.9
+  e01s01: completed
+  e01s02: completed
+  e01s03: completed
+  e01s04: completed
+  e01s05: completed
+  # e02 — WSJF 4.25
+  e02s01: completed
+  e02s02: completed
+  e02s03: completed
+  e02s04: completed
+  # e07 — WSJF 3.9
+  e07s01: completed
+  e07s02: completed
+  e07s03: completed
+  # e06 — WSJF 3.6
+  e06s01: completed
+  e06s02: completed
+  # e04 — WSJF 2.2
+  e04s01: completed
+  e04s02: completed
+  e04s03: completed
+  e04s04: completed

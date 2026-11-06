@@ -1,0 +1,10 @@
+story_id: e05s02
+title: Track and report audit defects alongside correctness
+status: completed
+bcps: 5
+tasks:
+- id: 1
+  description: Verify audit defect scoring
+  verify: python3 Tests/test_task_quality.py
+  risk: P0
+  status: completed

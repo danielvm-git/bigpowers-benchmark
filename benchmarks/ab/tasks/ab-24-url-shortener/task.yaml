@@ -1,0 +1,50 @@
+# story: e04s03
+# Small greenfield task adapted from intent-bench (Apache-2.0). Spec and tests are ours.
+id: ab-24
+title: URL shortener API with aliases, expiry and click counts
+kind: feature
+spec_style: behavioural
+source:
+  repo: intent-bench/intent-bench
+  license: Apache-2.0
+  url: https://github.com/intent-bench/intent-bench
+  note: "Task shape adapted; spec and hidden tests written here, not copied."
+requirements:
+  - id: auto-code
+    behaviour: "generates unique six-character codes"
+    hidden: "generates unique six-character codes"
+  - id: url-validation
+    behaviour: "accepts only absolute http/https URLs up to 2048 characters"
+    hidden: "rejects non-http URLs and overlong URLs"
+  - id: alias
+    behaviour: "alias length boundaries are enforced and collisions are rejected"
+    hidden: "alias length boundaries and collision"
+  - id: clicks
+    behaviour: "clicks increment only on redirect"
+    hidden: "clicks increment only on redirect"
+  - id: unknown
+    behaviour: "unknown codes fail consistently"
+    hidden: "unknown codes fail consistently"
+  - id: expiry
+    behaviour: "expiry is future-only; expired links are 410 on redirect but readable"
+    hidden: "expiry is future-only and expired links are 410 on redirect but readable"
+  - id: delete
+    behaviour: "delete removes both redirect and metadata"
+    hidden: "delete removes both redirect and metadata"
+  - id: list
+    behaviour: "list is ordered and carries the same metadata shape"
+    hidden: "list is ordered and carries the same metadata shape"
+  - id: errors
+    behaviour: "malformed JSON and unknown routes use the shared error shape"
+    hidden: "malformed JSON and unknown routes use the shared error shape"
+prompt: |
+  Implement the URL shortener described in docs/SPEC-shortener.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/shortener.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

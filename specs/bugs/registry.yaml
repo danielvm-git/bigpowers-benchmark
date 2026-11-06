@@ -1,0 +1,10 @@
+bugs:
+  - id: BUG-2026-11-03-story-verify-e58-eval-flake
+    title: Evaluation flake in story verification e58
+    status: documented
+    severity: high
+    workaround: "Retry evaluation with clean cache"
+  - id: BUG-2026-11-04-preflight-wrapper-workdir
+    title: Preflight wrapper working directory mismatch
+    status: resolved
+    severity: medium

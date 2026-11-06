@@ -1,0 +1,102 @@
+story_id: e02s02
+title: Pristine-fixture preflight before any agent run
+status: passing
+bcps: 8
+tasks:
+- id: 1
+  description: Add the preflight block to task.yaml and document it
+  verify: rg -n 'preflight' benchmarks/docs/SCHEMA-AB.md
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Preflight
+    - Schema
+- id: 2
+  description: Declare ab-03 as a red-suite task
+  verify: 'rg -n ''visible_tests: fail'' benchmarks/ab/tasks/ab-03-red-suite-slugify/task.yaml'
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Preflight
+    - Tasks
+- id: 3
+  description: Add ab_preflight.py with structured checks
+  verify: python3 -m py_compile scripts/lib/ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+- id: 4
+  description: Check arm setup and the visible test expectation
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+- id: 5
+  description: Assert fixture + hidden fails grade
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+- id: 6
+  description: Assert solution + hidden passes grade and scores 1.0
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+- id: 7
+  description: Run preflight inside grade_wrapper only
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+    - Isolation
+- id: 8
+  description: Add --preflight-only, --skip-preflight and a content-addressed cache
+  verify: bash scripts/run-ab-eval.sh --preflight-only --tasks ab-11 --bigpowers-root
+    /tmp/bp-subject
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Preflight
+    - CLI
+- id: 9
+  description: Abort round 1 on any preflight failure
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+    - Guards
+- id: 10
+  description: Prove a broken package.json aborts before an agent run
+  verify: python3 Tests/test_ab_preflight.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Preflight
+    - Regression

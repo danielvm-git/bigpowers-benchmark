@@ -1,0 +1,19 @@
+# story: e04s04
+# Final discriminating suite, re-scoped from 10 to 7 after 52 tasks.
+# Evidence: benchmarks/docs/SDD-ACADEMY-TASKS.md and calibration-sdd-batch*/.
+gate: 7
+tasks:
+- id: ab-09
+  pass_rate: 0.80
+- id: ab-27
+  pass_rate: 0.80
+- id: ab-30
+  pass_rate: 0.60
+- id: ab-31
+  pass_rate: 0.20
+- id: ab-32
+  pass_rate: 0.60
+- id: ab-36
+  pass_rate: 0.40
+- id: ab-37
+  pass_rate: 0.67

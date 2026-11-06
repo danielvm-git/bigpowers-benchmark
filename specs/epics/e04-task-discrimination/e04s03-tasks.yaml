@@ -1,0 +1,442 @@
+story_id: e04s03
+title: Add long-horizon and multi-step tasks
+status: completed
+bcps: 8
+tasks:
+- id: 1
+  description: Add ab-21 changing issue thread (todo due dates + old data)
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - Long horizon
+- id: 2
+  description: Add ab-22 multi-file items API partial updates
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - Long horizon
+- id: 3
+  description: Add ab-23 resume migration from saved state
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - Long horizon
+- id: 4
+  description: Preflight + task quality + parity for the new tasks
+  verify: python3 Tests/test_task_quality.py && python3 Tests/test_ab_tasks.py &&
+    python3 Tests/test_ab_parity.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Quality
+- id: 5
+  description: Calibrate the new tasks at k=10
+  verify: bash scripts/ab-calibrate.sh --tasks ab-21,ab-22,ab-23 --k 10 --bigpowers-root
+    /Users/danielvm/Developer/bigpowers
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 6
+  description: Add ab-24 URL shortener adapted from intent-bench (Apache-2.0)
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Tasks
+    - External source
+- id: 7
+  description: 'Calibrate ab-24 at k=5 (result: too_easy)'
+  verify: test -f benchmarks/reports/calibration-ab24/CALIBRATION-2026-11-04.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 8
+  description: Add ab-25 checkpointed resumable worker
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - State
+- id: 9
+  description: Add ab-26 mini Redis / sorted set TCP server
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - Concurrency
+- id: 10
+  description: Calibrate ab-25/ab-26 at k=5 (in progress)
+  verify: test -f benchmarks/reports/calibration-ab25-ab26/CALIBRATION-2026-11-04.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 11
+  description: Add ab-27 banking ledger (SDD Academy, advanced slice)
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 12
+  description: Add ab-28 flight booking (SDD Academy, advanced slice)
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 13
+  description: Add ab-29 HR payroll (SDD Academy, advanced slice)
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 14
+  description: 'Calibrate SDD batch 1: ab-27 discriminating 0.80; ab-28 too_hard;
+    ab-29 too_easy'
+  verify: test -f benchmarks/reports/calibration-sdd-batch1-retest/CALIBRATION-2026-11-05.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 15
+  description: Add ab-30 project DAG with cycle detection
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 16
+  description: Add ab-31 chat ordering and delivery
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 17
+  description: Add ab-32 social feed visibility
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 18
+  description: 'Calibrate SDD batch 2: ab-30 0.60, ab-31 0.20, ab-32 0.60 all discriminating'
+  verify: test -f benchmarks/reports/calibration-sdd-batch2-retest/CALIBRATION-2026-11-05.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 19
+  description: Add ab-33 music store with entitlements and refunds
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 20
+  description: Add ab-34 recommendation engine
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 21
+  description: Add ab-35 collaborative todo lists
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 22
+  description: Add ab-36 project timeline
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 23
+  description: Add ab-37 loans with simple interest
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 24
+  description: 'Calibrate batch 3: ab-37 discriminating 0.67; ab-33/36 too_hard; ab-34/35
+    too_easy'
+  verify: test -f benchmarks/reports/calibration-sdd-batch3-retest/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 25
+  description: Address ab-33/ab-36 contract ambiguities; ab-36 discriminating 0.40,
+    ab-33 too_easy
+  verify: test -f benchmarks/reports/calibration-sdd-batch3-retest2/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+    - Task quality
+- id: 26
+  description: Add ab-38 timeline re-planning with baseline slippage
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 27
+  description: Add ab-39 social messaging with private contact rules
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 28
+  description: Add ab-40 ledger holds, capture, release and refund
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 29
+  description: 'Calibrate batch 4: ab-38/39/40 all too_easy after contract fixes;
+    7 discriminating total'
+  verify: test -f benchmarks/reports/calibration-sdd-batch4-retest/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 30
+  description: Add ab-41 JSON parser from scratch
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 31
+  description: Add ab-42 length-prefixed binary protocol with partial frames
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 32
+  description: Add ab-43 package resolver with semver ranges, conflicts and cycles
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 33
+  description: 'Calibrate batch 5: ab-41/42/43 all too_easy; 7 discriminating total'
+  verify: test -f benchmarks/reports/calibration-sdd-batch5/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Calibration
+- id: 34
+  description: Add ab-44 fair scheduler with priority aging
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 35
+  description: Add ab-45 FX settlement with symmetric rounding
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 36
+  description: Add ab-46 access policy engine with deny-overrides
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 37
+  description: Add ab-47 inventory reservations with expiry
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 38
+  description: Add ab-48 cursor-paginated activity feed
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 39
+  description: Add ab-49 order workflow with idempotent commands
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 40
+  description: "Calibrate batches 6-7: all too_easy or single-edge too_hard; 7 discriminating total"
+  verify: test -f benchmarks/reports/calibration-sdd-batch7/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 41
+  description: Add ab-50 multi-warehouse fulfillment with backorders
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 42
+  description: Add ab-51 proxy auction with reserve and ties
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 43
+  description: Add ab-52 receivables reconciliation with FIFO allocation
+  verify: python3 Tests/test_ab_tasks.py
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy
+- id: 44
+  description: "Calibrate batch 8: ab-50/51 genuinely too_hard, ab-52 too_easy; 7 discriminating total"
+  verify: test -f benchmarks/reports/calibration-sdd-batch8b/CALIBRATION-2026-11-06.yaml
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Tasks
+    - SDD Academy

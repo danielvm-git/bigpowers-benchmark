@@ -1,0 +1,34 @@
+id: e08
+slug: reliability
+title: "Benchmark reliability tracked separately"
+status: completed
+release: "v2.0.1"
+bcps: 8
+wsjf:
+  business_value: 5
+  time_criticality: 8
+  risk_reduction: 8
+  job_size: 3
+  score: 7.0
+depends_on: [e01]
+stories:
+  - id: e08s01
+    title: "Reconcile the e58 flake and the #183/#185/#167 bug-record drift"
+    bcps: 5
+    risk: P1
+    status: completed
+  - id: e08s02
+    title: "Add a reliability block to every report"
+    bcps: 3
+    risk: P1
+    status: completed
+exit_criteria:
+  - "Every open benchmark bug has one registry entry and one file."
+  - "Reports separate infrastructure failure rate from quality."
+  - "A gate fails when a bug record and its registry entry disagree."
+evidence:
+  - "bigpowers specs/bugs/BUG-2026-11-03-story-verify-e58-eval-flake.md (open)."
+  - "Issues #183 artifact checks, #185 spec-state consistency, #167 external test evidence."
+risks:
+  - "Bug records drift when a fix lands without a registry update; make the gate part of preflight."
+  - "Infrastructure failures must not be folded into quality or they will look like agent regressions."

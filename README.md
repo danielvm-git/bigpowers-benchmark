@@ -23,12 +23,24 @@ BigPowers Benchmark runs AI coding agents against a curated task suite inside an
 
 One click → opencode attempts the task → scores appear → JSON shard is committed to git. No manual grading, no clipboard-shuffling, no spreadsheets.
 
+This repository also owns the **outcome A/B benchmark** that compares vanilla agents with
+bigpowers and its ablation arms on hidden-test tasks. It runs the same tasks through real agent
+CLIs, isolates each run in a container, detects protected-test tampering, scores partial credit,
+and reports bootstrap confidence intervals plus Lean value-stream metrics.
+
+```bash
+bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /path/to/bigpowers
+```
+
+See [`benchmarks/README.md`](benchmarks/README.md) for prerequisites, adapters, reports and tests.
+
 ---
 
 ## Table of Contents
 
 - [Features](#features)
 - [Screens](#screens)
+- [Outcome A/B benchmark](#outcome-ab-benchmark)
 - [How scoring works](#how-scoring-works)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
@@ -70,6 +82,22 @@ One click → opencode attempts the task → scores appear → JSON shard is com
 | **Settings** | Daytona URL, task repo, theme picker, Keychain API keys, auto-commit / auto-push |
 
 > Design references for every screen live in [`specs/assets/prototypes/`](specs/assets/prototypes/) as pixel-perfect HTML prototypes. Open any `.html` file in a browser to see exactly what the native app will look like.
+
+---
+
+## Outcome A/B benchmark
+
+The app also hosts the benchmark that answers the methodology question, not just the model question:
+does an agent with bigpowers solve real tasks better than the same agent without it?
+
+- **Arms:** `vanilla`, `bigpowers`, `bp-core`, `bp-seed`, `bp-skills`, `tdd-line`.
+- **Adapters:** `pi-docker` (default, isolated container), `pi`, `claude`, `opencode`.
+- **Tasks:** 17 hidden-test tasks, each with `fixture/`, `hidden/` and `solution/`.
+- **Signals:** pass, partial credit, audit defects, protected-test tampering, tokens, cost,
+  lead time, time-to-first-build, redundant test runs and diff size.
+
+Full setup and commands: [`benchmarks/README.md`](benchmarks/README.md). The schema and task
+design notes are in [`benchmarks/docs/`](benchmarks/docs/).
 
 ---
 

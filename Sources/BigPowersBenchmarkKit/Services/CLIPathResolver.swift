@@ -32,7 +32,12 @@ public enum CLIPathResolver {
     private static func checkViaLoginShell(_ name: String, shellPath: String) -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: shellPath)
-        process.arguments = ["-l", "-c", "command -v \(ShellQuoting.single(name)) >/dev/null 2>&1"] // swiftlint:disable:this line_length
+        process
+            .arguments = [
+                "-l",
+                "-c",
+                "command -v \(ShellQuoting.single(name)) >/dev/null 2>&1",
+            ] // swiftlint:disable:this line_length
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe

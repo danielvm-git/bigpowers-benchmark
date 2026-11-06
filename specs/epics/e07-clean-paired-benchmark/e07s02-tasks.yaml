@@ -1,0 +1,10 @@
+story_id: e07s02
+title: Generate paired comparison delta report with bootstrap CIs
+status: completed
+bcps: 5
+tasks:
+- id: 1
+  description: Verify bootstrap confidence interval generation
+  verify: python3 Tests/test_ab_eval.py TestMetrics.test_bootstrap_is_deterministic_and_brackets_estimate
+  risk: P0
+  status: completed

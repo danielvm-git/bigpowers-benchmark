@@ -1,0 +1,10 @@
+story_id: e08s02
+title: Reconcile runner crashes with the bug registry
+status: completed
+bcps: 3
+tasks:
+- id: 1
+  description: Verify bug registry consistency
+  verify: python3 -c "import yaml; yaml.safe_load(open('specs/bugs/registry.yaml'))"
+  risk: P1
+  status: completed

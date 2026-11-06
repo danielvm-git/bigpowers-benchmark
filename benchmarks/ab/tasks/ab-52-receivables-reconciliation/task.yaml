@@ -1,0 +1,52 @@
+# story: e04s03
+# Multi-module slice: FIFO allocation, partial payments, credit and disputes.
+id: ab-52
+title: Receivables reconciliation with FIFO allocation
+kind: feature
+spec_style: behavioural
+source:
+  url: https://sdd-academy.vercel.app/projects/finance
+  license: inspiration-only
+  note: "Project idea from SDD Academy; reconciliation rules, fixture and tests are ours."
+requirements:
+  - id: fifo
+    behaviour: "allocates FIFO by due day then id"
+    hidden: "allocates FIFO by due day then id"
+  - id: partial
+    behaviour: "partial payments leave invoices open"
+    hidden: "partial payments leave invoices open"
+  - id: credit
+    behaviour: "overpayments remain as credit"
+    hidden: "overpayments remain as credit"
+  - id: payment-order
+    behaviour: "multiple payments are applied in day then id order"
+    hidden: "multiple payments are applied in day then id order"
+  - id: dispute
+    behaviour: "disputed invoices are skipped"
+    hidden: "disputed invoices are skipped"
+  - id: paid-dispute
+    behaviour: "paid invoices cannot be disputed"
+    hidden: "paid invoices cannot be disputed"
+  - id: isolation
+    behaviour: "customers are isolated"
+    hidden: "customers are isolated"
+  - id: summary
+    behaviour: "summary sorts invoices and reports open cents"
+    hidden: "summary sorts invoices and reports open cents"
+  - id: validation
+    behaviour: "duplicates and invalid values fail"
+    hidden: "duplicates and invalid values fail"
+  - id: conservation
+    behaviour: "allocation loses no cents"
+    hidden: "allocation loses no cents"
+prompt: |
+  Implement the receivables module described in docs/SPEC-receivables.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/receivables.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 900
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

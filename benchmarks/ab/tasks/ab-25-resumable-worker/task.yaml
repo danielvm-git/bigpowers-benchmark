@@ -1,0 +1,43 @@
+# story: e04s03
+# Mid task: crash-safe resume with atomic checkpoints. Idea from HN spec-first discussion.
+id: ab-25
+title: Checkpointed resumable worker with atomic state
+kind: feature
+spec_style: behavioural
+source:
+  url: https://news.ycombinator.com/item?id=50260571
+  license: idea-only
+  note: "Our own spec, fixture, reference solution and hidden tests."
+requirements:
+  - id: resume
+    behaviour: "a limited run resumes without duplicating output"
+    hidden: "a limit run resumes without duplicating output"
+  - id: failure
+    behaviour: "a failed job does not advance the checkpoint and is retried"
+    hidden: "a failed job does not advance the checkpoint and is retried"
+  - id: checkpoint-validation
+    behaviour: "malformed and unsupported checkpoints fail without touching output"
+    hidden: "malformed and unsupported checkpoints fail without touching output"
+  - id: lock
+    behaviour: "a lock prevents a second worker and is removed afterwards"
+    hidden: "a lock prevents a second worker and is removed afterwards"
+  - id: atomic
+    behaviour: "the checkpoint is written atomically with no temp files left"
+    hidden: "the checkpoint is written atomically with no temp files left"
+  - id: limit-zero
+    behaviour: "limit 0 processes nothing and releases the lock"
+    hidden: "limit 0 processes nothing, leaves the checkpoint alone and releases the lock"
+  - id: existing-checkpoint
+    behaviour: "an existing checkpoint skips completed jobs"
+    hidden: "an existing checkpoint skips completed jobs"
+prompt: |
+  Implement the checkpointed resumable worker described in docs/SPEC-worker.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/worker.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 600
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

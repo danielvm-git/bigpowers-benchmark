@@ -1,0 +1,42 @@
+# story: e04s03
+# Long-horizon: multi-file HTTP API, routing, validation and a shared error shape.
+id: ab-22
+title: Add partial updates to the items API
+kind: feature
+spec_style: behavioural
+requirements:
+  - id: patch-one
+    behaviour: "a partial patch updates one field and keeps the others"
+    hidden: "patches one field and leaves the others unchanged"
+  - id: patch-many
+    behaviour: "price and quantity can be patched together"
+    hidden: "patches price and quantity together"
+  - id: patch-missing
+    behaviour: "an unknown id returns not_found"
+    hidden: "unknown id returns not_found"
+  - id: patch-invalid
+    behaviour: "invalid values return invalid_input"
+    hidden: "invalid patch values return invalid_input"
+  - id: empty-patch
+    behaviour: "an empty or unknown-only body is rejected"
+    hidden: "an empty body and an unknown-only body are rejected"
+  - id: ignore-unknown
+    behaviour: "unknown fields alongside a valid field are ignored"
+    hidden: "unknown fields alongside a valid field are ignored"
+  - id: bad-json
+    behaviour: "malformed JSON returns invalid_input"
+    hidden: "invalid JSON returns the shared error shape"
+  - id: regression
+    behaviour: "existing list, get, create and unknown-route behaviour is unchanged"
+    hidden: "regression: list, get, create and unknown routes"
+prompt: |
+  Implement `PATCH /items/:id` as described in docs/SPEC-items-api.md.
+  Keep `node --test test/*.test.js` passing.
+protected:
+  - test/items.test.js
+grade: node --test test/*.test.js test-hidden/*.test.js
+score: node --test --test-reporter=tap test-hidden/*.test.js
+timeout_s: 1800
+preflight:
+  visible_tests: pass
+  command: node --test test/*.test.js

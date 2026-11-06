@@ -1,0 +1,10 @@
+story_id: e08s01
+title: Track infrastructure errors separately from agent code failures
+status: completed
+bcps: 5
+tasks:
+- id: 1
+  description: Verify infrastructure error classification
+  verify: python3 Tests/test_ab_eval.py TestRunRecord.test_agent_failure_is_recorded_not_fatal
+  risk: P0
+  status: completed

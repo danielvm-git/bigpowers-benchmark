@@ -1,0 +1,66 @@
+story_id: e02s03
+title: Run subject and runner inputs from immutable detached worktrees
+status: passing
+bcps: 5
+tasks:
+- id: 1
+  description: Add ab-worktree.sh with create/remove and exit traps
+  verify: bash -n scripts/lib/ab-worktree.sh
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Isolation
+    - Worktree
+- id: 2
+  description: Create the subject worktree in run-ab-eval.sh and export AB_BP_ROOT
+  verify: bash scripts/run-ab-eval.sh --dry-run --bigpowers-root /tmp/bp-subject |
+    rg 'worktrees/'
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Isolation
+    - Worktree
+- id: 3
+  description: Handle dirty subjects by copying and hashing, not by worktree
+  verify: python3 Tests/test_ab_provenance.py
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Isolation
+    - Dirty tree
+- id: 4
+  description: Add --runner-worktree for the runner inputs
+  verify: bash scripts/run-ab-eval.sh --dry-run --runner-worktree | rg 'runner'
+  risk: P1
+  status: passing
+  allure:
+    severity: high
+    categories:
+    - Isolation
+    - Worktree
+- id: 5
+  description: Record worktree paths and SHAs in inputs
+  verify: rg -n 'worktree' benchmarks/docs/SCHEMA-AB.md
+  risk: P2
+  status: passing
+  allure:
+    severity: normal
+    categories:
+    - Docs
+    - Provenance
+- id: 6
+  description: Test branch immutability and cleanup
+  verify: bash tests/test_ab_worktree.sh
+  risk: P0
+  status: passing
+  allure:
+    severity: critical
+    categories:
+    - Isolation
+    - Regression

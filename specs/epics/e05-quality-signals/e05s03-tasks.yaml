@@ -1,0 +1,10 @@
+story_id: e05s03
+title: Integrate quality signals into the composite score
+status: completed
+bcps: 3
+tasks:
+- id: 1
+  description: Verify composite score calculation
+  verify: python3 Tests/test_ab_score.py
+  risk: P1
+  status: completed
