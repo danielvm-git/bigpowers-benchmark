@@ -26,7 +26,7 @@ specs:
   active_capsule: null
 handoff:
   next_skill: release-branch
-  reason: 'Release blocker resolved by dropping the semantic-release git and changelog plugins: the release job now only pushes tags and publishes GitHub releases, so branch protection stays enforced. Next: land the deploy workflow required by the v3 CI/CD check.'
+  reason: 'Release blocker fixed by dropping the semantic-release git and changelog plugins, and the v3 deploy stage added as .github/workflows/deploy.yml chained through workflow_run. Next: land the deploy PR, then confirm a main run is green end to end.'
 decisions:
   - gate: intake
     date: '2026-11-06'
@@ -64,6 +64,10 @@ decisions:
     date: '2026-11-08'
     decision: 'Drop the semantic-release git and changelog plugins so releases never write to main; keep branch protection fully enforced.'
     reason: 'The release job failed with GH006 because @semantic-release/git pushes a [skip ci] version commit that can never satisfy its own required check. A PAT bypass was not available and unprotecting main would reverse audit gate D.16. Removing the git plugin leaves tags and GitHub releases intact, which is the smallest change that makes the workflow pass without weakening a gate. Accepted cost: CHANGELOG.md is no longer updated by releases; follow-up would open a pull request instead.'
+  - gate: v3-deploy-stage
+    date: '2026-11-08'
+    decision: 'Add a separate deploy.yml chained from Test Build Release through workflow_run, and treat an unset DEPLOY_TARGET as a recorded no-op rather than a failure.'
+    reason: 'The Grimoire v3 check requires test-build-release.yml plus a separate deploy workflow. This repository ships a standalone macOS app with no web deploy target, so inventing a deployment would be false. Resolving the target from a repository variable keeps the pipeline shape honest and lets a real target be wired later without touching CI.'
 completed:
 - e01s01
 - e01s02

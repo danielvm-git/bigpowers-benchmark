@@ -130,3 +130,19 @@ scope_tracking:
       acceptance: "First-task red-test rule recorded where the next story author will read it."
       verify: "rg -n 'Task 1 of every new story is a test' specs/verifications/story-authoring-red-test.md"
       severity: low
+  batch_4:
+    - id: SCOPE-05-v3-deploy-stage
+      type: gap
+      tracker: grimoire-check
+      status: in_review
+      files:
+        - .github/workflows/deploy.yml
+      depends_on: [SCOPE-02-ticket-4-template-consolidation]
+      acceptance: "v3 CI/CD pair: test-build-release.yml plus a separate deploy.yml chained via workflow_run."
+      verify: "yamllint .github/workflows/ && python3 -c \"import yaml,os; d=yaml.safe_load(open('.github/workflows/deploy.yml')); on=d.get('on') or d.get(True); assert 'workflow_run' in on and on['workflow_run']['workflows']==['Test Build Release']\""
+      severity: medium
+      finding: >
+        The Grimoire check requires the workflow pair. This repository ships a
+        standalone macOS app with no web deploy target, so deploy.yml resolves
+        DEPLOY_TARGET and records a notice when it is unset instead of
+        inventing a deployment.
