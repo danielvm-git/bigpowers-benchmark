@@ -39,7 +39,7 @@ bugs:
     verify: >
       npx semantic-release --dry-run --no-ci on main resolves 1.3.6, creates the
       tag, and publishes via @semantic-release/github with no branch push.
-    affected_runs: '42279882331 (release=failure); main required checks test and verify are green'
+    affected_runs: '42279882331 (release=failure) -> 42477723817 (release=success, published 1.3.6)'
   - id: BUG-2026-11-06-macos-queue-timeout-cancels-ci
     title: macos runner queue time counts against the job timeout and cancels CI
     status: fixed
@@ -134,13 +134,19 @@ scope_tracking:
     - id: SCOPE-05-v3-deploy-stage
       type: gap
       tracker: grimoire-check
-      status: in_review
+      status: merged
+      pr: 15
       files:
         - .github/workflows/deploy.yml
       depends_on: [SCOPE-02-ticket-4-template-consolidation]
       acceptance: "v3 CI/CD pair: test-build-release.yml plus a separate deploy.yml chained via workflow_run."
       verify: "yamllint .github/workflows/ && python3 -c \"import yaml,os; d=yaml.safe_load(open('.github/workflows/deploy.yml')); on=d.get('on') or d.get(True); assert 'workflow_run' in on and on['workflow_run']['workflows']==['Test Build Release']\""
       severity: medium
+      verified: '2026-11-08'
+      evidence: >
+        Main push run 42477723817 green (test, verify, release) and the chained
+        Deploy run 42478040615 triggered by workflow_run and succeeded, taking
+        the no-op path with a recorded notice. semantic-release published 1.3.6.
       finding: >
         The Grimoire check requires the workflow pair. This repository ships a
         standalone macOS app with no web deploy target, so deploy.yml resolves
