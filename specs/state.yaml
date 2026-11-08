@@ -25,8 +25,8 @@ specs:
   planning_context: specs/planning-context.yaml
   active_capsule: null
 handoff:
-  next_skill: release-branch
-  reason: 'Release blocker fixed by dropping the semantic-release git and changelog plugins, and the v3 deploy stage added as .github/workflows/deploy.yml chained through workflow_run. Next: land the deploy PR, then confirm a main run is green end to end.'
+  next_skill: session-state
+  reason: 'Both reported problems fixed and verified on main. Release now publishes tags and GitHub releases without writing to protected main (run 42477723817 green, released 1.3.6), and the v3 deploy stage runs via workflow_run (run 42478040615 green, no-op with a recorded notice). No open work items remain; BUG-2026-11-06-prepush-swift-test-flake is the only open low-severity record.'
 decisions:
   - gate: intake
     date: '2026-11-06'
