@@ -25,8 +25,8 @@ specs:
   planning_context: specs/planning-context.yaml
   active_capsule: null
 handoff:
-  next_skill: blocked
-  reason: 'SCOPE close-out complete and merged (#8, #9, #10, #11, #12). One blocker needs a human decision: BUG-2026-11-06-semantic-release-vs-branch-protection. semantic-release cannot push its [skip ci] version commit to a protected main, and neither the Actions token nor a user-repo ruleset bypass can be made to work. Choices: PAT secret with bypass, drop @semantic-release/git, or unprotect main.'
+  next_skill: release-branch
+  reason: 'Release blocker resolved by dropping the semantic-release git and changelog plugins: the release job now only pushes tags and publishes GitHub releases, so branch protection stays enforced. Next: land the deploy workflow required by the v3 CI/CD check.'
 decisions:
   - gate: intake
     date: '2026-11-06'
@@ -60,6 +60,10 @@ decisions:
     date: '2026-11-06'
     decision: 'Keep required status checks test+verify, approvals 0, admins enforced.'
     reason: 'verify now exists on main, so it is a meaningful gate. Approvals stay at 0 because CONVENTIONS.md section 7 sets solo-git; every CI gate is still required.'
+  - gate: release-blocker-resolution
+    date: '2026-11-08'
+    decision: 'Drop the semantic-release git and changelog plugins so releases never write to main; keep branch protection fully enforced.'
+    reason: 'The release job failed with GH006 because @semantic-release/git pushes a [skip ci] version commit that can never satisfy its own required check. A PAT bypass was not available and unprotecting main would reverse audit gate D.16. Removing the git plugin leaves tags and GitHub releases intact, which is the smallest change that makes the workflow pass without weakening a gate. Accepted cost: CHANGELOG.md is no longer updated by releases; follow-up would open a pull request instead.'
 completed:
 - e01s01
 - e01s02
