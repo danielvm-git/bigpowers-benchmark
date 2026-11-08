@@ -1,0 +1,99 @@
+---
+name: Deploy
+# Separate deploy stage of the v3 CI/CD pair:
+#   test-build-release.yml  ->  deploy.yml (this file)
+# Chained through workflow_run so deploy never re-runs tests and never competes
+# with CI for runners.
+#
+# This repository ships a standalone macOS app: it has no web deploy target.
+# Deploy therefore resolves a target from the `DEPLOY_TARGET` repository
+# variable. When that variable is unset — today's state — the job records a
+# notice and succeeds without deploying. Wiring a real target later needs no
+# change to test-build-release.yml.
+
+on:
+  workflow_run:
+    workflows: ["Test Build Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Test Build Release run id to verify (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Sanity check upstream run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPSTREAM_RUN: ${{ inputs.run_id || github.event.workflow_run.id }}
+          UPSTREAM_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          echo "upstream run: ${UPSTREAM_RUN:-none}"
+          echo "commit: ${UPSTREAM_SHA:-none}"
+          echo "trigger: ${{ github.event_name }}"
+
+      - name: Resolve deploy target
+        id: target
+        env:
+          TARGET: ${{ vars.DEPLOY_TARGET }}
+        run: |
+          if [ -z "${TARGET}" ]; then
+            echo "::notice::No DEPLOY_TARGET variable set. This repository ships a standalone macOS app, so there is no deploy target to release to."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Deploying to ${TARGET}"
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "url=${TARGET}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Health check
+        if: steps.target.outputs.configured == 'true'
+        env:
+          URL: ${{ steps.target.outputs.url }}
+        run: |
+          attempts=8
+          interval=10
+          for i in $(seq 1 "$attempts"); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || echo 000)
+            case "$code" in
+              200|301|302)
+                echo "healthy (HTTP $code)"
+                exit 0
+                ;;
+            esac
+            echo "attempt $i/$attempts: HTTP $code, retrying in ${interval}s"
+            sleep "$interval"
+          done
+          echo "::error::health check failed after ${attempts} attempts"
+          exit 1
+
+      - name: Summary
+        run: |
+          {
+            echo "### Deploy"
+            echo ""
+            if [ "${{ steps.target.outputs.configured }}" = "true" ]; then
+              echo "- Target: \`${{ steps.target.outputs.url }}\`"
+              echo "- Health check: passed"
+            else
+              echo "- No \`DEPLOY_TARGET\` variable set."
+              echo "- Nothing deployed: this repository ships a standalone macOS app."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
